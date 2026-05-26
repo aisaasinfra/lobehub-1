@@ -1117,14 +1117,14 @@ When I am ___, I need ___
   'workspace.billingPage.billing.cancelSuccess': 'Cancellation scheduled.',
   'workspace.billingPage.billing.cancelTitle': 'Cancel subscription?',
   'workspace.billingPage.billing.downgrade.confirmBody':
-    'This schedules cancellation at the end of the current billing cycle. Pro features and members stay available until then; after the recovery period, the workspace will be downgraded to Solo if it is not restored.',
-  'workspace.billingPage.billing.downgrade.confirmCta': 'Schedule cancellation',
+    'This immediately downgrades the workspace to Solo. The current billing period is non-refundable, and every member except the primary owner will be removed from this workspace.',
+  'workspace.billingPage.billing.downgrade.confirmCta': 'Downgrade now',
   'workspace.billingPage.billing.downgrade.confirmInputLabel':
     'Type the workspace name "{{name}}" to confirm:',
   'workspace.billingPage.billing.downgrade.confirmInputPlaceholder': 'Workspace name',
-  'workspace.billingPage.billing.downgrade.confirmTitle': 'Schedule cancellation?',
+  'workspace.billingPage.billing.downgrade.confirmTitle': 'Downgrade to Solo?',
   'workspace.billingPage.billing.downgrade.failedToast': 'Failed to downgrade.',
-  'workspace.billingPage.billing.downgrade.successToast': 'Downgrade scheduled.',
+  'workspace.billingPage.billing.downgrade.successToast': 'Workspace downgraded to Solo.',
   'workspace.billingPage.billing.hobby.subtitle':
     'Hobby workspace · shared monthly pool · no team seats',
   'workspace.billingPage.billing.hobby.title': 'Free workspace',

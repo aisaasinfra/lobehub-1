@@ -61,9 +61,6 @@ describe('buildWorkspaceAwarePath', () => {
     expect(buildWorkspaceAwarePath('/settings/system-tools', 'acme')).toBe(
       '/settings/system-tools',
     );
-    expect(buildWorkspaceAwarePath('/settings/workspace-general', 'acme')).toBe(
-      '/settings/workspace-general',
-    );
   });
 
   it('prefixes the `/settings` index — both personal and workspace have a meaningful redirect', () => {

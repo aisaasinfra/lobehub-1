@@ -7,7 +7,6 @@ import SettingContainer from '@/features/Setting/SettingContainer';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { SettingsTabs } from '@/store/global/initialState';
 import { serverConfigSelectors, useServerConfigStore } from '@/store/serverConfig';
-import { useWorkspaceStore, workspaceSelectors } from '@/store/workspace';
 
 import { componentMap } from './componentMap';
 
@@ -19,22 +18,6 @@ const REDIRECT_MAP: Record<string, string> = {
   [SettingsTabs.Image]: SettingsTabs.ServiceModel,
 };
 
-/**
- * Legacy workspace-tab URLs (`/settings/workspace-general`,
- * `/settings/workspace-members`) are no longer rendered inside `/settings/*`
- * — workspace settings live under `/:workspaceSlug/settings/*`. Redirect to
- * the active workspace's equivalent page; fall back to the user profile when
- * no workspace is active.
- *
- * Keys are matched as raw URL segments — the enum members that used to
- * declare them (`SettingsTabs.WorkspaceGeneral`, `SettingsTabs.WorkspaceMembers`)
- * were removed along with the workspace-aware personal sidebar.
- */
-const LEGACY_WORKSPACE_TARGET: Record<string, 'general' | 'members'> = {
-  'workspace-general': 'general',
-  'workspace-members': 'members',
-};
-
 interface SettingsContentProps {
   activeTab?: string;
   mobile?: boolean;
@@ -43,7 +26,6 @@ interface SettingsContentProps {
 const SettingsContent = ({ mobile, activeTab }: SettingsContentProps) => {
   const enableBusinessFeatures = useServerConfigStore(serverConfigSelectors.enableBusinessFeatures);
   const navigate = useWorkspaceAwareNavigate();
-  const activeSlug = useWorkspaceStore((s) => workspaceSelectors.activeWorkspace(s)?.slug ?? null);
 
   useEffect(() => {
     if (activeTab && REDIRECT_MAP[activeTab]) {
@@ -51,15 +33,8 @@ const SettingsContent = ({ mobile, activeTab }: SettingsContentProps) => {
       // chat-appearance) map to personal-settings tabs. `escape: true` keeps the
       // user in personal context even when a workspace happens to be active.
       navigate(`/settings/${REDIRECT_MAP[activeTab]}`, { escape: true, replace: true });
-      return;
     }
-    if (activeTab && LEGACY_WORKSPACE_TARGET[activeTab]) {
-      const target = LEGACY_WORKSPACE_TARGET[activeTab];
-      navigate(activeSlug ? `/${activeSlug}/settings/${target}` : '/settings/profile', {
-        replace: true,
-      });
-    }
-  }, [activeTab, activeSlug, navigate]);
+  }, [activeTab, navigate]);
 
   const renderComponent = (tab: string) => {
     const Component = componentMap[tab as keyof typeof componentMap] || componentMap.appearance;
@@ -87,7 +62,6 @@ const SettingsContent = ({ mobile, activeTab }: SettingsContentProps) => {
   };
 
   if (activeTab && REDIRECT_MAP[activeTab]) return null;
-  if (activeTab && LEGACY_WORKSPACE_TARGET[activeTab]) return null;
 
   if (mobile) {
     return activeTab ? renderComponent(activeTab) : renderComponent(SettingsTabs.Profile);
