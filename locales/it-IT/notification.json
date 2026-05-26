@@ -14,5 +14,9 @@
   "inbox.markAllRead": "Segna tutto come letto",
   "inbox.title": "Notifiche",
   "video_generation_completed": "Il tuo video \"{{prompt}}\" è pronto.",
-  "video_generation_completed_title": "Generazione video completata"
+  "video_generation_completed_title": "Generazione video completata",
+  "workspace_member_removed": "Sei stato rimosso dal workspace \"{{workspaceName}}\" dal proprietario del workspace.",
+  "workspace_member_removed_downgrade": "Sei stato rimosso dal workspace \"{{workspaceName}}\" perché il workspace è stato declassato.",
+  "workspace_member_removed_downgrade_title": "Rimosso dal workspace",
+  "workspace_member_removed_title": "Rimosso dal workspace"
 }

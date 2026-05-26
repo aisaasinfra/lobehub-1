@@ -14,5 +14,9 @@
   "inbox.markAllRead": "همه را به‌عنوان خوانده‌شده علامت بزن",
   "inbox.title": "اعلانات",
   "video_generation_completed": "ویدیوی شما با موضوع «{{prompt}}» آماده است.",
-  "video_generation_completed_title": "تولید ویدیو تکمیل شد"
+  "video_generation_completed_title": "تولید ویدیو تکمیل شد",
+  "workspace_member_removed": "شما توسط مالک فضای کاری از فضای کاری \"{{workspaceName}}\" حذف شده‌اید.",
+  "workspace_member_removed_downgrade": "شما به دلیل کاهش سطح فضای کاری از فضای کاری \"{{workspaceName}}\" حذف شده‌اید.",
+  "workspace_member_removed_downgrade_title": "حذف شده از فضای کاری",
+  "workspace_member_removed_title": "حذف شده از فضای کاری"
 }

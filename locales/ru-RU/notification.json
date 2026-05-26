@@ -14,5 +14,9 @@
   "inbox.markAllRead": "Отметить все как прочитанные",
   "inbox.title": "Уведомления",
   "video_generation_completed": "Ваше видео «{{prompt}}» готово.",
-  "video_generation_completed_title": "Создание видео завершено"
+  "video_generation_completed_title": "Создание видео завершено",
+  "workspace_member_removed": "Вы были удалены из рабочей области \"{{workspaceName}}\" владельцем рабочей области.",
+  "workspace_member_removed_downgrade": "Вы были удалены из рабочей области \"{{workspaceName}}\", так как рабочая область была понижена в тарифе.",
+  "workspace_member_removed_downgrade_title": "Удалены из рабочей области",
+  "workspace_member_removed_title": "Удалены из рабочей области"
 }

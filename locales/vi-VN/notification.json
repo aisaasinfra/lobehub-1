@@ -14,5 +14,9 @@
   "inbox.markAllRead": "Đánh dấu tất cả là đã đọc",
   "inbox.title": "Thông báo",
   "video_generation_completed": "Video \"{{prompt}}\" của bạn đã sẵn sàng.",
-  "video_generation_completed_title": "Hoàn tất tạo video"
+  "video_generation_completed_title": "Hoàn tất tạo video",
+  "workspace_member_removed": "Bạn đã bị xóa khỏi không gian làm việc \"{{workspaceName}}\" bởi chủ sở hữu không gian làm việc.",
+  "workspace_member_removed_downgrade": "Bạn đã bị xóa khỏi không gian làm việc \"{{workspaceName}}\" vì không gian làm việc đã bị hạ cấp.",
+  "workspace_member_removed_downgrade_title": "Đã bị xóa khỏi không gian làm việc",
+  "workspace_member_removed_title": "Đã bị xóa khỏi không gian làm việc"
 }

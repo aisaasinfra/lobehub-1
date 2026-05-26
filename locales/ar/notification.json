@@ -14,5 +14,9 @@
   "inbox.markAllRead": "تحديد الكل كمقروء",
   "inbox.title": "الإشعارات",
   "video_generation_completed": "الفيديو الخاص بك \"{{prompt}}\" جاهز.",
-  "video_generation_completed_title": "اكتملت عملية إنشاء الفيديو"
+  "video_generation_completed_title": "اكتملت عملية إنشاء الفيديو",
+  "workspace_member_removed": "تمت إزالتك من مساحة العمل \"{{workspaceName}}\" بواسطة مالك مساحة العمل.",
+  "workspace_member_removed_downgrade": "تمت إزالتك من مساحة العمل \"{{workspaceName}}\" بسبب تخفيض مستوى مساحة العمل.",
+  "workspace_member_removed_downgrade_title": "تمت إزالتك من مساحة العمل",
+  "workspace_member_removed_title": "تمت إزالتك من مساحة العمل"
 }

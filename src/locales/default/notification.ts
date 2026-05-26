@@ -17,4 +17,10 @@ export default {
   'inbox.title': 'Notifications',
   'video_generation_completed': 'Your video "{{prompt}}" is ready.',
   'video_generation_completed_title': 'Video generation completed',
+  'workspace_member_removed':
+    'You have been removed from workspace "{{workspaceName}}" by the workspace owner.',
+  'workspace_member_removed_downgrade':
+    'You have been removed from workspace "{{workspaceName}}" because the workspace was downgraded.',
+  'workspace_member_removed_downgrade_title': 'Removed from workspace',
+  'workspace_member_removed_title': 'Removed from workspace',
 };

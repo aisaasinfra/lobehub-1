@@ -14,5 +14,9 @@
   "inbox.markAllRead": "Alle als gelesen markieren",
   "inbox.title": "Benachrichtigungen",
   "video_generation_completed": "Ihr Video „{{prompt}}“ ist fertig.",
-  "video_generation_completed_title": "Videoerstellung abgeschlossen"
+  "video_generation_completed_title": "Videoerstellung abgeschlossen",
+  "workspace_member_removed": "Sie wurden vom Arbeitsbereich \"{{workspaceName}}\" durch den Arbeitsbereichsinhaber entfernt.",
+  "workspace_member_removed_downgrade": "Sie wurden vom Arbeitsbereich \"{{workspaceName}}\" entfernt, da der Arbeitsbereich herabgestuft wurde.",
+  "workspace_member_removed_downgrade_title": "Aus dem Arbeitsbereich entfernt",
+  "workspace_member_removed_title": "Aus dem Arbeitsbereich entfernt"
 }

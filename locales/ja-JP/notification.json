@@ -14,5 +14,9 @@
   "inbox.markAllRead": "すべてを既読にする",
   "inbox.title": "通知",
   "video_generation_completed": "動画「{{prompt}}」の生成が完了しました。",
-  "video_generation_completed_title": "動画生成が完了しました"
+  "video_generation_completed_title": "動画生成が完了しました",
+  "workspace_member_removed": "ワークスペース「{{workspaceName}}」からワークスペースの所有者によって削除されました。",
+  "workspace_member_removed_downgrade": "ワークスペース「{{workspaceName}}」がダウングレードされたため、削除されました。",
+  "workspace_member_removed_downgrade_title": "ワークスペースから削除されました",
+  "workspace_member_removed_title": "ワークスペースから削除されました"
 }

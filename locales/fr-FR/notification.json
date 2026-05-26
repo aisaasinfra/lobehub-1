@@ -14,5 +14,9 @@
   "inbox.markAllRead": "Marquer tout comme lu",
   "inbox.title": "Notifications",
   "video_generation_completed": "Votre vidéo « {{prompt}} » est prête.",
-  "video_generation_completed_title": "Génération de vidéo terminée"
+  "video_generation_completed_title": "Génération de vidéo terminée",
+  "workspace_member_removed": "Vous avez été retiré de l'espace de travail \"{{workspaceName}}\" par le propriétaire de l'espace de travail.",
+  "workspace_member_removed_downgrade": "Vous avez été retiré de l'espace de travail \"{{workspaceName}}\" en raison de la rétrogradation de l'espace de travail.",
+  "workspace_member_removed_downgrade_title": "Retiré de l'espace de travail",
+  "workspace_member_removed_title": "Retiré de l'espace de travail"
 }

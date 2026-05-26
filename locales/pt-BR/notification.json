@@ -14,5 +14,9 @@
   "inbox.markAllRead": "Marcar todas como lidas",
   "inbox.title": "Notificações",
   "video_generation_completed": "Seu vídeo \"{{prompt}}\" está pronto.",
-  "video_generation_completed_title": "Geração de vídeo concluída"
+  "video_generation_completed_title": "Geração de vídeo concluída",
+  "workspace_member_removed": "Você foi removido do espaço de trabalho \"{{workspaceName}}\" pelo proprietário do espaço de trabalho.",
+  "workspace_member_removed_downgrade": "Você foi removido do espaço de trabalho \"{{workspaceName}}\" porque o espaço de trabalho foi rebaixado.",
+  "workspace_member_removed_downgrade_title": "Removido do espaço de trabalho",
+  "workspace_member_removed_title": "Removido do espaço de trabalho"
 }

@@ -14,5 +14,9 @@
   "inbox.markAllRead": "Alles als gelezen markeren",
   "inbox.title": "Meldingen",
   "video_generation_completed": "Uw video \"{{prompt}}\" is klaar.",
-  "video_generation_completed_title": "Videogeneratie voltooid"
+  "video_generation_completed_title": "Videogeneratie voltooid",
+  "workspace_member_removed": "Je bent verwijderd uit werkruimte \"{{workspaceName}}\" door de eigenaar van de werkruimte.",
+  "workspace_member_removed_downgrade": "Je bent verwijderd uit werkruimte \"{{workspaceName}}\" omdat de werkruimte is gedegradeerd.",
+  "workspace_member_removed_downgrade_title": "Verwijderd uit werkruimte",
+  "workspace_member_removed_title": "Verwijderd uit werkruimte"
 }

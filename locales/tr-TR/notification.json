@@ -14,5 +14,9 @@
   "inbox.markAllRead": "Tümünü okundu olarak işaretle",
   "inbox.title": "Bildirimler",
   "video_generation_completed": "\"{{prompt}}\" adlı videonuz hazır.",
-  "video_generation_completed_title": "Video oluşturma tamamlandı"
+  "video_generation_completed_title": "Video oluşturma tamamlandı",
+  "workspace_member_removed": "Çalışma alanı \"{{workspaceName}}\" sahibinin sizi kaldırdığı bildirildi.",
+  "workspace_member_removed_downgrade": "Çalışma alanı \"{{workspaceName}}\" düşürüldüğü için kaldırıldınız.",
+  "workspace_member_removed_downgrade_title": "Çalışma alanından kaldırıldınız",
+  "workspace_member_removed_title": "Çalışma alanından kaldırıldınız"
 }

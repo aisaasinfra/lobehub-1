@@ -14,5 +14,9 @@
   "inbox.markAllRead": "全部標記為已讀",
   "inbox.title": "通知",
   "video_generation_completed": "您的影片「{{prompt}}」已完成。",
-  "video_generation_completed_title": "影片生成完成"
+  "video_generation_completed_title": "影片生成完成",
+  "workspace_member_removed": "您已被工作區擁有者從工作區「{{workspaceName}}」中移除。",
+  "workspace_member_removed_downgrade": "由於工作區已降級，您已被移除出工作區「{{workspaceName}}」。",
+  "workspace_member_removed_downgrade_title": "已從工作區移除",
+  "workspace_member_removed_title": "已從工作區移除"
 }

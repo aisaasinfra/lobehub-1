@@ -14,5 +14,9 @@
   "inbox.markAllRead": "Маркирай всички като прочетени",
   "inbox.title": "Известия",
   "video_generation_completed": "Вашето видео \"{{prompt}}\" е готово.",
-  "video_generation_completed_title": "Генерирането на видеото завърши"
+  "video_generation_completed_title": "Генерирането на видеото завърши",
+  "workspace_member_removed": "Бяхте премахнати от работното пространство \"{{workspaceName}}\" от собственика на работното пространство.",
+  "workspace_member_removed_downgrade": "Бяхте премахнати от работното пространство \"{{workspaceName}}\", защото работното пространство беше понижено.",
+  "workspace_member_removed_downgrade_title": "Премахнати от работното пространство",
+  "workspace_member_removed_title": "Премахнати от работното пространство"
 }
