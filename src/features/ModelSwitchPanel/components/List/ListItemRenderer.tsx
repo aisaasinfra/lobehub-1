@@ -18,8 +18,10 @@ import urlJoin from 'url-join';
 
 import { ModelItemRender, ProviderItemRender } from '@/components/ModelSelect';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
+import { buildWorkspaceAwarePath } from '@/features/Workspace/workspaceAwarePath';
 import { useUserStore } from '@/store/user';
 import { userGeneralSettingsSelectors } from '@/store/user/selectors';
+import { useWorkspaceStore, workspaceSelectors } from '@/store/workspace';
 
 import { styles } from '../../styles';
 import { type ListItem } from '../../types';
@@ -54,6 +56,9 @@ export const ListItemRenderer = memo<ListItemRendererProps>(
   }) => {
     const { t } = useTranslation('components');
     const navigate = useWorkspaceAwareNavigate();
+    const activeSlug = useWorkspaceStore(
+      (s) => workspaceSelectors.activeWorkspace(s)?.slug ?? null,
+    );
     const isDevMode = useUserStore((s) => userGeneralSettingsSelectors.config(s).isDevMode);
     const [detailOpen, setDetailOpen] = useState(false);
 
@@ -106,7 +111,7 @@ export const ListItemRenderer = memo<ListItemRendererProps>(
                 e.stopPropagation();
                 const url = urlJoin('/settings/provider', item.provider.id || 'all');
                 if (e.ctrlKey || e.metaKey) {
-                  window.open(url, '_blank');
+                  window.open(buildWorkspaceAwarePath(url, activeSlug), '_blank');
                 } else {
                   navigate(url);
                 }
