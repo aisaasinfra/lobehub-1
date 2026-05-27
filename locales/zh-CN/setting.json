@@ -1178,7 +1178,7 @@
   "workspace.billingPage.billing.invoice.title": "发票历史",
   "workspace.billingPage.billing.manage.cancelItem": "取消订阅",
   "workspace.billingPage.billing.manage.cta": "管理",
-  "workspace.billingPage.billing.manage.downgradeItem": "Downgrade",
+  "workspace.billingPage.billing.manage.downgradeItem": "降级",
   "workspace.billingPage.billing.manage.resumeItem": "恢复订阅",
   "workspace.billingPage.billing.monthlyFeeLabel": "/ 月",
   "workspace.billingPage.billing.planBadge.active": "活跃",
@@ -1361,7 +1361,8 @@
   "workspace.billingPage.usage.remaining": "剩余：{{amount}}",
   "workspace.billingPage.usage.selfTitle": "您的使用情况",
   "workspace.billingPage.usage.spend": "支出",
-  "workspace.billingPage.usage.summaryTitle": "工作区使用情况",
+  "workspace.billingPage.usage.summaryCardTitle": "积分用量统计",
+  "workspace.billingPage.usage.summaryTitle": "用量",
   "workspace.billingPage.usage.topSpender": "最高支出者：{{name}} ({{amount}})",
   "workspace.billingPage.usage.trendTitle": "每日支出趋势",
   "workspace.billingPage.usage.trendTooltip": "{{date}}：{{value}}",
@@ -1745,5 +1746,5 @@
   "workspaceSetting.tab.members": "成员",
   "workspaceSetting.tab.plans": "计划",
   "workspaceSetting.tab.skill": "技能",
-  "workspaceSetting.tab.usage": "使用情况"
+  "workspaceSetting.tab.usage": "用量"
 }

@@ -1,13 +1,13 @@
 'use client';
 
-import { type DropdownItem, Icon } from '@lobehub/ui';
+import type { DropdownItem } from '@lobehub/ui';
+import { Block, Flexbox, Icon, Text } from '@lobehub/ui';
 import { confirmModal, type ModalInstance } from '@lobehub/ui/base-ui';
 import { App } from 'antd';
 import {
   Clock3Icon,
   Copy,
   ExternalLink,
-  FileText,
   Hash,
   Maximize2,
   PencilLine,
@@ -15,6 +15,7 @@ import {
   Trash,
   Wand2,
 } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useParams } from 'react-router-dom';
@@ -36,7 +37,34 @@ import { useDocumentStore } from '@/store/document';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 
-export const useMenu = (): { menuItems: DropdownItem[] } => {
+interface TopicInfoHeaderProps {
+  authorName: string;
+  title: string;
+  updatedAtLabel?: string;
+}
+
+const TopicInfoHeader = ({ authorName, title, updatedAtLabel }: TopicInfoHeaderProps) => (
+  <Block
+    horizontal
+    align={'center'}
+    gap={12}
+    paddingBlock={8}
+    paddingInline={12}
+    style={{ minWidth: 240 }}
+    variant={'borderless'}
+  >
+    <Flexbox flex={1} gap={2} style={{ minWidth: 0, overflow: 'hidden' }}>
+      <Text ellipsis style={{ lineHeight: 1.4 }} weight={'bold'}>
+        {title}
+      </Text>
+      <Text ellipsis fontSize={12} style={{ lineHeight: 1.4 }} type={'secondary'}>
+        {updatedAtLabel ? `${authorName} ${updatedAtLabel}` : authorName}
+      </Text>
+    </Flexbox>
+  </Block>
+);
+
+export const useMenu = (): { menuHeader?: ReactNode; menuItems: DropdownItem[] } => {
   const { t } = useTranslation(['chat', 'topic', 'common', 'file']);
   const { modal, message } = App.useApp();
   const { pathname } = useLocation();
@@ -154,6 +182,31 @@ export const useMenu = (): { menuItems: DropdownItem[] } => {
   const topicId = activeTopic?.id;
   const topicTitle = activeTopic?.title ?? '';
   const isFavorite = !!activeTopic?.favorite;
+  const menuHeader = useMemo<ReactNode | undefined>(() => {
+    if (!authorInfo?.fullName || !topicId) return undefined;
+
+    const updatedAt = activeTopic?.updatedAt;
+    const formattedDate = updatedAt
+      ? new Date(updatedAt).toLocaleString(undefined, {
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+      : '';
+    const updatedAtLabel = formattedDate
+      ? t('info.updatedAt', { ns: 'topic', time: formattedDate })
+      : undefined;
+
+    return (
+      <TopicInfoHeader
+        authorName={authorInfo.fullName}
+        title={t('info.title', { ns: 'topic' })}
+        updatedAtLabel={updatedAtLabel}
+      />
+    );
+  }, [activeTopic?.updatedAt, authorInfo?.fullName, topicId, t]);
 
   const menuItems = useMemo<DropdownItem[]>(() => {
     const items: DropdownItem[] = [];
@@ -246,38 +299,6 @@ export const useMenu = (): { menuItems: DropdownItem[] } => {
       );
     }
 
-    if (authorInfo?.fullName && topicId) {
-      const updatedAt = activeTopic?.updatedAt;
-      const formattedDate = updatedAt
-        ? new Date(updatedAt).toLocaleString(undefined, {
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-          })
-        : '';
-
-      items.push(
-        {
-          icon: <Icon icon={FileText} />,
-          key: 'topic-info',
-          label: (
-            <div>
-              <div style={{ fontSize: 14 }}>
-                Topic {t('topic:topicInfo', { defaultValue: '信息' })}
-              </div>
-              <div style={{ color: cssVar.colorTextQuaternary, fontSize: 12, marginTop: 2 }}>
-                {authorInfo.fullName}
-                {formattedDate && ` · ${formattedDate}`}
-              </div>
-            </div>
-          ),
-        },
-        { type: 'divider' as const },
-      );
-    }
-
     items.push({
       checked: wideScreen,
       icon: <Icon icon={Maximize2} />,
@@ -315,8 +336,6 @@ export const useMenu = (): { menuItems: DropdownItem[] } => {
     topicTitle,
     isFavorite,
     activeAgentId,
-    activeTopic,
-    authorInfo,
     pathname,
     workingDirectory,
     wideScreen,
@@ -333,5 +352,5 @@ export const useMenu = (): { menuItems: DropdownItem[] } => {
     message,
   ]);
 
-  return { menuItems };
+  return { menuHeader, menuItems };
 };
