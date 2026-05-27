@@ -1119,7 +1119,6 @@ table notification_deliveries {
 table notifications {
   id uuid [pk, not null, default: `gen_random_uuid()`]
   user_id text [not null]
-  workspace_id text
   category text [not null]
   type text [not null]
   title text [not null]
@@ -1133,11 +1132,9 @@ table notifications {
 
   indexes {
     user_id [name: 'idx_notifications_user']
-    workspace_id [name: 'idx_notifications_workspace']
     (user_id, created_at) [name: 'idx_notifications_user_active']
     user_id [name: 'idx_notifications_user_unread']
     (user_id, dedupe_key) [name: 'idx_notifications_dedupe', unique]
-    (workspace_id, user_id, dedupe_key) [name: 'idx_notifications_dedupe_workspace', unique]
     (updated_at, created_at, id) [name: 'idx_notifications_archived_cleanup']
   }
 }

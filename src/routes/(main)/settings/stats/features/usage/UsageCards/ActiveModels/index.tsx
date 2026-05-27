@@ -77,7 +77,7 @@ const ActiveModels = memo<UsageChartProps>(({ data, isLoading, groupBy, resolveU
       const display = resolveUser?.(item);
       return (
         <Avatar
-          avatar={display?.avatar || undefined}
+          avatar={display?.avatar || display?.name || item}
           background={cssVar.colorFillSecondary}
           key={item}
           shape={'circle'}

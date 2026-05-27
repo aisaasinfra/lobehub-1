@@ -8,11 +8,10 @@ import { serverDatabase } from '@/libs/trpc/lambda/middleware';
 
 const notificationProcedure = wsCompatProcedure.use(serverDatabase).use(async (opts) => {
   const { ctx } = opts;
-  const wsId = ctx.workspaceId ?? undefined;
 
   return opts.next({
     ctx: {
-      notificationModel: new NotificationModel(ctx.serverDB, ctx.userId, wsId),
+      notificationModel: new NotificationModel(ctx.serverDB, ctx.userId),
     },
   });
 });

@@ -116,7 +116,7 @@ const ModelTable = memo<UsageChartProps>(({ data, isLoading, groupBy, resolveUse
       return (
         <Flexbox horizontal align={'center'} gap={8}>
           <Avatar
-            avatar={display?.avatar || undefined}
+            avatar={display?.avatar || display?.name || key}
             background={cssVar.colorFillSecondary}
             shape={'circle'}
             size={24}

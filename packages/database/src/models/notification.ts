@@ -7,21 +7,12 @@ import type { LobeChatDatabase } from '../type';
 export class NotificationModel {
   private readonly userId: string;
   private readonly db: LobeChatDatabase;
-  private readonly workspaceId?: string;
 
-  constructor(db: LobeChatDatabase, userId: string, workspaceId?: string) {
+  constructor(db: LobeChatDatabase, userId: string) {
     this.db = db;
     this.userId = userId;
-    this.workspaceId = workspaceId;
   }
 
-  /**
-   * Notifications are inherently user-scoped (subscription expiring, security
-   * alerts, etc.) and surface in the same inbox regardless of the current
-   * workspace. We keep `workspaceId` as a tagging column to record the source
-   * workspace when relevant, but read predicates always filter by `userId`
-   * only — the inbox view stays consistent across workspaces.
-   */
   private ownership = () => eq(notifications.userId, this.userId);
 
   async list(
@@ -114,7 +105,7 @@ export class NotificationModel {
   async create(data: Omit<NewNotification, 'userId'>) {
     const [result] = await this.db
       .insert(notifications)
-      .values({ ...data, userId: this.userId, workspaceId: this.workspaceId ?? null })
+      .values({ ...data, userId: this.userId })
       .onConflictDoNothing({
         target: [notifications.userId, notifications.dedupeKey],
       })

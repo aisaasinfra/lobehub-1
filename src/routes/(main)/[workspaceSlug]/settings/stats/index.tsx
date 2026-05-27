@@ -2,12 +2,15 @@
 
 import { useCallback, useMemo } from 'react';
 
+import { useFetchWorkspaceMembers } from '@/business/client/hooks/useFetchWorkspaceMembers';
 import Page from '@/routes/(main)/settings/stats';
 import WorkspaceWelcome from '@/routes/(main)/settings/stats/features/overview/WorkspaceWelcome';
 import { type UserDisplay } from '@/routes/(main)/settings/stats/types';
 import { useWorkspaceStore, workspaceSelectors } from '@/store/workspace';
 
 const WorkspaceStatsSetting = () => {
+  useFetchWorkspaceMembers();
+
   const members = useWorkspaceStore(workspaceSelectors.members);
 
   const memberMap = useMemo(() => {
