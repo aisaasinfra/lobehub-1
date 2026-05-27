@@ -266,6 +266,7 @@
   "plans.includesExtra": "包含 {{name}} 的所有权益，另加：",
   "plans.knowledgeBase.desc": "在对话中使用文件和知识库",
   "plans.knowledgeBase.filetype": "支持 PDF / MD / DOC / XLS / PPT 等格式",
+  "plans.knowledgeBase.storagePayAsYouGo": "超出文件存储额度后支持按量付费",
   "plans.knowledgeBase.title": "文件与知识库",
   "plans.knowledgeBase.tooltip": "支持上传文件、图片、音频、视频等，创建知识库便于管理。在对话中使用文件和知识库，提升交互体验。",
   "plans.llm.customAPI": "全球主流模型自定义 API 服务",

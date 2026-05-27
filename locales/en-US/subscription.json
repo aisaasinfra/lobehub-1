@@ -266,6 +266,7 @@
   "plans.includesExtra": "All benefits in {{name}}, plus:",
   "plans.knowledgeBase.desc": "Use files and knowledge base in conversations",
   "plans.knowledgeBase.filetype": "Supports PDF / MD / DOC / XLS / PPT and other formats",
+  "plans.knowledgeBase.storagePayAsYouGo": "Storage overages support pay-as-you-go billing",
   "plans.knowledgeBase.title": "Files & Knowledge Base",
   "plans.knowledgeBase.tooltip": "Supports file upload and knowledge base features. Upload files, images, audio, video and more. Create knowledge bases for easy file management. Use files and knowledge base in conversations for richer experiences.",
   "plans.llm.customAPI": "Global mainstream model custom API service",

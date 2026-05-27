@@ -206,6 +206,7 @@ export default {
     "Please check your network connection and ensure that the file storage service's cross-origin configuration is correct.",
   'upload.storageBlock.monthlyCapReached': 'Your monthly storage spending cap has been reached.',
   'upload.storageBlock.noPaymentMethod': 'Please add a payment method to continue uploading.',
+  'upload.storageBlock.openStorageSettings': 'Open storage settings',
   'upload.storageBlock.overageNotEnabled':
     'Your storage is full. Enable pay-as-you-go billing to continue uploading.',
   'upload.storageBlock.subscriptionPastDue':

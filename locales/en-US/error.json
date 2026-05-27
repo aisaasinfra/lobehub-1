@@ -131,6 +131,7 @@
   "upload.networkError": "Please check your network connection and ensure that the file storage service's cross-origin configuration is correct.",
   "upload.storageBlock.monthlyCapReached": "Your monthly storage spending cap has been reached.",
   "upload.storageBlock.noPaymentMethod": "Please add a payment method to continue uploading.",
+  "upload.storageBlock.openStorageSettings": "Open storage settings",
   "upload.storageBlock.overageNotEnabled": "Your storage is full. Enable pay-as-you-go billing to continue uploading.",
   "upload.storageBlock.subscriptionPastDue": "Your subscription payment has failed. Please update your payment method.",
   "upload.storageBlock.subscriptionUnpaid": "Your subscription has been suspended. Please resolve the outstanding payment.",

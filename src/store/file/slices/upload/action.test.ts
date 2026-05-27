@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { message } from '@/components/AntdStaticMethods';
+import { message, notification } from '@/components/AntdStaticMethods';
 import { fileService } from '@/services/file';
 import { uploadService } from '@/services/upload';
 import { getImageDimensions } from '@/utils/client/imageDimensions';
@@ -14,6 +14,9 @@ vi.mock('zustand/traditional');
 vi.mock('@/components/AntdStaticMethods', () => ({
   message: {
     info: vi.fn(),
+  },
+  notification: {
+    error: vi.fn(),
   },
 }));
 
@@ -692,6 +695,39 @@ describe('FileUploadAction', () => {
     });
 
     describe('error handling', () => {
+      it('should show a storage settings action when upload is blocked by storage overage', async () => {
+        const { uploadWithProgress } = useStore.getState();
+
+        const mockFile = new File(['test content'], 'blocked.png', { type: 'image/png' });
+        const mockCheckResult = { isExist: false };
+        const onStatusUpdate = vi.fn();
+
+        vi.mocked(getImageDimensions).mockResolvedValue(undefined);
+        vi.spyOn(fileService, 'checkFileHash').mockResolvedValue(mockCheckResult);
+        vi.spyOn(uploadService, 'uploadFileToS3').mockRejectedValue(
+          new Error('storage_block:overage_not_enabled'),
+        );
+
+        const result = await act(async () => {
+          return await uploadWithProgress({
+            file: mockFile,
+            onStatusUpdate,
+          });
+        });
+
+        expect(result).toBeUndefined();
+        expect(onStatusUpdate).toHaveBeenCalledWith({
+          id: mockFile.name,
+          type: 'removeFile',
+        });
+        expect(notification.error).toHaveBeenCalledWith(
+          expect.objectContaining({
+            actions: expect.anything(),
+            description: 'upload.storageBlock.overageNotEnabled',
+          }),
+        );
+      });
+
       it('should handle checkFileHash errors', async () => {
         const { uploadWithProgress } = useStore.getState();
 

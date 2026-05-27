@@ -979,7 +979,8 @@ When I am ___, I need ___
   'storageOverage.consent.enableDisabledTooltip':
     'Review and accept the pricing terms before enabling.',
   'storageOverage.consent.onlyOverage': 'Only overage is charged',
-  'storageOverage.consent.rate': '$0.016/GB/day (~$0.50/GB/month)',
+  'storageOverage.consent.rate':
+    '{{dailyRate}}/GB/day. Limited time: {{limitedMonthlyRate}}/GB/month (regular {{regularMonthlyRate}}).',
   'storageOverage.consent.title': 'Enable Storage Pay-as-you-go',
   'storageOverage.desc': 'Enable metered billing for storage exceeding your plan quota.',
   'storageOverage.disableFailed': 'Failed to disable storage pay-as-you-go.',
@@ -990,7 +991,8 @@ When I am ___, I need ___
   'storageOverage.monthlyCapDesc':
     'Leave empty for unlimited. Uploads will be blocked when the cap is reached.',
   'storageOverage.noPaymentMethod': 'Please add a payment method to enable storage pay-as-you-go.',
-  'storageOverage.rate': '$0.016/GB/day (~$0.50/GB/month)',
+  'storageOverage.rate':
+    '{{dailyRate}}/GB/day. Limited time: {{limitedMonthlyRate}}/GB/month (regular {{regularMonthlyRate}}).',
   'storageOverage.title': 'Storage Pay-as-you-go',
   'storageOverage.toggle': 'Enable overage billing',
   'storageOverage.unlimited': 'Unlimited',

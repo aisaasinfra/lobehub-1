@@ -1,11 +1,14 @@
 import { LOBE_CHAT_CLOUD, StorageBlockReason } from '@lobechat/business-const';
 import { inferImageMimeTypeFromBytes } from '@lobechat/utils';
+import { Button } from '@lobehub/ui';
 import { t } from 'i18next';
 import { sha256 } from 'js-sha256';
+import { createElement } from 'react';
 
 import { message, notification } from '@/components/AntdStaticMethods';
 import { fileService } from '@/services/file';
 import { uploadService } from '@/services/upload';
+import { useGlobalStore } from '@/store/global';
 import { type StoreSetter } from '@/store/types';
 import { type FileMetadata, type UploadFileItem } from '@/types/files';
 import { getImageDimensions } from '@/utils/client/imageDimensions';
@@ -70,6 +73,29 @@ const normalizeUploadedImageFileType = async (
 
 type Setter = StoreSetter<FileStore>;
 type UploadStorageBlockReason = Exclude<StorageBlockReason, typeof StorageBlockReason.WithinLimit>;
+
+const openStorageSettings = () => {
+  const navigate = useGlobalStore.getState().navigationRef.current;
+  if (navigate) {
+    navigate('/settings/storage');
+    return;
+  }
+
+  if (typeof window !== 'undefined') {
+    window.location.assign('/settings/storage');
+  }
+};
+
+const createStorageSettingsAction = () =>
+  createElement(
+    Button,
+    {
+      size: 'small',
+      type: 'primary',
+      onClick: openStorageSettings,
+    },
+    t('upload.storageBlock.openStorageSettings', { ns: 'error' }),
+  );
 
 export const createFileUploadSlice = (set: Setter, get: () => FileStore, _api?: unknown) =>
   new FileUploadActionImpl(set, get, _api);
@@ -218,6 +244,7 @@ export class FileUploadActionImpl {
         } as const satisfies Record<UploadStorageBlockReason, string>;
 
         notification.error({
+          actions: createStorageSettingsAction(),
           description: Object.hasOwn(errorKeyMap, reason)
             ? t(errorKeyMap[reason as UploadStorageBlockReason], { ns: 'error' })
             : t('upload.storageLimitExceeded', { ns: 'error' }),
@@ -230,6 +257,7 @@ export class FileUploadActionImpl {
       if (errorMessage.includes('beyond the plan limit')) {
         onStatusUpdate?.({ id: statusId, type: 'removeFile' });
         notification.error({
+          actions: createStorageSettingsAction(),
           description: t('upload.storageLimitExceeded', { ns: 'error' }),
           message: t('upload.uploadFailed', { ns: 'error' }),
         });
