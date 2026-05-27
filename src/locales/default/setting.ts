@@ -976,6 +976,8 @@ When I am ___, I need ___
   'storageOverage.consent.canDisable': 'Can be disabled anytime',
   'storageOverage.consent.description': 'Storage exceeding your plan quota will be charged:',
   'storageOverage.consent.enable': 'Enable',
+  'storageOverage.consent.enableDisabledTooltip':
+    'Review and accept the pricing terms before enabling.',
   'storageOverage.consent.onlyOverage': 'Only overage is charged',
   'storageOverage.consent.rate': '$0.016/GB/day (~$0.50/GB/month)',
   'storageOverage.consent.title': 'Enable Storage Pay-as-you-go',
@@ -994,6 +996,7 @@ When I am ___, I need ___
   'storageOverage.unlimited': 'Unlimited',
   'storageOverage.usage.current': 'Usage',
   'storageOverage.usage.estimatedCharge': 'Est. Cycle Charge',
+  'storageOverage.usage.incurredCharge': 'Incurred This Cycle',
   'storageOverage.usage.overage': 'Overage',
   'submitAgentModal.button': 'Submit Agent',
   'submitAgentModal.identifier': 'Agent Identifier',
