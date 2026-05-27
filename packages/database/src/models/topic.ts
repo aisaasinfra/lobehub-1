@@ -144,6 +144,7 @@ export class TopicModel {
             status: topics.status,
             title: topics.title,
             updatedAt: topics.updatedAt,
+            userId: topics.userId,
           })
           .from(topics)
           .where(whereCondition)
@@ -218,6 +219,7 @@ export class TopicModel {
             status: topics.status,
             title: topics.title,
             updatedAt: topics.updatedAt,
+            userId: topics.userId,
           })
           .from(topics)
           .where(agentWhere)
@@ -257,6 +259,7 @@ export class TopicModel {
           status: topics.status,
           title: topics.title,
           updatedAt: topics.updatedAt,
+          userId: topics.userId,
         })
         .from(topics)
         .where(whereCondition)

@@ -7,6 +7,7 @@ import type { FC, ReactNode } from 'react';
 import { memo } from 'react';
 
 import DiffAllToolbar from '@/features/EditorCanvas/DiffAllToolbar';
+import PageMetaBar from '@/features/PageEditor/PageMetaBar';
 import WideScreenContainer from '@/features/WideScreenContainer';
 import { useRegisterFilesHotkeys } from '@/hooks/useHotkeys';
 import { usePermission } from '@/hooks/usePermission';
@@ -98,6 +99,7 @@ const PageEditorCanvas = memo<PageEditorCanvasProps>(({ header, fullWidthHeader 
         >
           <Flexbox flex={1} style={styles.editorContent}>
             <TitleSection />
+            <PageMetaBar />
             <EditorCanvas />
           </Flexbox>
         </WideScreenContainer>

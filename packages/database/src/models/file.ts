@@ -324,6 +324,7 @@ export class FileModel {
         size: files.size,
         updatedAt: files.updatedAt,
         url: files.url,
+        userId: files.userId,
       })
       .from(files);
 

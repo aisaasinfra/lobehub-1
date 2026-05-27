@@ -504,6 +504,7 @@ export default {
   'notification.item.agent_cron_job_failed': 'Scheduled task failed',
   'notification.item.image_generation_completed': 'Image generation completed',
   'notification.item.video_generation_completed': 'Video generation completed',
+  'notification.item.workspace_member_joined': 'New member joined',
   'notification.item.workspace_member_removed': 'Removed from workspace',
   'notification.title': 'Notification Channels',
   'myAgents.actions.cancel': 'Cancel',

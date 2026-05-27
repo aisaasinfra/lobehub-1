@@ -9,6 +9,7 @@ import type { CSSProperties } from 'react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import { DiffAllToolbar, EditorCanvas as SharedEditorCanvas } from '@/features/EditorCanvas';
+import TopicMetaBar from '@/features/TopicCanvas/TopicMetaBar';
 import WideScreenContainer from '@/features/WideScreenContainer';
 import { useRegisterFilesHotkeys } from '@/hooks/useHotkeys';
 import { hasMeaningfulEditorContent } from '@/libs/editor/hasMeaningfulEditorContent';
@@ -268,6 +269,7 @@ const TopicCanvasBody = memo<TopicCanvasProps>(
             <WideScreenContainer wrapperStyle={{ cursor: 'text' }}>
               <Flexbox flex={1} style={styles.editorContent}>
                 <TitleSection title={title} onTitleChange={onTitleChange} />
+                <TopicMetaBar topicId={topicId} />
                 <SharedEditorCanvas
                   documentId={documentId}
                   editor={editor}

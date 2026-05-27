@@ -486,6 +486,7 @@
   "notification.item.agent_cron_job_failed": "计划任务失败",
   "notification.item.image_generation_completed": "图片生成完成",
   "notification.item.video_generation_completed": "视频生成完成",
+  "notification.item.workspace_member_joined": "新成员加入",
   "notification.item.workspace_member_removed": "已从工作区移除",
   "notification.title": "通知渠道",
   "plugin.addMCPPlugin": "添加 MCP",

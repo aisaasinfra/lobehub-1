@@ -186,6 +186,7 @@ export interface ChatTopic extends Omit<BaseDataModel, 'meta'> {
   status?: ChatTopicStatus | null;
   title: string;
   trigger?: string | null;
+  userId?: string;
 }
 
 export type ChatTopicMap = Record<string, ChatTopic>;
