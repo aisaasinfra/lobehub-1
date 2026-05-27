@@ -123,7 +123,6 @@ const AdvancedActions = () => {
         minWidth: undefined,
       },
       ...(enableBusinessFeatures ? [renderExportButtonFormItem()] : []),
-      ...(transferAgentsFormItem ? [transferAgentsFormItem] : []),
       {
         children: (
           <Button danger type={'primary'} onClick={handleClear}>
@@ -149,13 +148,21 @@ const AdvancedActions = () => {
     ],
     title: t('storage.actions.title'),
   };
+
+  const dataMigration: FormGroupItemType | undefined = transferAgentsFormItem
+    ? {
+        children: [transferAgentsFormItem],
+        title: t('storage.migration.title'),
+      }
+    : undefined;
+
   return (
     <>
       <Form
         collapsible={false}
         form={form}
         initialValues={settings}
-        items={[analytics, system]}
+        items={[analytics, ...(dataMigration ? [dataMigration] : []), system]}
         itemsType={'group'}
         variant={'filled'}
         onValuesChange={setSettings}

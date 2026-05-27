@@ -7,10 +7,12 @@ import { HardDriveDownload, HardDriveUpload } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useTransferAgentsFormItem } from '@/business/client/hooks/useTransferAgentsFormItem';
 import { FORM_STYLE } from '@/const/layoutTokens';
 
 const WorkspaceStorageContent = memo(() => {
   const { t } = useTranslation('setting');
+  const transferAgentsFormItem = useTransferAgentsFormItem();
 
   const analytics: FormGroupItemType = {
     children: [
@@ -75,10 +77,17 @@ const WorkspaceStorageContent = memo(() => {
     title: t('storage.actions.title'),
   };
 
+  const dataMigration: FormGroupItemType | undefined = transferAgentsFormItem
+    ? {
+        children: [transferAgentsFormItem],
+        title: t('storage.migration.title'),
+      }
+    : undefined;
+
   return (
     <Form
       collapsible={false}
-      items={[analytics, system]}
+      items={[analytics, ...(dataMigration ? [dataMigration] : []), system]}
       itemsType={'group'}
       variant={'filled'}
       {...FORM_STYLE}
