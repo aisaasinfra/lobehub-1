@@ -7,14 +7,20 @@ import { merge } from '@/utils/merge';
 
 import type { AgentItem } from '../schemas';
 import {
+  agentBotProviders,
+  agentCronJobs,
   agents,
   agentsFiles,
   agentsKnowledgeBases,
   agentsToSessions,
+  chatGroupsAgents,
   documents,
   files,
   knowledgeBases,
+  messages,
   sessions,
+  threads,
+  topics,
 } from '../schemas';
 import type { LobeChatDatabase } from '../type';
 import { buildWorkspacePayload, buildWorkspaceWhere } from '../utils/workspace';
@@ -687,5 +693,126 @@ export class AgentModel {
         where: and(eq(agents.slug, slug), this.ownership()),
       })) ?? null
     );
+  };
+
+  /**
+   * Transfer an agent and all its associated data to a different workspace or personal account.
+   * Runs in a single transaction to ensure atomicity.
+   */
+  transferAgent = async (
+    agentId: string,
+    targetWorkspaceId: string | null,
+    targetUserId: string,
+  ): Promise<{ agentId: string; slug: string | null }> => {
+    return this.db.transaction(async (trx) => {
+      // 1. Verify agent exists and belongs to current scope
+      const agent = await trx.query.agents.findFirst({
+        where: and(eq(agents.id, agentId), this.ownership()),
+      });
+      if (!agent) throw new Error('Agent not found');
+
+      // 2. Handle slug conflict in target scope
+      let slug = agent.slug;
+      if (slug) {
+        const buildConflictCheck = (candidate: string) =>
+          targetWorkspaceId
+            ? and(eq(agents.slug, candidate), eq(agents.workspaceId, targetWorkspaceId))
+            : and(
+                eq(agents.slug, candidate),
+                eq(agents.userId, targetUserId),
+                isNull(agents.workspaceId),
+              );
+
+        const existing = await trx.query.agents.findFirst({
+          where: buildConflictCheck(slug),
+        });
+        if (existing) {
+          let suffix = 1;
+          while (suffix < 100) {
+            const candidate = `${slug}-${suffix}`;
+            const conflict = await trx.query.agents.findFirst({
+              where: buildConflictCheck(candidate),
+            });
+            if (!conflict) {
+              slug = candidate;
+              break;
+            }
+            suffix++;
+          }
+        }
+      }
+
+      // 3. Build ownership update payload
+      const ownershipUpdate = {
+        userId: targetUserId,
+        workspaceId: targetWorkspaceId,
+      };
+
+      // 4. Update the agent record
+      await trx
+        .update(agents)
+        .set({ ...ownershipUpdate, slug, updatedAt: new Date() })
+        .where(eq(agents.id, agentId));
+
+      // 5. Update sessions linked via agentsToSessions
+      const links = await trx
+        .select({ sessionId: agentsToSessions.sessionId })
+        .from(agentsToSessions)
+        .where(eq(agentsToSessions.agentId, agentId));
+
+      const sessionIds = links.map((l) => l.sessionId);
+
+      if (sessionIds.length > 0) {
+        await trx.update(sessions).set(ownershipUpdate).where(inArray(sessions.id, sessionIds));
+      }
+
+      await trx
+        .update(agentsToSessions)
+        .set(ownershipUpdate)
+        .where(eq(agentsToSessions.agentId, agentId));
+
+      // 6. Update topics (linked via sessionId or agentId)
+      const topicCondition =
+        sessionIds.length > 0
+          ? or(inArray(topics.sessionId, sessionIds), eq(topics.agentId, agentId))
+          : eq(topics.agentId, agentId);
+      await trx.update(topics).set(ownershipUpdate).where(topicCondition!);
+
+      // 7. Update messages (linked via sessionId or agentId)
+      const messageCondition =
+        sessionIds.length > 0
+          ? or(inArray(messages.sessionId, sessionIds), eq(messages.agentId, agentId))
+          : eq(messages.agentId, agentId);
+      await trx.update(messages).set(ownershipUpdate).where(messageCondition!);
+
+      // 8. Update threads (linked via agentId)
+      await trx.update(threads).set(ownershipUpdate).where(eq(threads.agentId, agentId));
+
+      // 9. Update agent files associations
+      await trx.update(agentsFiles).set(ownershipUpdate).where(eq(agentsFiles.agentId, agentId));
+
+      // 10. Update agent knowledge base associations
+      await trx
+        .update(agentsKnowledgeBases)
+        .set(ownershipUpdate)
+        .where(eq(agentsKnowledgeBases.agentId, agentId));
+
+      // 11. Update agent cron jobs
+      await trx
+        .update(agentCronJobs)
+        .set(ownershipUpdate)
+        .where(eq(agentCronJobs.agentId, agentId));
+
+      // 12. Update agent bot providers (transfer, not delete)
+      await trx
+        .update(agentBotProviders)
+        .set(ownershipUpdate)
+        .where(eq(agentBotProviders.agentId, agentId));
+
+      // 13. Remove chat group associations (groups belong to source workspace context)
+      await trx.delete(chatGroupsAgents).where(eq(chatGroupsAgents.agentId, agentId));
+
+      return { agentId, slug };
+    });
   };
 }

@@ -1416,6 +1416,28 @@ When I am ___, I need ___
   'workspace.general.id.title': 'Workspace ID',
   'workspace.general.leave.confirm.content':
     'You will lose access to "{{name}}" immediately. You can rejoin only if you are invited again.',
+  'workspace.general.transferAgents.cta': 'Transfer',
+  'workspace.general.transferAgents.description':
+    'Transfer agents from this workspace to another workspace or your personal account.',
+  'workspace.general.transferAgents.hint':
+    'Agent data including topics, messages, and files will be moved.',
+  'workspace.general.transferAgents.modal.back': 'Back',
+  'workspace.general.transferAgents.modal.continue': 'Continue',
+  'workspace.general.transferAgents.modal.failed': 'Failed to transfer agents',
+  'workspace.general.transferAgents.modal.loadFailed': 'Failed to load agents',
+  'workspace.general.transferAgents.modal.noAgents': 'No agents in this workspace',
+  'workspace.general.transferAgents.modal.selectAgents': 'Select agents to transfer to {{target}}.',
+  'workspace.general.transferAgents.modal.selectPlaceholder': 'Select target workspace...',
+  'workspace.general.transferAgents.modal.selectTarget':
+    'Choose a workspace to transfer agents to.',
+  'workspace.general.transferAgents.modal.selected': 'selected',
+  'workspace.general.transferAgents.modal.success': '{{count}} agent(s) transferred successfully',
+  'workspace.general.transferAgents.modal.title': 'Transfer Agents',
+  'workspace.general.transferAgents.modal.transfer': 'Transfer {{count}} agent(s)',
+  'workspace.general.transferAgents.modal.warning':
+    'Custom plugins may not be available and multi-agent group associations will be removed.',
+  'workspace.general.transferAgents.personalAccount': 'Personal Account',
+  'workspace.general.transferAgents.title': 'Transfer Agents',
   'workspace.general.transferPrimary.cta': 'Transfer Primary Owner',
   'workspace.general.transferPrimary.description':
     'Transfer primary ownership to another owner. The new primary owner will take over billing and primary privileges for this workspace.',

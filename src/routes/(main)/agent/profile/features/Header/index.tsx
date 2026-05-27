@@ -6,6 +6,7 @@ import { BotMessageSquareIcon, MoreHorizontal, Settings2Icon, Trash } from 'luci
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useAgentTransferMenuItem } from '@/business/client/hooks/useAgentTransferMenuItem';
 import { useBusinessAgentImportMenuItem } from '@/business/client/hooks/useBusinessAgentImportMenuItem';
 import { message } from '@/components/AntdStaticMethods';
 import { DESKTOP_HEADER_ICON_SMALL_SIZE } from '@/const/layoutTokens';
@@ -148,6 +149,7 @@ const Header = memo(() => {
   }, [activeAgentId, canEdit, modal, navigate, removeAgent, t]);
 
   const importMenuItem = useBusinessAgentImportMenuItem(activeAgentId ?? undefined);
+  const transferMenuItem = useAgentTransferMenuItem(activeAgentId ?? undefined);
 
   const menuItems = useMemo(
     () =>
@@ -168,6 +170,8 @@ const Header = memo(() => {
         },
         importMenuItem ? { type: 'divider' as const } : null,
         importMenuItem,
+        transferMenuItem ? { type: 'divider' as const } : null,
+        transferMenuItem,
         { type: 'divider' as const },
         {
           danger: true,
@@ -178,7 +182,7 @@ const Header = memo(() => {
           onClick: handleDelete,
         },
       ].filter(Boolean),
-    [canEdit, handlePublishClick, handleDelete, t, importMenuItem],
+    [canEdit, handlePublishClick, handleDelete, t, importMenuItem, transferMenuItem],
   );
 
   return (

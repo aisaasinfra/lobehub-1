@@ -232,6 +232,13 @@ class AgentService {
   ): Promise<{ agentId: string } | null> => {
     return lambdaClient.agent.duplicateAgent.mutate({ agentId, newTitle });
   };
+
+  transferAgent = async (
+    agentId: string,
+    targetWorkspaceId: string | null,
+  ): Promise<{ agentId: string; slug: string | null }> => {
+    return lambdaClient.agent.transferAgent.mutate({ agentId, targetWorkspaceId });
+  };
 }
 
 export const agentService = new AgentService();

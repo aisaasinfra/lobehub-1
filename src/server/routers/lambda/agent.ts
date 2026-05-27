@@ -1,6 +1,8 @@
 import { DEFAULT_AGENT_CONFIG, INBOX_SESSION_ID } from '@lobechat/const';
 import { CreateAgentSchema, type KnowledgeItem } from '@lobechat/types';
 import { KnowledgeType } from '@lobechat/types';
+import { TRPCError } from '@trpc/server';
+import { and, eq, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { withScopedPermission } from '@/business/server/trpc-middlewares/rbacPermission';
@@ -11,6 +13,7 @@ import { FileModel } from '@/database/models/file';
 import { KnowledgeBaseModel } from '@/database/models/knowledgeBase';
 import { SessionModel } from '@/database/models/session';
 import { UserModel } from '@/database/models/user';
+import { workspaceMembers } from '@/database/schemas';
 import { router } from '@/libs/trpc/lambda';
 import { serverDatabase } from '@/libs/trpc/lambda/middleware';
 import { AgentService } from '@/server/services/agent';
@@ -333,6 +336,77 @@ export const agentRouter = router({
         input.knowledgeBaseId,
         input.enabled,
       );
+    }),
+
+  transferAgent: agentProcedure
+    .use(withScopedPermission('agent:update'))
+    .input(
+      z.object({
+        agentId: z.string(),
+        targetWorkspaceId: z.string().nullable(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      // 1. Fetch the agent to check ownership
+      const agent = await ctx.agentModel.getAgentConfigById(input.agentId);
+      if (!agent) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Agent not found' });
+      }
+
+      // 2. In workspace mode, members can only transfer agents they created;
+      //    workspace owners can transfer any agent
+      if (ctx.workspaceId && agent.userId !== ctx.userId) {
+        const [membership] = await ctx.serverDB
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, ctx.workspaceId),
+              eq(workspaceMembers.userId, ctx.userId),
+              isNull(workspaceMembers.deletedAt),
+            ),
+          )
+          .limit(1);
+
+        if (!membership || membership.role !== 'owner') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Only workspace owners can transfer agents created by others',
+          });
+        }
+      }
+
+      // 3. Validate target workspace access (user must be member+)
+      if (input.targetWorkspaceId) {
+        const [targetMembership] = await ctx.serverDB
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, input.targetWorkspaceId),
+              eq(workspaceMembers.userId, ctx.userId),
+              isNull(workspaceMembers.deletedAt),
+            ),
+          )
+          .limit(1);
+
+        if (!targetMembership || targetMembership.role === 'viewer') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'No write access to target workspace',
+          });
+        }
+      }
+
+      // 4. Cannot transfer to the same workspace
+      if (input.targetWorkspaceId === ctx.workspaceId) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Cannot transfer agent to the same workspace',
+        });
+      }
+
+      return ctx.agentModel.transferAgent(input.agentId, input.targetWorkspaceId, ctx.userId);
     }),
 
   updateAgentConfig: agentProcedure
