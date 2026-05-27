@@ -83,6 +83,7 @@ export interface BotCallbackBody {
   userId?: string;
   userMessageId?: string;
   userPrompt?: string;
+  workspaceId?: string;
 }
 
 // --------------- Service ---------------
@@ -105,13 +106,15 @@ export class BotCallbackService {
     } = body;
     const platform = platformThreadId.split(':')[0];
 
-    const { client, connectionId, messenger, charLimit, settings } = await this.createMessenger({
-      applicationId,
-      messengerInstallationKey,
-      platform,
-      platformThreadId,
-      userId,
-    });
+    const { client, connectionId, messenger, charLimit, settings, workspaceId } =
+      await this.createMessenger({
+        applicationId,
+        messengerInstallationKey,
+        platform,
+        platformThreadId,
+        userId,
+        workspaceId: body.workspaceId,
+      });
 
     const entry = platformRegistry.getPlatform(platform);
     const canEdit = entry?.supportsMessageEdit !== false;
@@ -149,7 +152,10 @@ export class BotCallbackService {
       // In queue mode, the bridge handler's finally block skips this cleanup
       // to keep the thread marked active while the agent runs on the job queue.
       AgentBridgeService.clearActiveThread(platformThreadId);
-      this.summarizeTopicTitle(body, messenger);
+      this.summarizeTopicTitle(
+        { ...body, workspaceId: body.workspaceId ?? workspaceId ?? undefined },
+        messenger,
+      );
     }
   }
 
@@ -159,12 +165,14 @@ export class BotCallbackService {
     platform: string;
     platformThreadId: string;
     userId?: string;
+    workspaceId?: string;
   }): Promise<{
     charLimit?: number;
     connectionId: string;
     client: PlatformClient;
     messenger: PlatformMessenger;
     settings: Record<string, unknown>;
+    workspaceId?: string | null;
   }> {
     const { applicationId, messengerInstallationKey, platform, platformThreadId, userId } = params;
 
@@ -178,6 +186,7 @@ export class BotCallbackService {
         messengerInstallationKey,
         platformThreadId,
         userId,
+        params.workspaceId,
       );
     }
 
@@ -216,7 +225,14 @@ export class BotCallbackService {
     });
     const messenger = client.getMessenger(platformThreadId);
 
-    return { charLimit, connectionId: row.id, messenger, client, settings };
+    return {
+      charLimit,
+      client,
+      connectionId: row.id,
+      messenger,
+      settings,
+      workspaceId: row.workspaceId,
+    };
   }
 
   /**
@@ -237,12 +253,14 @@ export class BotCallbackService {
     installationKey: string,
     platformThreadId: string,
     userId?: string,
+    workspaceId?: string,
   ): Promise<{
     charLimit?: number;
     connectionId: string;
     client: PlatformClient;
     messenger: PlatformMessenger;
     settings: Record<string, unknown>;
+    workspaceId?: string;
   }> {
     const store = getInstallationStore(platform as MessengerPlatform);
     if (!store) {
@@ -281,7 +299,7 @@ export class BotCallbackService {
       ? messengerConnectionIdForUser({ connectionMode, installationKey, userId })
       : '';
 
-    return { charLimit: undefined, client, connectionId, messenger, settings: {} };
+    return { charLimit: undefined, client, connectionId, messenger, settings: {}, workspaceId };
   }
 
   private async handleStep(
@@ -547,7 +565,7 @@ export class BotCallbackService {
 
     // Thread already has a user-set name — use it as topic title, skip LLM generation
     if (threadName) {
-      const topicModel = new TopicModel(this.db, userId);
+      const topicModel = new TopicModel(this.db, userId, body.workspaceId);
       topicModel
         .findById(topicId)
         .then(async (topic) => {
@@ -560,7 +578,7 @@ export class BotCallbackService {
       return;
     }
 
-    const topicModel = new TopicModel(this.db, userId);
+    const topicModel = new TopicModel(this.db, userId, body.workspaceId);
     topicModel
       .findById(topicId)
       .then(async (topic) => {

@@ -21,6 +21,7 @@ import type { DecryptedMessengerInstallation } from '@/database/models/messenger
 import { MessengerInstallationModel } from '@/database/models/messengerInstallation';
 import { agents, users } from '@/database/schemas';
 import type { LobeChatDatabase } from '@/database/type';
+import { buildWorkspaceWhere } from '@/database/utils/workspace';
 import { authedProcedure, publicProcedure, router } from '@/libs/trpc/lambda';
 import { serverDatabase } from '@/libs/trpc/lambda/middleware';
 import { KeyVaultsGateKeeper } from '@/server/modules/KeyVaultsEncrypt';
@@ -289,7 +290,15 @@ export const messengerRouter = router({
       const [agentRow] = await ctx.serverDB
         .select({ id: agents.id, title: agents.title })
         .from(agents)
-        .where(and(eq(agents.id, input.initialAgentId), eq(agents.userId, ctx.userId)))
+        .where(
+          and(
+            eq(agents.id, input.initialAgentId),
+            buildWorkspaceWhere(
+              { userId: ctx.userId, workspaceId: ctx.workspaceId ?? undefined },
+              agents,
+            ),
+          ),
+        )
         .limit(1);
       if (!agentRow) {
         throw new TRPCError({ code: 'NOT_FOUND', message: 'messenger.error.agentNotFound' });
@@ -370,7 +379,10 @@ export const messengerRouter = router({
       .from(agents)
       .where(
         and(
-          eq(agents.userId, ctx.userId),
+          buildWorkspaceWhere(
+            { userId: ctx.userId, workspaceId: ctx.workspaceId ?? undefined },
+            agents,
+          ),
           or(ne(agents.virtual, true), eq(agents.slug, INBOX_SESSION_ID)),
         ),
       )
@@ -430,7 +442,15 @@ export const messengerRouter = router({
         const [agentRow] = await ctx.serverDB
           .select({ id: agents.id })
           .from(agents)
-          .where(and(eq(agents.id, input.agentId), eq(agents.userId, ctx.userId)))
+          .where(
+            and(
+              eq(agents.id, input.agentId),
+              buildWorkspaceWhere(
+                { userId: ctx.userId, workspaceId: ctx.workspaceId ?? undefined },
+                agents,
+              ),
+            ),
+          )
           .limit(1);
         if (!agentRow) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'messenger.error.agentNotFound' });

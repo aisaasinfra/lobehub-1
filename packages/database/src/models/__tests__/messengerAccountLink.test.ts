@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { getTestDB } from '../../core/getTestDB';
-import { agents, messengerAccountLinks, users } from '../../schemas';
+import { agents, messengerAccountLinks, users, workspaces } from '../../schemas';
 import type { LobeChatDatabase } from '../../type';
 import {
   MessengerAccountLinkConflictError,
@@ -16,19 +16,29 @@ const userA = 'msg-link-user-a';
 const userB = 'msg-link-user-b';
 const agentA = 'msg-link-agent-a';
 const agentB = 'msg-link-agent-b';
+const workspaceA = 'msg-link-workspace-a';
+const workspaceAgentA = 'msg-link-agent-workspace-a';
 
 beforeEach(async () => {
   await serverDB.delete(users);
   await serverDB.insert(users).values([{ id: userA }, { id: userB }]);
+  await serverDB.insert(workspaces).values({
+    id: workspaceA,
+    name: 'Workspace A',
+    primaryOwnerId: userA,
+    slug: 'workspace-a',
+  });
   await serverDB.insert(agents).values([
     { id: agentA, userId: userA },
     { id: agentB, userId: userB },
+    { id: workspaceAgentA, userId: userA, workspaceId: workspaceA },
   ]);
 });
 
 afterEach(async () => {
   await serverDB.delete(messengerAccountLinks);
   await serverDB.delete(agents);
+  await serverDB.delete(workspaces);
   await serverDB.delete(users);
 });
 
@@ -222,6 +232,54 @@ describe('MessengerAccountLinkModel', () => {
       });
       const links = await model.list();
       expect(links.filter((l) => l.platform === 'slack')).toHaveLength(2);
+    });
+  });
+
+  describe('workspace scoping', () => {
+    it('keeps personal and workspace link lists isolated', async () => {
+      await new MessengerAccountLinkModel(serverDB, userA).upsertForPlatform({
+        activeAgentId: agentA,
+        platform: 'telegram',
+        platformUserId: 'tg-personal',
+      });
+      await new MessengerAccountLinkModel(serverDB, userA, workspaceA).upsertForPlatform({
+        activeAgentId: workspaceAgentA,
+        platform: 'slack',
+        platformUserId: 'U_WORKSPACE',
+        tenantId: 'T_WORKSPACE',
+      });
+
+      const personalLinks = await new MessengerAccountLinkModel(serverDB, userA).list();
+      const workspaceLinks = await new MessengerAccountLinkModel(
+        serverDB,
+        userA,
+        workspaceA,
+      ).list();
+
+      expect(personalLinks.map((link) => link.platformUserId)).toEqual(['tg-personal']);
+      expect(workspaceLinks.map((link) => link.platformUserId)).toEqual(['U_WORKSPACE']);
+    });
+
+    it('does not update a workspace link from personal mode', async () => {
+      await new MessengerAccountLinkModel(serverDB, userA, workspaceA).upsertForPlatform({
+        activeAgentId: workspaceAgentA,
+        platform: 'slack',
+        platformUserId: 'U_WORKSPACE',
+        tenantId: 'T_WORKSPACE',
+      });
+
+      await new MessengerAccountLinkModel(serverDB, userA).setActiveAgent(
+        'slack',
+        null,
+        'T_WORKSPACE',
+      );
+
+      const workspaceLink = await new MessengerAccountLinkModel(
+        serverDB,
+        userA,
+        workspaceA,
+      ).findByPlatform('slack', 'T_WORKSPACE');
+      expect(workspaceLink?.activeAgentId).toBe(workspaceAgentA);
     });
   });
 

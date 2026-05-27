@@ -89,12 +89,16 @@ vi.mock('@chat-adapter/state-ioredis', () => ({
 // reused — see the comment in `MessengerRouter.dispatchToAgent`.
 const mockHandleMention = vi.fn();
 const mockHandleSubscribed = vi.fn();
+const mockAgentBridgeConstructor = vi.fn();
 vi.mock('@/server/services/bot/AgentBridgeService', () => ({
   AgentBridgeService: class {
     static clearActiveThread = vi.fn();
     static getActiveOperationId = vi.fn();
     static isThreadActive = vi.fn();
     static requestStop = vi.fn();
+    constructor(...args: unknown[]) {
+      mockAgentBridgeConstructor(...args);
+    }
     handleMention = mockHandleMention;
     handleSubscribedMessage = mockHandleSubscribed;
   },
@@ -184,6 +188,7 @@ beforeEach(() => {
     telegram: mockWebhookHandler,
   };
   mockFindLink.mockReset();
+  mockAgentBridgeConstructor.mockReset();
   mockHandleMention.mockReset();
   mockHandleSubscribed.mockReset();
   mockOpenDM.mockReset();
@@ -412,6 +417,7 @@ describe('MessengerRouter channel @mention', () => {
       platformUserId: 'U_ALICE',
       tenantId: 'T_ACME',
       userId: 'user_alice',
+      workspaceId: 'workspace-1',
     });
 
     const handler = mockChatBot.onNewMention.mock.calls[0][0] as (
@@ -427,6 +433,11 @@ describe('MessengerRouter channel @mention', () => {
     // first-touch entry, so dispatch goes through `handleMention` (mirrors
     // BotMessageRouter).
     expect(mockHandleMention).toHaveBeenCalledTimes(1);
+    expect(mockAgentBridgeConstructor).toHaveBeenCalledWith(
+      expect.anything(),
+      'user_alice',
+      'workspace-1',
+    );
     expect(mockHandleMention.mock.calls[0][2]).toMatchObject({ agentId: 'agt_main' });
     expect(mockHandleSubscribed).not.toHaveBeenCalled();
     // We deliberately do NOT subscribe channel threads — see comment in

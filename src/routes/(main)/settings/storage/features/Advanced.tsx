@@ -11,6 +11,7 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AccountDeletion from '@/business/client/features/AccountDeletion';
+import { useTransferAgentsFormItem } from '@/business/client/hooks/useTransferAgentsFormItem';
 import { FORM_STYLE } from '@/const/layoutTokens';
 import DataImporter from '@/features/DataImporter';
 import { configService } from '@/services/config';
@@ -28,6 +29,7 @@ const AdvancedActions = () => {
   const [form] = Form.useForm();
   const { message, modal } = App.useApp();
   const enableBusinessFeatures = useServerConfigStore(serverConfigSelectors.enableBusinessFeatures);
+  const transferAgentsFormItem = useTransferAgentsFormItem();
   const [clearSessions, clearSessionGroups] = useSessionStore((s) => [
     s.clearSessions,
     s.clearSessionGroups,
@@ -121,6 +123,7 @@ const AdvancedActions = () => {
         minWidth: undefined,
       },
       ...(enableBusinessFeatures ? [renderExportButtonFormItem()] : []),
+      ...(transferAgentsFormItem ? [transferAgentsFormItem] : []),
       {
         children: (
           <Button danger type={'primary'} onClick={handleClear}>

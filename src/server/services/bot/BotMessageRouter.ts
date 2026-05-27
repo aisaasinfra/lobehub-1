@@ -92,6 +92,7 @@ const summarizeMessageAttachments = (message: Message): Array<Record<string, unk
 interface ResolvedAgentInfo {
   agentId: string;
   userId: string;
+  workspaceId?: string;
 }
 
 interface RegisteredBot {
@@ -288,7 +289,7 @@ export class BotMessageRouter {
     provider: DecryptedBotProvider,
     serverDB: LobeChatDatabase,
   ): Promise<RegisteredBot> {
-    const { agentId, userId, applicationId } = provider;
+    const { agentId, userId, applicationId, workspaceId } = provider;
     const platform = entry.id;
     const key = buildRuntimeKey(platform, applicationId);
 
@@ -351,6 +352,7 @@ export class BotMessageRouter {
       platform,
       settings,
       userId,
+      workspaceId: workspaceId ?? undefined,
     });
     await chatBot.initialize();
     client.applyChatPatches?.(chatBot);
@@ -368,7 +370,7 @@ export class BotMessageRouter {
     }
 
     const registered: RegisteredBot = {
-      agentInfo: { agentId, userId },
+      agentInfo: { agentId, userId, workspaceId: workspaceId ?? undefined },
       chatBot,
       client,
     };
@@ -516,8 +518,8 @@ export class BotMessageRouter {
       settings?: Record<string, any>;
     },
   ): void {
-    const { agentId, applicationId, platform, userId } = info;
-    const bridge = new AgentBridgeService(serverDB, userId);
+    const { agentId, applicationId, platform, userId, workspaceId } = info;
+    const bridge = new AgentBridgeService(serverDB, userId, workspaceId);
     const charLimit = (info.settings?.charLimit as number) || undefined;
     const displayToolCalls = info.settings?.displayToolCalls === true;
     const dmSettings: DmSettings = extractDmSettings(info.settings);

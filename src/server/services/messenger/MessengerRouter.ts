@@ -16,6 +16,7 @@ import { MessengerAccountLinkModel } from '@/database/models/messengerAccountLin
 import type { MessengerAccountLinkItem } from '@/database/schemas';
 import { agents } from '@/database/schemas';
 import type { LobeChatDatabase } from '@/database/type';
+import { buildWorkspaceWhere } from '@/database/utils/workspace';
 import { getAgentRuntimeRedisClient } from '@/server/modules/AgentRuntime/redis';
 import { AiAgentService } from '@/server/services/aiAgent';
 import { AgentBridgeService } from '@/server/services/bot/AgentBridgeService';
@@ -954,7 +955,7 @@ export class MessengerRouter {
       return;
     }
 
-    const userAgents = await this.fetchUserAgents(serverDB, link.userId);
+    const userAgents = await this.fetchUserAgents(serverDB, link.userId, link.workspaceId);
     if (userAgents.length === 0) {
       await ctx.reply('You have no agents yet. Create one in LobeHub, then come back to /agents.');
       return;
@@ -1066,7 +1067,7 @@ export class MessengerRouter {
 
       let activeAgentName: string | undefined;
       if (link.activeAgentId) {
-        const userAgents = await this.fetchUserAgents(serverDB, link.userId);
+        const userAgents = await this.fetchUserAgents(serverDB, link.userId, link.workspaceId);
         activeAgentName = userAgents.find((a) => a.id === link.activeAgentId)?.title;
       }
 
@@ -1157,7 +1158,7 @@ export class MessengerRouter {
       return;
     }
 
-    const userAgents = await this.fetchUserAgents(serverDB, link.userId);
+    const userAgents = await this.fetchUserAgents(serverDB, link.userId, link.workspaceId);
     const target = userAgents.find((agent) => agent.id === targetAgentId);
     if (!target) {
       await ack({ toast: 'Agent not found.' });
@@ -1191,13 +1192,14 @@ export class MessengerRouter {
   private async fetchUserAgents(
     serverDB: LobeChatDatabase,
     userId: string,
+    workspaceId?: string | null,
   ): Promise<AgentSummary[]> {
     const rows = await serverDB
       .select({ id: agents.id, slug: agents.slug, title: agents.title })
       .from(agents)
       .where(
         and(
-          eq(agents.userId, userId),
+          buildWorkspaceWhere({ userId, workspaceId: workspaceId ?? undefined }, agents),
           or(ne(agents.virtual, true), eq(agents.slug, INBOX_SESSION_ID)),
         ),
       )
@@ -1240,7 +1242,7 @@ export class MessengerRouter {
     );
 
     const serverDB = await getServerDB();
-    const bridge = new AgentBridgeService(serverDB, link.userId);
+    const bridge = new AgentBridgeService(serverDB, link.userId, link.workspaceId ?? undefined);
 
     // Messenger account-link routing already binds platform sender →
     // LobeHub user; the dispatch only fires for the linked sender. So
