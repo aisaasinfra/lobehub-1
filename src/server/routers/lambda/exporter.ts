@@ -14,7 +14,7 @@ import { type ExportDatabaseData } from '@/types/export';
 const exportProcedure = authedProcedure.use(serverDatabase).use(async (opts) => {
   const { ctx } = opts;
   const wsId = ctx.workspaceId ?? undefined;
-  const dataExporterRepos = new DataExporterRepos(ctx.serverDB, ctx.userId);
+  const dataExporterRepos = new DataExporterRepos(ctx.serverDB, ctx.userId, wsId);
   const drizzleMigration = new DrizzleMigrationModel(ctx.serverDB);
   const messageModel = new MessageModel(ctx.serverDB, ctx.userId, wsId);
   const sessionModel = new SessionModel(ctx.serverDB, ctx.userId, wsId);

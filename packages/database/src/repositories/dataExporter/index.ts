@@ -3,6 +3,7 @@ import pMap from 'p-map';
 
 import * as EXPORT_TABLES from '../../schemas';
 import type { LobeChatDatabase } from '../../type';
+import { buildWorkspaceWhere } from '../../utils/workspace';
 
 interface BaseTableConfig {
   table: keyof typeof EXPORT_TABLES;
@@ -83,10 +84,12 @@ export const DATA_EXPORT_CONFIG = {
 export class DataExporterRepos {
   private userId: string;
   private db: LobeChatDatabase;
+  private workspaceId?: string;
 
-  constructor(db: LobeChatDatabase, userId: string) {
+  constructor(db: LobeChatDatabase, userId: string, workspaceId?: string) {
     this.db = db;
     this.userId = userId;
+    this.workspaceId = workspaceId;
   }
 
   private removeUserId(data: any[]) {
@@ -110,7 +113,7 @@ export class DataExporterRepos {
 
         // If source data is empty, this table may not be able to query any data
         if (sourceData.length === 0) {
-          console.log(
+          console.info(
             `Source table ${relation.sourceTable} has no data, skipping query for ${table}`,
           );
           return [];
@@ -132,7 +135,7 @@ export class DataExporterRepos {
       const result = await this.db.query[table].findMany({ where });
 
       // Only remove userId field for tables queried with userId
-      console.log(`Successfully exported table: ${table}, count: ${result.length}`);
+      console.info(`Successfully exported table: ${table}, count: ${result.length}`);
       return config.relations ? result : this.removeUserId(result);
     } catch (error) {
       console.error(`Error querying table ${table}:`, error);
@@ -146,17 +149,24 @@ export class DataExporterRepos {
     if (!tableObj) throw new Error(`Table ${table} not found`);
 
     try {
+      if (this.workspaceId && !('workspaceId' in tableObj)) {
+        return [];
+      }
+
       // If there's relation config, use relation query
 
       // Default to querying with userId, use userField for special cases
       const userField = config.userField || 'userId';
-      const where = eq(tableObj[userField], this.userId);
+      const where =
+        'workspaceId' in tableObj
+          ? buildWorkspaceWhere({ userId: this.userId, workspaceId: this.workspaceId }, tableObj)
+          : eq(tableObj[userField], this.userId);
 
       // @ts-expect-error query
       const result = await this.db.query[table].findMany({ where });
 
       // Only remove userId field for tables queried with userId
-      console.log(`Successfully exported table: ${table}, count: ${result.length}`);
+      console.info(`Successfully exported table: ${table}, count: ${result.length}`);
       return this.removeUserId(result);
     } catch (error) {
       console.error(`Error querying table ${table}:`, error);
@@ -168,7 +178,7 @@ export class DataExporterRepos {
     const result: Record<string, any[]> = {};
 
     // 1. First query all base tables concurrently
-    console.log('Querying base tables...');
+    console.info('Querying base tables...');
     const baseResults = await pMap(
       DATA_EXPORT_CONFIG.baseTables,
       async (config) => ({ data: await this.queryBaseTables(config), table: config.table }),
@@ -191,7 +201,7 @@ export class DataExporterRepos {
         );
 
         if (!allSourcesHaveData) {
-          console.log(`Skipping table ${config.table} as some source tables have no data`);
+          console.info(`Skipping table ${config.table} as some source tables have no data`);
           return { data: [], table: config.table };
         }
 
@@ -207,8 +217,6 @@ export class DataExporterRepos {
     relationResults.forEach(({ table, data }) => {
       result[table] = data;
     });
-
-    console.log('finalResults:', result);
 
     return result;
   }

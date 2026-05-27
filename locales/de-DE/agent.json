@@ -209,5 +209,19 @@
   "channel.wechatScanToConnect": "QR-Code scannen, um eine Verbindung herzustellen",
   "channel.wechatTips": "Bitte aktualisieren Sie WeChat auf die neueste Version und starten Sie es neu. Das ClawBot-Plugin wird schrittweise eingeführt. Überprüfen Sie Einstellungen > Plugins, um den Zugriff zu bestätigen.",
   "channel.wechatUserId": "WeChat-Benutzer-ID",
-  "channel.wechatUserIdHint": "WeChat-Konto-Kennung, die durch den Autorisierungsprozess zurückgegeben wurde."
+  "channel.wechatUserIdHint": "WeChat-Konto-Kennung, die durch den Autorisierungsprozess zurückgegeben wurde.",
+  "transfer.button": "Übertragen",
+  "transfer.confirm.botChannels": "Bot-Kanalverbindungen müssen möglicherweise nach der Übertragung aktualisiert werden",
+  "transfer.confirm.chatGroups": "Multi-Agenten-Gruppenassoziationen werden entfernt",
+  "transfer.confirm.desc": "Dies wird den Agenten und alle zugehörigen Daten (Themen, Nachrichten, Dateien usw.) in den Zielarbeitsbereich verschieben.",
+  "transfer.confirm.plugins": "Benutzerdefinierte Plugins sind möglicherweise im Zielarbeitsbereich nicht verfügbar",
+  "transfer.confirm.title": "Agent übertragen",
+  "transfer.confirm.warning": "Einige Funktionen werden nicht übertragen:",
+  "transfer.desc": "Übertragen Sie diesen Agenten in einen anderen Arbeitsbereich oder Ihr persönliches Konto.",
+  "transfer.error": "Agent konnte nicht übertragen werden",
+  "transfer.personalAccount": "Persönliches Konto",
+  "transfer.searchWorkspace": "Arbeitsbereiche durchsuchen...",
+  "transfer.selectTarget": "Agent übertragen nach",
+  "transfer.success": "Agent erfolgreich übertragen",
+  "transfer.title": "Übertragen"
 }

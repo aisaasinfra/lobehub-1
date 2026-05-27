@@ -209,5 +209,19 @@
   "channel.wechatScanToConnect": "掃描 QR 碼以連接",
   "channel.wechatTips": "請更新微信至最新版本並重新啟動。ClawBot 插件正在逐步推出，請檢查「設置 > 插件」以確認是否有訪問權限。",
   "channel.wechatUserId": "微信用戶 ID",
-  "channel.wechatUserIdHint": "授權流程返回的微信帳號標識符。"
+  "channel.wechatUserIdHint": "授權流程返回的微信帳號標識符。",
+  "transfer.button": "轉移",
+  "transfer.confirm.botChannels": "轉移後可能需要重新刷新機器人頻道的連接",
+  "transfer.confirm.chatGroups": "多代理群組的關聯將被移除",
+  "transfer.confirm.desc": "這將把代理及所有相關數據（主題、消息、文件等）移動到目標工作區。",
+  "transfer.confirm.plugins": "自定義插件可能無法在目標工作區使用",
+  "transfer.confirm.title": "轉移代理",
+  "transfer.confirm.warning": "部分功能無法轉移：",
+  "transfer.desc": "將此代理轉移到另一個工作區或您的個人帳戶。",
+  "transfer.error": "代理轉移失敗",
+  "transfer.personalAccount": "個人帳戶",
+  "transfer.searchWorkspace": "搜索工作區...",
+  "transfer.selectTarget": "轉移代理到",
+  "transfer.success": "代理轉移成功",
+  "transfer.title": "轉移"
 }

@@ -209,5 +209,19 @@
   "channel.wechatScanToConnect": "مسح رمز الاستجابة السريعة للاتصال",
   "channel.wechatTips": "يرجى تحديث تطبيق WeChat إلى أحدث إصدار وإعادة تشغيله. يتم طرح إضافة ClawBot تدريجيًا، لذا تحقق من الإعدادات > الإضافات لتأكيد الوصول.",
   "channel.wechatUserId": "معرّف مستخدم WeChat",
-  "channel.wechatUserIdHint": "معرّف حساب WeChat الذي يتم إرجاعه من خلال عملية التفويض."
+  "channel.wechatUserIdHint": "معرّف حساب WeChat الذي يتم إرجاعه من خلال عملية التفويض.",
+  "transfer.button": "نقل",
+  "transfer.confirm.botChannels": "قد تحتاج اتصالات قنوات الروبوت إلى التحديث بعد النقل",
+  "transfer.confirm.chatGroups": "سيتم إزالة ارتباطات مجموعات الوكلاء المتعددة",
+  "transfer.confirm.desc": "سيتم نقل الوكيل وجميع البيانات المرتبطة به (المواضيع، الرسائل، الملفات، إلخ) إلى مساحة العمل المستهدفة.",
+  "transfer.confirm.plugins": "قد لا تكون الإضافات المخصصة متاحة في مساحة العمل المستهدفة",
+  "transfer.confirm.title": "نقل الوكيل",
+  "transfer.confirm.warning": "بعض الميزات لا يتم نقلها:",
+  "transfer.desc": "قم بنقل هذا الوكيل إلى مساحة عمل أخرى أو إلى حسابك الشخصي.",
+  "transfer.error": "فشل في نقل الوكيل",
+  "transfer.personalAccount": "الحساب الشخصي",
+  "transfer.searchWorkspace": "البحث في مساحات العمل...",
+  "transfer.selectTarget": "نقل الوكيل إلى",
+  "transfer.success": "تم نقل الوكيل بنجاح",
+  "transfer.title": "نقل"
 }

@@ -209,5 +209,19 @@
   "channel.wechatScanToConnect": "QR 코드를 스캔하여 연결",
   "channel.wechatTips": "WeChat을 최신 버전으로 업데이트하고 다시 시작하세요. ClawBot 플러그인은 점진적으로 배포되고 있으니 설정 > 플러그인에서 액세스를 확인하세요.",
   "channel.wechatUserId": "WeChat 사용자 ID",
-  "channel.wechatUserIdHint": "인증 흐름에서 반환된 WeChat 계정 식별자입니다."
+  "channel.wechatUserIdHint": "인증 흐름에서 반환된 WeChat 계정 식별자입니다.",
+  "transfer.button": "전송",
+  "transfer.confirm.botChannels": "전송 후 봇 채널 연결을 새로 고쳐야 할 수 있습니다.",
+  "transfer.confirm.chatGroups": "다중 에이전트 그룹 연결이 제거됩니다.",
+  "transfer.confirm.desc": "에이전트와 관련된 모든 데이터(주제, 메시지, 파일 등)를 대상 워크스페이스로 이동합니다.",
+  "transfer.confirm.plugins": "사용자 정의 플러그인이 대상 워크스페이스에서 사용 불가능할 수 있습니다.",
+  "transfer.confirm.title": "에이전트 전송",
+  "transfer.confirm.warning": "일부 기능은 전송되지 않습니다:",
+  "transfer.desc": "이 에이전트를 다른 워크스페이스 또는 개인 계정으로 전송합니다.",
+  "transfer.error": "에이전트 전송에 실패했습니다.",
+  "transfer.personalAccount": "개인 계정",
+  "transfer.searchWorkspace": "워크스페이스 검색...",
+  "transfer.selectTarget": "에이전트를 전송할 대상",
+  "transfer.success": "에이전트가 성공적으로 전송되었습니다.",
+  "transfer.title": "전송"
 }

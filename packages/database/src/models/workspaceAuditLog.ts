@@ -12,6 +12,8 @@ export type WorkspaceAuditAction =
   | 'workspace.deleted'
   | 'workspace.cleanup_triggered'
   | 'workspace.account_upgraded'
+  | 'workspace.data_cleared'
+  | 'workspace.settings_reset'
   | 'member.invited'
   | 'member.removed'
   | 'member.role_updated'

@@ -209,5 +209,19 @@
   "channel.wechatScanToConnect": "Bağlanmak için QR Kodunu Tarayın",
   "channel.wechatTips": "Lütfen WeChat'i en son sürüme güncelleyin ve yeniden başlatın. ClawBot eklentisi kademeli olarak dağıtılıyor, bu yüzden Ayarlar > Eklentiler bölümünden erişimi doğrulayın.",
   "channel.wechatUserId": "WeChat Kullanıcı Kimliği",
-  "channel.wechatUserIdHint": "Yetkilendirme akışı tarafından döndürülen WeChat hesap tanımlayıcısı."
+  "channel.wechatUserIdHint": "Yetkilendirme akışı tarafından döndürülen WeChat hesap tanımlayıcısı.",
+  "transfer.button": "Transfer Et",
+  "transfer.confirm.botChannels": "Transferden sonra bot kanal bağlantılarının yenilenmesi gerekebilir",
+  "transfer.confirm.chatGroups": "Çoklu temsilci grup bağlantıları kaldırılacak",
+  "transfer.confirm.desc": "Bu işlem, temsilciyi ve ilişkili tüm verileri (konular, mesajlar, dosyalar vb.) hedef çalışma alanına taşıyacaktır.",
+  "transfer.confirm.plugins": "Özel eklentiler hedef çalışma alanında mevcut olmayabilir",
+  "transfer.confirm.title": "Temsilciyi Transfer Et",
+  "transfer.confirm.warning": "Bazı özellikler transfer edilmez:",
+  "transfer.desc": "Bu temsilciyi başka bir çalışma alanına veya kişisel hesabınıza transfer edin.",
+  "transfer.error": "Temsilci transfer edilemedi",
+  "transfer.personalAccount": "Kişisel Hesap",
+  "transfer.searchWorkspace": "Çalışma alanlarını ara...",
+  "transfer.selectTarget": "Temsilciyi Şuraya Transfer Et",
+  "transfer.success": "Temsilci başarıyla transfer edildi",
+  "transfer.title": "Transfer"
 }
