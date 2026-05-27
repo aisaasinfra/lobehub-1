@@ -12,7 +12,7 @@ import { FORM_STYLE } from '@/const/layoutTokens';
 
 const WorkspaceStorageContent = memo(() => {
   const { t } = useTranslation('setting');
-  const transferAgentsFormItem = useTransferAgentsFormItem();
+  const transferAgentsFormItems = useTransferAgentsFormItem();
 
   const analytics: FormGroupItemType = {
     children: [
@@ -77,9 +77,9 @@ const WorkspaceStorageContent = memo(() => {
     title: t('storage.actions.title'),
   };
 
-  const dataMigration: FormGroupItemType | undefined = transferAgentsFormItem
+  const dataMigration: FormGroupItemType | undefined = transferAgentsFormItems
     ? {
-        children: [transferAgentsFormItem],
+        children: transferAgentsFormItems,
         title: t('storage.migration.title'),
       }
     : undefined;

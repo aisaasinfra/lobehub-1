@@ -916,6 +916,10 @@ When I am ___, I need ___
   'storage.actions.transfer.button': 'Transfer',
   'storage.actions.transfer.desc': 'Move agents and their data to a workspace you have access to.',
   'storage.actions.transfer.title': 'Agents Migration',
+  'storage.actions.copyLobeAI.button': 'Create',
+  'storage.actions.copyLobeAI.desc':
+    "Copy LobeAI's configuration into a workspace as a new Agent. Topics and messages are optional.",
+  'storage.actions.copyLobeAI.title': 'Create Agent from LobeAI',
   'storage.actions.export.button': 'Export',
   'storage.actions.export.exportType.agent': 'Export Agent Settings',
   'storage.actions.export.exportType.agentWithMessage': 'Export Agent and Messages',
@@ -1443,6 +1447,16 @@ When I am ___, I need ___
     'Custom plugins may not be available and multi-agent group associations will be removed.',
   'workspace.general.transferAgents.personalAccount': 'Personal Account',
   'workspace.general.transferAgents.title': 'Transfer Agents',
+  'workspace.general.copyLobeAI.modal.create': 'Create Agent',
+  'workspace.general.copyLobeAI.modal.failed': 'Failed to create Agent from LobeAI',
+  'workspace.general.copyLobeAI.modal.includeHistory': 'Copy topics and messages',
+  'workspace.general.copyLobeAI.modal.includeHistoryDesc':
+    'Optional. Copies all LobeAI conversation history into the new Agent.',
+  'workspace.general.copyLobeAI.modal.selectPlaceholder': 'Select workspace...',
+  'workspace.general.copyLobeAI.modal.selectTarget':
+    "Choose a workspace. LobeAI's configuration will be copied as a new Agent by default.",
+  'workspace.general.copyLobeAI.modal.success': 'Agent created from LobeAI',
+  'workspace.general.copyLobeAI.modal.title': 'Create Agent from LobeAI',
   'workspace.general.transferPrimary.cta': 'Transfer Primary Owner',
   'workspace.general.transferPrimary.description':
     'Transfer primary ownership to another owner. The new primary owner will take over billing and primary privileges for this workspace.',
