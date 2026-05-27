@@ -1416,7 +1416,7 @@ When I am ___, I need ___
   'workspace.general.id.title': 'Workspace ID',
   'workspace.general.leave.confirm.content':
     'You will lose access to "{{name}}" immediately. You can rejoin only if you are invited again.',
-  'workspace.general.transferPrimary.cta': 'Transfer Ownership',
+  'workspace.general.transferPrimary.cta': 'Transfer Primary Owner',
   'workspace.general.transferPrimary.description':
     'Transfer primary ownership to another owner. The new primary owner will take over billing and primary privileges for this workspace.',
   'workspace.general.transferPrimary.hint': 'You will remain an owner but lose primary privileges.',
@@ -1427,7 +1427,7 @@ When I am ___, I need ___
   'workspace.general.leave.description':
     "Revoke your access to this workspace. Any resources you've added will remain.",
   'workspace.general.leave.failed': 'Failed to leave workspace',
-  'workspace.general.leave.hint': '',
+  'workspace.general.leave.hint': 'To rejoin later, another member must invite you again.',
   'workspace.general.leave.ownerHint':
     'Transfer ownership to another member before leaving the workspace.',
   'workspace.general.leave.title': 'Leave Workspace',
