@@ -48,9 +48,11 @@ export class WorkspaceMemberModel {
     });
   };
 
-  listMembers = async (workspaceId: string) => {
+  listMembers = async (workspaceId: string, options: { includeDeleted?: boolean } = {}) => {
     return this.db.query.workspaceMembers.findMany({
-      where: and(eq(workspaceMembers.workspaceId, workspaceId), isNull(workspaceMembers.deletedAt)),
+      where: options.includeDeleted
+        ? eq(workspaceMembers.workspaceId, workspaceId)
+        : and(eq(workspaceMembers.workspaceId, workspaceId), isNull(workspaceMembers.deletedAt)),
     });
   };
 

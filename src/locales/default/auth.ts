@@ -258,6 +258,7 @@ export default {
   'usage.activeModels.table.provider': 'Provider',
   'usage.activeModels.table.spend': 'Spend',
   'usage.activeModels.table.user': 'User',
+  'usage.activeModels.removedUserName': '{{name}} (Removed)',
   'usage.activeModels.userTable': 'User List',
   'usage.activeModels.users': 'Active Users',
   'usage.cards.month.modelCalls': 'Model Calls',

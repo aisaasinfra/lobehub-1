@@ -1,33 +1,44 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useFetchWorkspaceMembers } from '@/business/client/hooks/useFetchWorkspaceMembers';
 import Page from '@/routes/(main)/settings/stats';
 import WorkspaceWelcome from '@/routes/(main)/settings/stats/features/overview/WorkspaceWelcome';
 import { type UserDisplay } from '@/routes/(main)/settings/stats/types';
-import { useWorkspaceStore, workspaceSelectors } from '@/store/workspace';
+
+interface WorkspaceStatsMemberProfile {
+  avatar?: string | null;
+  email?: string | null;
+  fullName?: string | null;
+  username?: string | null;
+}
+
+interface WorkspaceStatsMember {
+  deletedAt?: Date | string | null;
+  user?: WorkspaceStatsMemberProfile | null;
+  userId: string;
+}
 
 const WorkspaceStatsSetting = () => {
-  useFetchWorkspaceMembers();
+  const { t } = useTranslation('auth');
 
-  const members = useWorkspaceStore(workspaceSelectors.members);
+  const { data: members = [] } = useFetchWorkspaceMembers({ includeDeleted: true });
 
   const memberMap = useMemo(() => {
     const map = new Map<string, UserDisplay>();
     for (const m of members) {
-      const profile = (
-        m as {
-          user?: { avatar?: string | null; email?: string | null; fullName?: string | null } | null;
-        }
-      ).user;
-      map.set(m.userId, {
+      const member = m as WorkspaceStatsMember;
+      const profile = member.user;
+      const name = profile?.fullName || profile?.username || profile?.email || member.userId;
+      map.set(member.userId, {
         avatar: profile?.avatar ?? null,
-        name: profile?.fullName || profile?.email || m.userId,
+        name: member.deletedAt ? t('usage.activeModels.removedUserName', { name }) : name,
       });
     }
     return map;
-  }, [members]);
+  }, [members, t]);
 
   const resolveUser = useCallback(
     (userId: string): UserDisplay => memberMap.get(userId) ?? { avatar: null, name: userId },
