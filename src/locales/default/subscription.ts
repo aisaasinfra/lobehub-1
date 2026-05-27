@@ -326,7 +326,7 @@ export default {
   'plans.payonce.cancel': 'Cancel',
   'plans.payonce.ok': 'Confirm Selection',
   'plans.payonce.popconfirm':
-    'After one-time payment, you can upgrade anytime but downgrade requires waiting for expiration. Please confirm your selection.',
+    'After one-time payment, you can upgrade anytime, but downgrade requires waiting for expiration. Storage pay-as-you-go is not supported. Please confirm your selection.',
   'plans.payonce.tooltip':
     'One-time payment only supports upgrading to a higher tier or longer duration',
   'plans.payonce.upgradeOk': 'Confirm Upgrade',
