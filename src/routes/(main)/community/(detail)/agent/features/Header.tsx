@@ -25,11 +25,11 @@ import {
 import qs from 'query-string';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import useSWR from 'swr';
 import urlJoin from 'url-join';
 
 import PublishedTime from '@/components/PublishedTime';
+import WorkspaceLink from '@/features/Workspace/WorkspaceLink';
 import { useMarketAuth } from '@/layout/AuthProvider/MarketAuth';
 import { socialService } from '@/services/social';
 import { formatIntergerNumber } from '@/utils/format';
@@ -109,7 +109,7 @@ const Header = memo<{ mobile?: boolean }>(({ mobile: isMobile }) => {
   const cate = categories.find((c) => c.key === category);
 
   const cateButton = (
-    <Link
+    <WorkspaceLink
       to={qs.stringifyUrl({
         query: { category: cate?.key },
         url: '/community/agent',
@@ -118,7 +118,7 @@ const Header = memo<{ mobile?: boolean }>(({ mobile: isMobile }) => {
       <Button icon={cate?.icon} size={'middle'} variant={'outlined'}>
         {cate?.label}
       </Button>
-    </Link>
+    </WorkspaceLink>
   );
 
   return (
@@ -172,9 +172,9 @@ const Header = memo<{ mobile?: boolean }>(({ mobile: isMobile }) => {
           </Flexbox>
           <Flexbox horizontal align={'center'} gap={8} wrap={'wrap'}>
             {author && userName ? (
-              <Link style={{ color: 'inherit' }} to={urlJoin('/community/user', userName)}>
+              <WorkspaceLink style={{ color: 'inherit' }} to={urlJoin('/community/user', userName)}>
                 {author}
-              </Link>
+              </WorkspaceLink>
             ) : (
               author
             )}

@@ -11,6 +11,10 @@ describe('buildWorkspaceAwarePath', () => {
   it('prefixes absolute paths with the active workspace slug', () => {
     expect(buildWorkspaceAwarePath('/memory', 'acme')).toBe('/acme/memory');
     expect(buildWorkspaceAwarePath('/agent/inbox', 'acme')).toBe('/acme/agent/inbox');
+    expect(buildWorkspaceAwarePath('/community/agent/jailbreak', 'acme')).toBe(
+      '/acme/community/agent/jailbreak',
+    );
+    expect(buildWorkspaceAwarePath('/group/group-1', 'acme')).toBe('/acme/group/group-1');
   });
 
   it('bypasses the prefix when `escape` is true', () => {

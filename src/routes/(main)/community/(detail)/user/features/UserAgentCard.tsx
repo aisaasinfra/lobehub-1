@@ -29,11 +29,11 @@ import {
 import qs from 'query-string';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import urlJoin from 'url-join';
 
 import PublishedTime from '@/components/PublishedTime';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
+import WorkspaceLink from '@/features/Workspace/WorkspaceLink';
 import { usePermission } from '@/hooks/usePermission';
 import { agentService } from '@/services/agent';
 import { discoverService } from '@/services/discover';
@@ -309,7 +309,7 @@ const UserAgentCard = memo<UserAgentCardProps>(
               }}
             >
               <Flexbox horizontal align={'center'} gap={8}>
-                <Link
+                <WorkspaceLink
                   style={{ color: 'inherit', flex: 1, overflow: 'hidden' }}
                   to={link}
                   onClick={(e) => e.stopPropagation()}
@@ -317,7 +317,7 @@ const UserAgentCard = memo<UserAgentCardProps>(
                   <Text ellipsis as={'h3'} className={styles.title} style={{ flex: 1 }}>
                     {title}
                   </Text>
-                </Link>
+                </WorkspaceLink>
                 {isValidated === false ? (
                   <AntTag color="orange" style={{ flexShrink: 0, margin: 0 }}>
                     {t('assistant.underReview', { defaultValue: 'Under Review' })}

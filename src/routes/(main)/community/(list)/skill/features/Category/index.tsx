@@ -3,10 +3,10 @@
 import { Icon, Tag } from '@lobehub/ui';
 import qs from 'query-string';
 import { memo, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 
 import { withSuspense } from '@/components/withSuspense';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
+import WorkspaceLink from '@/features/Workspace/WorkspaceLink';
 import { useQuery } from '@/hooks/useQuery';
 import { useSkillCategory } from '@/hooks/useSkillCategory';
 import { SCROLL_PARENT_ID } from '@/routes/(main)/community/features/const';
@@ -79,7 +79,7 @@ const Category = memo(() => {
                 ),
           ...item,
           icon: <Icon icon={item.icon} size={18} />,
-          label: <Link to={genUrl(item.key)}>{item.label}</Link>,
+          label: <WorkspaceLink to={genUrl(item.key)}>{item.label}</WorkspaceLink>,
         };
       })}
       onClick={(v) => handleClick(v.key as SkillCategory)}

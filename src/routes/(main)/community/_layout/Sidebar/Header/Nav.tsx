@@ -5,11 +5,11 @@ import { McpIcon, ProviderIcon, SkillsIcon } from '@lobehub/ui/icons';
 import { Bot, Brain, ShapesIcon } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 
 import { type NavItemProps } from '@/features/NavPanel/components/NavItem';
 import NavItem from '@/features/NavPanel/components/NavItem';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
+import WorkspaceLink from '@/features/Workspace/WorkspaceLink';
 import { usePathname } from '@/libs/router/navigation';
 import { DiscoverTab } from '@/types/discover';
 import { isModifierClick } from '@/utils/navigation';
@@ -90,7 +90,7 @@ const Nav = memo(() => {
         if (!item.url) return content;
 
         return (
-          <Link
+          <WorkspaceLink
             key={item.key}
             to={item.url}
             onClick={(e) => {
@@ -103,7 +103,7 @@ const Nav = memo(() => {
             }}
           >
             <NavItem active={tab.startsWith(item.key)} icon={item.icon} title={item.title} />
-          </Link>
+          </WorkspaceLink>
         );
       })}
     </Flexbox>

@@ -4,10 +4,10 @@ import { createStaticStyles, cssVar } from 'antd-style';
 import { GlobeIcon } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import urlJoin from 'url-join';
 
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
+import WorkspaceLink from '@/features/Workspace/WorkspaceLink';
 import { type DiscoverProviderItem } from '@/types/discover';
 
 const styles = createStaticStyles(({ css, cssVar }) => {
@@ -79,9 +79,9 @@ const ProviderItem = memo<DiscoverProviderItem>(
               overflow: 'hidden',
             }}
           >
-            <Link style={{ color: 'inherit', overflow: 'hidden' }} to={link}>
+            <WorkspaceLink style={{ color: 'inherit', overflow: 'hidden' }} to={link}>
               <ProviderCombine provider={identifier} size={28} style={{ flex: 'none' }} />
-            </Link>
+            </WorkspaceLink>
             <div className={styles.author}>@{name}</div>
           </Flexbox>
           <Flexbox horizontal align={'center'}>
@@ -122,9 +122,9 @@ const ProviderItem = memo<DiscoverProviderItem>(
               .slice(0, 6)
               .filter(Boolean)
               .map((tag: string) => (
-                <Link key={tag} to={urlJoin('/model', tag)}>
+                <WorkspaceLink key={tag} to={urlJoin('/community/model', tag)}>
                   <ModelTag model={tag} style={{ margin: 0 }} />
-                </Link>
+                </WorkspaceLink>
               ))}
           </MaskShadow>
         </Flexbox>

@@ -17,11 +17,11 @@ import { ClockIcon, DownloadIcon, Heart } from 'lucide-react';
 import qs from 'query-string';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import urlJoin from 'url-join';
 
 import PublishedTime from '@/components/PublishedTime';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
+import WorkspaceLink from '@/features/Workspace/WorkspaceLink';
 import { useMarketAuth } from '@/layout/AuthProvider/MarketAuth';
 import { type FavoriteAgentItem } from '@/services/social';
 import { socialService } from '@/services/social';
@@ -164,7 +164,7 @@ const FavoriteAgentCard = memo<FavoriteAgentCardProps>(
               }}
             >
               <Flexbox horizontal align={'center'} gap={8}>
-                <Link
+                <WorkspaceLink
                   style={{ color: 'inherit', flex: 1, overflow: 'hidden' }}
                   to={link}
                   onClick={stopPropagation}
@@ -172,7 +172,7 @@ const FavoriteAgentCard = memo<FavoriteAgentCardProps>(
                   <Text ellipsis as={'h3'} className={styles.title} style={{ flex: 1 }}>
                     {name}
                   </Text>
-                </Link>
+                </WorkspaceLink>
               </Flexbox>
             </Flexbox>
           </Flexbox>
