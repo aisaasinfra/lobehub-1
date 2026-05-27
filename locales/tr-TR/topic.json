@@ -50,6 +50,8 @@
   "inPopup.description": "Bu konu şu anda ayrı bir pencerede açık. Mesajların senkronize kalması için konuşmaya oradan devam edin.",
   "inPopup.focus": "Açılan pencereye odaklan",
   "inPopup.title": "Açılır pencerede aç",
+  "info.title": "Konu Bilgisi",
+  "info.updatedAt": "{{time}} tarihinde güncellendi",
   "loadMore": "Daha Fazla Yükle",
   "newTopic": "Yeni Konu",
   "renameModal.description": "Kısa ve kolay tanınabilir olsun.",

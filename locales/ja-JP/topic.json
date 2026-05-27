@@ -50,6 +50,8 @@
   "inPopup.description": "このトピックは現在別ウィンドウで開いています。メッセージを同期させるために、そちらで会話を続けてください。",
   "inPopup.focus": "ポップアップウィンドウにフォーカス",
   "inPopup.title": "ポップアップウィンドウで開く",
+  "info.title": "トピック情報",
+  "info.updatedAt": "{{time}} に更新",
   "loadMore": "さらに表示",
   "newTopic": "新しいトピック",
   "renameModal.description": "短く、わかりやすい名前にしてください。",

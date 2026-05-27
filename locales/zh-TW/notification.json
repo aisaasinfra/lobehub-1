@@ -15,8 +15,18 @@
   "inbox.title": "通知",
   "video_generation_completed": "您的影片「{{prompt}}」已完成。",
   "video_generation_completed_title": "影片生成完成",
+  "workspace_member_joined": "{{memberLabel}} 已加入工作區「{{workspaceName}}」，角色為 {{role}}。",
+  "workspace_member_joined_member": "{{memberLabel}} 已加入工作區「{{workspaceName}}」，角色為成員。",
+  "workspace_member_joined_member_title": "新成員已加入 {{workspaceName}}",
+  "workspace_member_joined_owner": "{{memberLabel}} 已加入工作區「{{workspaceName}}」，角色為擁有者。",
+  "workspace_member_joined_owner_title": "新成員已加入 {{workspaceName}}",
+  "workspace_member_joined_title": "新成員已加入 {{workspaceName}}",
+  "workspace_member_joined_viewer": "{{memberLabel}} 已加入工作區「{{workspaceName}}」，角色為檢視者。",
+  "workspace_member_joined_viewer_title": "新成員已加入 {{workspaceName}}",
   "workspace_member_removed": "您已被工作區擁有者從工作區「{{workspaceName}}」中移除。",
   "workspace_member_removed_downgrade": "由於工作區已降級，您已被移除出工作區「{{workspaceName}}」。",
   "workspace_member_removed_downgrade_title": "已從工作區移除",
-  "workspace_member_removed_title": "已從工作區移除"
+  "workspace_member_removed_title": "已從工作區移除",
+  "workspace_primary_ownership_transferred": "您現在是工作區「{{workspaceName}}」的主要擁有者。帳單和主要權限已轉移給您。",
+  "workspace_primary_ownership_transferred_title": "您現在是 {{workspaceName}} 的主要擁有者"
 }

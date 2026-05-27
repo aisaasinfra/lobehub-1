@@ -15,8 +15,18 @@
   "inbox.title": "Notificações",
   "video_generation_completed": "Seu vídeo \"{{prompt}}\" está pronto.",
   "video_generation_completed_title": "Geração de vídeo concluída",
+  "workspace_member_joined": "{{memberLabel}} entrou no espaço de trabalho \"{{workspaceName}}\" como {{role}}.",
+  "workspace_member_joined_member": "{{memberLabel}} entrou no espaço de trabalho \"{{workspaceName}}\" como Membro.",
+  "workspace_member_joined_member_title": "Novo membro entrou em {{workspaceName}}",
+  "workspace_member_joined_owner": "{{memberLabel}} entrou no espaço de trabalho \"{{workspaceName}}\" como Proprietário.",
+  "workspace_member_joined_owner_title": "Novo membro entrou em {{workspaceName}}",
+  "workspace_member_joined_title": "Novo membro entrou em {{workspaceName}}",
+  "workspace_member_joined_viewer": "{{memberLabel}} entrou no espaço de trabalho \"{{workspaceName}}\" como Visualizador.",
+  "workspace_member_joined_viewer_title": "Novo membro entrou em {{workspaceName}}",
   "workspace_member_removed": "Você foi removido do espaço de trabalho \"{{workspaceName}}\" pelo proprietário do espaço de trabalho.",
   "workspace_member_removed_downgrade": "Você foi removido do espaço de trabalho \"{{workspaceName}}\" porque o espaço de trabalho foi rebaixado.",
   "workspace_member_removed_downgrade_title": "Removido do espaço de trabalho",
-  "workspace_member_removed_title": "Removido do espaço de trabalho"
+  "workspace_member_removed_title": "Removido do espaço de trabalho",
+  "workspace_primary_ownership_transferred": "Agora você é o proprietário principal do espaço de trabalho \"{{workspaceName}}\". A cobrança e os privilégios principais foram transferidos para você.",
+  "workspace_primary_ownership_transferred_title": "Agora você é o proprietário principal de {{workspaceName}}"
 }

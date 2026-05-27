@@ -506,6 +506,7 @@ export default {
   'notification.item.video_generation_completed': 'Video generation completed',
   'notification.item.workspace_member_joined': 'New member joined',
   'notification.item.workspace_member_removed': 'Removed from workspace',
+  'notification.item.workspace_primary_ownership_transferred': 'Primary ownership transferred',
   'notification.title': 'Notification Channels',
   'myAgents.actions.cancel': 'Cancel',
   'myAgents.actions.confirmDeprecate': 'Confirm Deprecate',
@@ -1415,6 +1416,11 @@ When I am ___, I need ___
   'workspace.general.id.title': 'Workspace ID',
   'workspace.general.leave.confirm.content':
     'You will lose access to "{{name}}" immediately. You can rejoin only if you are invited again.',
+  'workspace.general.transferPrimary.cta': 'Transfer Ownership',
+  'workspace.general.transferPrimary.description':
+    'Transfer primary ownership to another owner. The new primary owner will take over billing and primary privileges for this workspace.',
+  'workspace.general.transferPrimary.hint': 'You will remain an owner but lose primary privileges.',
+  'workspace.general.transferPrimary.title': 'Transfer Primary Ownership',
   'workspace.general.leave.confirm.ok': 'Leave workspace',
   'workspace.general.leave.confirm.title': 'Leave this workspace?',
   'workspace.general.leave.cta': 'Leave Workspace',
@@ -1471,6 +1477,14 @@ When I am ___, I need ___
   'workspace.member.manageAccessModal.title': 'Manage Team Access',
   'workspace.member.primaryOwner': 'Primary',
   'workspace.member.promote': 'Promote to owner',
+  'workspace.member.transferPrimaryConfirm.failed': 'Failed to transfer primary ownership',
+  'workspace.member.transferPrimaryConfirm.noOwners':
+    'No other owners in this workspace. Promote a member to owner first before transferring primary ownership.',
+  'workspace.member.transferPrimaryConfirm.ok': 'Transfer ownership',
+  'workspace.member.transferPrimaryConfirm.selectOwner':
+    'Select the owner who will become the new primary owner and take over billing for this workspace.',
+  'workspace.member.transferPrimaryConfirm.success': 'Primary ownership transferred',
+  'workspace.member.transferPrimaryConfirm.title': 'Transfer primary ownership',
   'workspace.member.promoteConfirm.content':
     'This member will gain full owner privileges — billing, member management, and workspace deletion.',
   'workspace.member.promoteConfirm.title': 'Promote to owner?',
@@ -1729,6 +1743,8 @@ When I am ___, I need ___
     "You don't have permission to do this. Ask a workspace owner to grant you Member or higher.",
   'workspace.permission.requiresOwner':
     'Only workspace owners can do this. Ask an owner if you need this changed.',
+  'workspace.permission.requiresPrimaryOwner':
+    'Only the primary owner can delete this workspace. Transfer primary ownership first if needed.',
   'workspace.onboarding.title': 'Set up your workspace',
   'workspace.onboarding.stepLabel': 'Step {{current}} of {{total}}',
   'workspace.onboarding.skip': 'Skip',

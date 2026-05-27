@@ -50,6 +50,8 @@
   "inPopup.description": "Dit onderwerp is momenteel geopend in een apart venster. Ga daar verder met het gesprek om berichten synchroon te houden.",
   "inPopup.focus": "Focus op pop-upvenster",
   "inPopup.title": "Openen in pop-upvenster",
+  "info.title": "Onderwerp Informatie",
+  "info.updatedAt": "Bijgewerkt op {{time}}",
   "loadMore": "Meer laden",
   "newTopic": "Nieuw onderwerp",
   "renameModal.description": "Houd het kort en gemakkelijk herkenbaar.",

@@ -50,6 +50,8 @@
   "inPopup.description": "Este tema está abierto actualmente en una ventana independiente. Continúa la conversación allí para mantener los mensajes sincronizados.",
   "inPopup.focus": "Ir a la ventana emergente",
   "inPopup.title": "Abrir en ventana emergente",
+  "info.title": "Información del Tema",
+  "info.updatedAt": "Actualizado a las {{time}}",
   "loadMore": "Cargar más",
   "newTopic": "Nuevo tema",
   "renameModal.description": "Mantenlo breve y fácil de reconocer.",

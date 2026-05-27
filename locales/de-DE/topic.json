@@ -50,6 +50,8 @@
   "inPopup.description": "Dieses Thema ist derzeit in einem separaten Fenster geöffnet. Führen Sie die Unterhaltung dort fort, um die Nachrichten synchron zu halten.",
   "inPopup.focus": "Popup-Fenster fokussieren",
   "inPopup.title": "In Popup-Fenster öffnen",
+  "info.title": "Themeninfo",
+  "info.updatedAt": "Aktualisiert am {{time}}",
   "loadMore": "Mehr laden",
   "newTopic": "Neues Thema",
   "renameModal.description": "Kurz und leicht erkennbar halten.",

@@ -50,6 +50,8 @@
   "inPopup.description": "Ce sujet est actuellement ouvert dans une fenêtre séparée. Continuez la conversation là-bas pour garder les messages synchronisés.",
   "inPopup.focus": "Donner le focus à la fenêtre",
   "inPopup.title": "Ouvrir dans une fenêtre popup",
+  "info.title": "Informations sur le sujet",
+  "info.updatedAt": "Mis à jour à {{time}}",
   "loadMore": "Charger plus",
   "newTopic": "Nouveau sujet",
   "renameModal.description": "Gardez-le court et facile à reconnaître.",

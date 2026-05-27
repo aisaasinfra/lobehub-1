@@ -50,6 +50,8 @@
   "inPopup.description": "이 토픽은 현재 별도 창에서 열려 있습니다. 메시지를 동기화하려면 그 창에서 계속 대화하세요.",
   "inPopup.focus": "팝업 창에 포커스",
   "inPopup.title": "팝업 창에서 열기",
+  "info.title": "주제 정보",
+  "info.updatedAt": "{{time}}에 업데이트됨",
   "loadMore": "더 보기",
   "newTopic": "새 토픽",
   "renameModal.description": "간단하고 알아보기 쉽게 설정하세요.",

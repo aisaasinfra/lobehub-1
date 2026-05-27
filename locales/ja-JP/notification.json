@@ -15,8 +15,18 @@
   "inbox.title": "通知",
   "video_generation_completed": "動画「{{prompt}}」の生成が完了しました。",
   "video_generation_completed_title": "動画生成が完了しました",
+  "workspace_member_joined": "{{memberLabel}} がワークスペース「{{workspaceName}}」に {{role}} として参加しました。",
+  "workspace_member_joined_member": "{{memberLabel}} がワークスペース「{{workspaceName}}」にメンバーとして参加しました。",
+  "workspace_member_joined_member_title": "新しいメンバーが {{workspaceName}} に参加しました",
+  "workspace_member_joined_owner": "{{memberLabel}} がワークスペース「{{workspaceName}}」にオーナーとして参加しました。",
+  "workspace_member_joined_owner_title": "新しいメンバーが {{workspaceName}} に参加しました",
+  "workspace_member_joined_title": "新しいメンバーが {{workspaceName}} に参加しました",
+  "workspace_member_joined_viewer": "{{memberLabel}} がワークスペース「{{workspaceName}}」にビューアーとして参加しました。",
+  "workspace_member_joined_viewer_title": "新しいメンバーが {{workspaceName}} に参加しました",
   "workspace_member_removed": "ワークスペース「{{workspaceName}}」からワークスペースの所有者によって削除されました。",
   "workspace_member_removed_downgrade": "ワークスペース「{{workspaceName}}」がダウングレードされたため、削除されました。",
   "workspace_member_removed_downgrade_title": "ワークスペースから削除されました",
-  "workspace_member_removed_title": "ワークスペースから削除されました"
+  "workspace_member_removed_title": "ワークスペースから削除されました",
+  "workspace_primary_ownership_transferred": "あなたがワークスペース「{{workspaceName}}」のプライマリオーナーになりました。請求および主要な権限があなたに移管されました。",
+  "workspace_primary_ownership_transferred_title": "あなたが {{workspaceName}} のプライマリオーナーになりました"
 }

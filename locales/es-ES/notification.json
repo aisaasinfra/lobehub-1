@@ -15,8 +15,18 @@
   "inbox.title": "Notificaciones",
   "video_generation_completed": "Tu video \"{{prompt}}\" está listo.",
   "video_generation_completed_title": "Generación de video completada",
+  "workspace_member_joined": "{{memberLabel}} se unió al espacio de trabajo \"{{workspaceName}}\" como {{role}}.",
+  "workspace_member_joined_member": "{{memberLabel}} se unió al espacio de trabajo \"{{workspaceName}}\" como Miembro.",
+  "workspace_member_joined_member_title": "Nuevo miembro se unió a {{workspaceName}}",
+  "workspace_member_joined_owner": "{{memberLabel}} se unió al espacio de trabajo \"{{workspaceName}}\" como Propietario.",
+  "workspace_member_joined_owner_title": "Nuevo miembro se unió a {{workspaceName}}",
+  "workspace_member_joined_title": "Nuevo miembro se unió a {{workspaceName}}",
+  "workspace_member_joined_viewer": "{{memberLabel}} se unió al espacio de trabajo \"{{workspaceName}}\" como Espectador.",
+  "workspace_member_joined_viewer_title": "Nuevo miembro se unió a {{workspaceName}}",
   "workspace_member_removed": "Has sido eliminado del espacio de trabajo \"{{workspaceName}}\" por el propietario del espacio de trabajo.",
   "workspace_member_removed_downgrade": "Has sido eliminado del espacio de trabajo \"{{workspaceName}}\" porque el espacio de trabajo fue degradado.",
   "workspace_member_removed_downgrade_title": "Eliminado del espacio de trabajo",
-  "workspace_member_removed_title": "Eliminado del espacio de trabajo"
+  "workspace_member_removed_title": "Eliminado del espacio de trabajo",
+  "workspace_primary_ownership_transferred": "Ahora eres el propietario principal del espacio de trabajo \"{{workspaceName}}\". La facturación y los privilegios principales han sido transferidos a ti.",
+  "workspace_primary_ownership_transferred_title": "Ahora eres el propietario principal de {{workspaceName}}"
 }

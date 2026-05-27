@@ -15,8 +15,18 @@
   "inbox.title": "اعلانات",
   "video_generation_completed": "ویدیوی شما با موضوع «{{prompt}}» آماده است.",
   "video_generation_completed_title": "تولید ویدیو تکمیل شد",
+  "workspace_member_joined": "{{memberLabel}} به فضای کاری \"{{workspaceName}}\" به عنوان {{role}} پیوست.",
+  "workspace_member_joined_member": "{{memberLabel}} به فضای کاری \"{{workspaceName}}\" به عنوان عضو پیوست.",
+  "workspace_member_joined_member_title": "عضو جدید به {{workspaceName}} پیوست",
+  "workspace_member_joined_owner": "{{memberLabel}} به فضای کاری \"{{workspaceName}}\" به عنوان مالک پیوست.",
+  "workspace_member_joined_owner_title": "عضو جدید به {{workspaceName}} پیوست",
+  "workspace_member_joined_title": "عضو جدید به {{workspaceName}} پیوست",
+  "workspace_member_joined_viewer": "{{memberLabel}} به فضای کاری \"{{workspaceName}}\" به عنوان مشاهده‌گر پیوست.",
+  "workspace_member_joined_viewer_title": "عضو جدید به {{workspaceName}} پیوست",
   "workspace_member_removed": "شما توسط مالک فضای کاری از فضای کاری \"{{workspaceName}}\" حذف شده‌اید.",
   "workspace_member_removed_downgrade": "شما به دلیل کاهش سطح فضای کاری از فضای کاری \"{{workspaceName}}\" حذف شده‌اید.",
   "workspace_member_removed_downgrade_title": "حذف شده از فضای کاری",
-  "workspace_member_removed_title": "حذف شده از فضای کاری"
+  "workspace_member_removed_title": "حذف شده از فضای کاری",
+  "workspace_primary_ownership_transferred": "شما اکنون مالک اصلی فضای کاری \"{{workspaceName}}\" هستید. صورتحساب و امتیازات اصلی به شما منتقل شده است.",
+  "workspace_primary_ownership_transferred_title": "شما اکنون مالک اصلی {{workspaceName}} هستید"
 }

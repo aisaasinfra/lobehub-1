@@ -15,8 +15,18 @@
   "inbox.title": "Bildirimler",
   "video_generation_completed": "\"{{prompt}}\" adlı videonuz hazır.",
   "video_generation_completed_title": "Video oluşturma tamamlandı",
+  "workspace_member_joined": "{{memberLabel}}, \"{{workspaceName}}\" çalışma alanına {{role}} olarak katıldı.",
+  "workspace_member_joined_member": "{{memberLabel}}, \"{{workspaceName}}\" çalışma alanına Üye olarak katıldı.",
+  "workspace_member_joined_member_title": "{{workspaceName}} çalışma alanına yeni bir üye katıldı",
+  "workspace_member_joined_owner": "{{memberLabel}}, \"{{workspaceName}}\" çalışma alanına Sahip olarak katıldı.",
+  "workspace_member_joined_owner_title": "{{workspaceName}} çalışma alanına yeni bir üye katıldı",
+  "workspace_member_joined_title": "{{workspaceName}} çalışma alanına yeni bir üye katıldı",
+  "workspace_member_joined_viewer": "{{memberLabel}}, \"{{workspaceName}}\" çalışma alanına Görüntüleyici olarak katıldı.",
+  "workspace_member_joined_viewer_title": "{{workspaceName}} çalışma alanına yeni bir üye katıldı",
   "workspace_member_removed": "Çalışma alanı \"{{workspaceName}}\" sahibinin sizi kaldırdığı bildirildi.",
   "workspace_member_removed_downgrade": "Çalışma alanı \"{{workspaceName}}\" düşürüldüğü için kaldırıldınız.",
   "workspace_member_removed_downgrade_title": "Çalışma alanından kaldırıldınız",
-  "workspace_member_removed_title": "Çalışma alanından kaldırıldınız"
+  "workspace_member_removed_title": "Çalışma alanından kaldırıldınız",
+  "workspace_primary_ownership_transferred": "Artık \"{{workspaceName}}\" çalışma alanının birincil sahibisiniz. Faturalandırma ve birincil ayrıcalıklar size devredildi.",
+  "workspace_primary_ownership_transferred_title": "Artık {{workspaceName}} çalışma alanının birincil sahibisiniz"
 }

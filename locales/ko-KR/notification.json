@@ -15,8 +15,18 @@
   "inbox.title": "알림",
   "video_generation_completed": "동영상 \"{{prompt}}\"이(가) 준비되었습니다.",
   "video_generation_completed_title": "동영상 생성 완료",
+  "workspace_member_joined": "{{memberLabel}}님이 \"{{workspaceName}}\" 워크스페이스에 {{role}}로 참여했습니다.",
+  "workspace_member_joined_member": "{{memberLabel}}님이 \"{{workspaceName}}\" 워크스페이스에 멤버로 참여했습니다.",
+  "workspace_member_joined_member_title": "{{workspaceName}}에 새로운 멤버가 참여했습니다",
+  "workspace_member_joined_owner": "{{memberLabel}}님이 \"{{workspaceName}}\" 워크스페이스에 소유자로 참여했습니다.",
+  "workspace_member_joined_owner_title": "{{workspaceName}}에 새로운 멤버가 참여했습니다",
+  "workspace_member_joined_title": "{{workspaceName}}에 새로운 멤버가 참여했습니다",
+  "workspace_member_joined_viewer": "{{memberLabel}}님이 \"{{workspaceName}}\" 워크스페이스에 뷰어로 참여했습니다.",
+  "workspace_member_joined_viewer_title": "{{workspaceName}}에 새로운 멤버가 참여했습니다",
   "workspace_member_removed": "워크스페이스 \"{{workspaceName}}\"에서 워크스페이스 소유자에 의해 제거되었습니다.",
   "workspace_member_removed_downgrade": "워크스페이스 \"{{workspaceName}}\"가 다운그레이드되어 제거되었습니다.",
   "workspace_member_removed_downgrade_title": "워크스페이스에서 제거됨",
-  "workspace_member_removed_title": "워크스페이스에서 제거됨"
+  "workspace_member_removed_title": "워크스페이스에서 제거됨",
+  "workspace_primary_ownership_transferred": "이제 \"{{workspaceName}}\" 워크스페이스의 주요 소유자가 되었습니다. 청구 및 주요 권한이 귀하에게 이전되었습니다.",
+  "workspace_primary_ownership_transferred_title": "이제 {{workspaceName}}의 주요 소유자가 되었습니다"
 }

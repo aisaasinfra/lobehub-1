@@ -15,8 +15,18 @@
   "inbox.title": "Известия",
   "video_generation_completed": "Вашето видео \"{{prompt}}\" е готово.",
   "video_generation_completed_title": "Генерирането на видеото завърши",
+  "workspace_member_joined": "{{memberLabel}} се присъедини към работното пространство \"{{workspaceName}}\" като {{role}}.",
+  "workspace_member_joined_member": "{{memberLabel}} се присъедини към работното пространство \"{{workspaceName}}\" като Член.",
+  "workspace_member_joined_member_title": "Нов член се присъедини към {{workspaceName}}",
+  "workspace_member_joined_owner": "{{memberLabel}} се присъедини към работното пространство \"{{workspaceName}}\" като Собственик.",
+  "workspace_member_joined_owner_title": "Нов член се присъедини към {{workspaceName}}",
+  "workspace_member_joined_title": "Нов член се присъедини към {{workspaceName}}",
+  "workspace_member_joined_viewer": "{{memberLabel}} се присъедини към работното пространство \"{{workspaceName}}\" като Наблюдател.",
+  "workspace_member_joined_viewer_title": "Нов член се присъедини към {{workspaceName}}",
   "workspace_member_removed": "Бяхте премахнати от работното пространство \"{{workspaceName}}\" от собственика на работното пространство.",
   "workspace_member_removed_downgrade": "Бяхте премахнати от работното пространство \"{{workspaceName}}\", защото работното пространство беше понижено.",
   "workspace_member_removed_downgrade_title": "Премахнати от работното пространство",
-  "workspace_member_removed_title": "Премахнати от работното пространство"
+  "workspace_member_removed_title": "Премахнати от работното пространство",
+  "workspace_primary_ownership_transferred": "Вече сте основният собственик на работното пространство \"{{workspaceName}}\". Таксуването и основните привилегии са прехвърлени на вас.",
+  "workspace_primary_ownership_transferred_title": "Вече сте основният собственик на {{workspaceName}}"
 }

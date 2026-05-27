@@ -50,6 +50,8 @@
   "inPopup.description": "Chủ đề này hiện đang mở trong một cửa sổ riêng. Hãy tiếp tục cuộc trò chuyện ở đó để giữ đồng bộ tin nhắn.",
   "inPopup.focus": "Chuyển đến cửa sổ popup",
   "inPopup.title": "Mở trong cửa sổ popup",
+  "info.title": "Thông Tin Chủ Đề",
+  "info.updatedAt": "Cập nhật lúc {{time}}",
   "loadMore": "Tải thêm",
   "newTopic": "Chủ đề mới",
   "renameModal.description": "Giữ tiêu đề ngắn gọn và dễ nhận biết.",

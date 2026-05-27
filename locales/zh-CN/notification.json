@@ -26,5 +26,7 @@
   "workspace_member_removed": "您已被工作区所有者从工作区 \"{{workspaceName}}\" 中移除。",
   "workspace_member_removed_downgrade": "由于工作区已降级，您已被从工作区 \"{{workspaceName}}\" 中移除。",
   "workspace_member_removed_downgrade_title": "已从工作区移除",
-  "workspace_member_removed_title": "已从工作区移除"
+  "workspace_member_removed_title": "已从工作区移除",
+  "workspace_primary_ownership_transferred": "您已成为工作区「{{workspaceName}}」的 Primary Owner。账单和 Primary 权限已转移给您。",
+  "workspace_primary_ownership_transferred_title": "您已成为 {{workspaceName}} 的 Primary Owner"
 }

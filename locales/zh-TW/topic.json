@@ -50,6 +50,8 @@
   "inPopup.description": "此主題已在獨立視窗中開啟。請在該視窗中繼續對話以保持訊息同步。",
   "inPopup.focus": "切換至彈出視窗",
   "inPopup.title": "在彈出視窗中開啟",
+  "info.title": "主題資訊",
+  "info.updatedAt": "更新於 {{time}}",
   "loadMore": "載入更多",
   "newTopic": "新主題",
   "renameModal.description": "請保持簡短且易於辨識。",

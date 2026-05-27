@@ -15,8 +15,18 @@
   "inbox.title": "Thông báo",
   "video_generation_completed": "Video \"{{prompt}}\" của bạn đã sẵn sàng.",
   "video_generation_completed_title": "Hoàn tất tạo video",
+  "workspace_member_joined": "{{memberLabel}} đã tham gia không gian làm việc \"{{workspaceName}}\" với vai trò {{role}}.",
+  "workspace_member_joined_member": "{{memberLabel}} đã tham gia không gian làm việc \"{{workspaceName}}\" với vai trò Thành viên.",
+  "workspace_member_joined_member_title": "Thành viên mới đã tham gia {{workspaceName}}",
+  "workspace_member_joined_owner": "{{memberLabel}} đã tham gia không gian làm việc \"{{workspaceName}}\" với vai trò Chủ sở hữu.",
+  "workspace_member_joined_owner_title": "Thành viên mới đã tham gia {{workspaceName}}",
+  "workspace_member_joined_title": "Thành viên mới đã tham gia {{workspaceName}}",
+  "workspace_member_joined_viewer": "{{memberLabel}} đã tham gia không gian làm việc \"{{workspaceName}}\" với vai trò Người xem.",
+  "workspace_member_joined_viewer_title": "Thành viên mới đã tham gia {{workspaceName}}",
   "workspace_member_removed": "Bạn đã bị xóa khỏi không gian làm việc \"{{workspaceName}}\" bởi chủ sở hữu không gian làm việc.",
   "workspace_member_removed_downgrade": "Bạn đã bị xóa khỏi không gian làm việc \"{{workspaceName}}\" vì không gian làm việc đã bị hạ cấp.",
   "workspace_member_removed_downgrade_title": "Đã bị xóa khỏi không gian làm việc",
-  "workspace_member_removed_title": "Đã bị xóa khỏi không gian làm việc"
+  "workspace_member_removed_title": "Đã bị xóa khỏi không gian làm việc",
+  "workspace_primary_ownership_transferred": "Bạn hiện là chủ sở hữu chính của không gian làm việc \"{{workspaceName}}\". Quyền thanh toán và quyền chính đã được chuyển giao cho bạn.",
+  "workspace_primary_ownership_transferred_title": "Bạn hiện là chủ sở hữu chính của {{workspaceName}}"
 }

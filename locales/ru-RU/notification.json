@@ -15,8 +15,18 @@
   "inbox.title": "Уведомления",
   "video_generation_completed": "Ваше видео «{{prompt}}» готово.",
   "video_generation_completed_title": "Создание видео завершено",
+  "workspace_member_joined": "{{memberLabel}} присоединился к рабочей области \"{{workspaceName}}\" в роли {{role}}.",
+  "workspace_member_joined_member": "{{memberLabel}} присоединился к рабочей области \"{{workspaceName}}\" в роли Участника.",
+  "workspace_member_joined_member_title": "Новый участник присоединился к {{workspaceName}}",
+  "workspace_member_joined_owner": "{{memberLabel}} присоединился к рабочей области \"{{workspaceName}}\" в роли Владельца.",
+  "workspace_member_joined_owner_title": "Новый участник присоединился к {{workspaceName}}",
+  "workspace_member_joined_title": "Новый участник присоединился к {{workspaceName}}",
+  "workspace_member_joined_viewer": "{{memberLabel}} присоединился к рабочей области \"{{workspaceName}}\" в роли Наблюдателя.",
+  "workspace_member_joined_viewer_title": "Новый участник присоединился к {{workspaceName}}",
   "workspace_member_removed": "Вы были удалены из рабочей области \"{{workspaceName}}\" владельцем рабочей области.",
   "workspace_member_removed_downgrade": "Вы были удалены из рабочей области \"{{workspaceName}}\", так как рабочая область была понижена в тарифе.",
   "workspace_member_removed_downgrade_title": "Удалены из рабочей области",
-  "workspace_member_removed_title": "Удалены из рабочей области"
+  "workspace_member_removed_title": "Удалены из рабочей области",
+  "workspace_primary_ownership_transferred": "Теперь вы являетесь основным владельцем рабочей области \"{{workspaceName}}\". Платежные и основные привилегии были переданы вам.",
+  "workspace_primary_ownership_transferred_title": "Теперь вы являетесь основным владельцем {{workspaceName}}"
 }

@@ -15,8 +15,18 @@
   "inbox.title": "Benachrichtigungen",
   "video_generation_completed": "Ihr Video „{{prompt}}“ ist fertig.",
   "video_generation_completed_title": "Videoerstellung abgeschlossen",
+  "workspace_member_joined": "{{memberLabel}} ist dem Arbeitsbereich \"{{workspaceName}}\" als {{role}} beigetreten.",
+  "workspace_member_joined_member": "{{memberLabel}} ist dem Arbeitsbereich \"{{workspaceName}}\" als Mitglied beigetreten.",
+  "workspace_member_joined_member_title": "Neues Mitglied ist dem Arbeitsbereich {{workspaceName}} beigetreten",
+  "workspace_member_joined_owner": "{{memberLabel}} ist dem Arbeitsbereich \"{{workspaceName}}\" als Eigentümer beigetreten.",
+  "workspace_member_joined_owner_title": "Neues Mitglied ist dem Arbeitsbereich {{workspaceName}} beigetreten",
+  "workspace_member_joined_title": "Neues Mitglied ist dem Arbeitsbereich {{workspaceName}} beigetreten",
+  "workspace_member_joined_viewer": "{{memberLabel}} ist dem Arbeitsbereich \"{{workspaceName}}\" als Betrachter beigetreten.",
+  "workspace_member_joined_viewer_title": "Neues Mitglied ist dem Arbeitsbereich {{workspaceName}} beigetreten",
   "workspace_member_removed": "Sie wurden vom Arbeitsbereich \"{{workspaceName}}\" durch den Arbeitsbereichsinhaber entfernt.",
   "workspace_member_removed_downgrade": "Sie wurden vom Arbeitsbereich \"{{workspaceName}}\" entfernt, da der Arbeitsbereich herabgestuft wurde.",
   "workspace_member_removed_downgrade_title": "Aus dem Arbeitsbereich entfernt",
-  "workspace_member_removed_title": "Aus dem Arbeitsbereich entfernt"
+  "workspace_member_removed_title": "Aus dem Arbeitsbereich entfernt",
+  "workspace_primary_ownership_transferred": "Sie sind jetzt der Hauptinhaber des Arbeitsbereichs \"{{workspaceName}}\". Abrechnung und Hauptprivilegien wurden an Sie übertragen.",
+  "workspace_primary_ownership_transferred_title": "Sie sind jetzt der Hauptinhaber von {{workspaceName}}"
 }

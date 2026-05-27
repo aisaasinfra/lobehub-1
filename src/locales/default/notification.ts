@@ -34,4 +34,8 @@ export default {
     'You have been removed from workspace "{{workspaceName}}" because the workspace was downgraded.',
   'workspace_member_removed_downgrade_title': 'Removed from workspace',
   'workspace_member_removed_title': 'Removed from workspace',
+  'workspace_primary_ownership_transferred':
+    'You are now the primary owner of workspace "{{workspaceName}}". Billing and primary privileges have been transferred to you.',
+  'workspace_primary_ownership_transferred_title':
+    'You are now the primary owner of {{workspaceName}}',
 };
