@@ -742,6 +742,13 @@
       "when": 1779818009745,
       "tag": "0105_notifications_user_scoped",
       "breakpoints": true
+    },
+    {
+      "idx": 106,
+      "version": "7",
+      "when": 1779848520649,
+      "tag": "0106_workspace_members_soft_delete",
+      "breakpoints": true
     }
   ],
   "version": "6"

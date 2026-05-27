@@ -1,5 +1,5 @@
 import { INVITATION_EXPIRY_DAYS } from '@lobechat/const';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNull } from 'drizzle-orm';
 import { nanoid } from 'nanoid/non-secure';
 
 import { workspaceInvitations, workspaceMembers } from '../schemas/workspace';
@@ -26,7 +26,14 @@ export class WorkspaceMemberModel {
         userId: params.userId,
         workspaceId: params.workspaceId,
       })
-      .onConflictDoNothing({ target: [workspaceMembers.workspaceId, workspaceMembers.userId] })
+      .onConflictDoUpdate({
+        set: {
+          deletedAt: null,
+          joinedAt: new Date(),
+          role: params.role ?? 'member',
+        },
+        target: [workspaceMembers.workspaceId, workspaceMembers.userId],
+      })
       .returning();
     return result;
   };
@@ -36,21 +43,27 @@ export class WorkspaceMemberModel {
       where: and(
         eq(workspaceMembers.workspaceId, workspaceId),
         eq(workspaceMembers.userId, userId),
+        isNull(workspaceMembers.deletedAt),
       ),
     });
   };
 
   listMembers = async (workspaceId: string) => {
     return this.db.query.workspaceMembers.findMany({
-      where: eq(workspaceMembers.workspaceId, workspaceId),
+      where: and(eq(workspaceMembers.workspaceId, workspaceId), isNull(workspaceMembers.deletedAt)),
     });
   };
 
   removeMember = async (workspaceId: string, userId: string) => {
     return this.db
-      .delete(workspaceMembers)
+      .update(workspaceMembers)
+      .set({ deletedAt: new Date() })
       .where(
-        and(eq(workspaceMembers.workspaceId, workspaceId), eq(workspaceMembers.userId, userId)),
+        and(
+          eq(workspaceMembers.workspaceId, workspaceId),
+          eq(workspaceMembers.userId, userId),
+          isNull(workspaceMembers.deletedAt),
+        ),
       );
   };
 
@@ -59,7 +72,11 @@ export class WorkspaceMemberModel {
       .update(workspaceMembers)
       .set({ role })
       .where(
-        and(eq(workspaceMembers.workspaceId, workspaceId), eq(workspaceMembers.userId, userId)),
+        and(
+          eq(workspaceMembers.workspaceId, workspaceId),
+          eq(workspaceMembers.userId, userId),
+          isNull(workspaceMembers.deletedAt),
+        ),
       );
   };
 

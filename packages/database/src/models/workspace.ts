@@ -1,4 +1,4 @@
-import { and, count, desc, eq, ne } from 'drizzle-orm';
+import { and, count, desc, eq, isNull, ne } from 'drizzle-orm';
 
 import {
   type NewWorkspace,
@@ -93,13 +93,13 @@ export class WorkspaceModel {
     const result = await this.db
       .select({ count: count() })
       .from(workspaceMembers)
-      .where(eq(workspaceMembers.userId, this.userId));
+      .where(and(eq(workspaceMembers.userId, this.userId), isNull(workspaceMembers.deletedAt)));
     return result[0]?.count ?? 0;
   };
 
   listUserWorkspaces = async () => {
     const memberships = await this.db.query.workspaceMembers.findMany({
-      where: eq(workspaceMembers.userId, this.userId),
+      where: and(eq(workspaceMembers.userId, this.userId), isNull(workspaceMembers.deletedAt)),
     });
 
     if (memberships.length === 0) return [];
@@ -156,6 +156,7 @@ export class WorkspaceModel {
         where: and(
           eq(workspaceMembers.workspaceId, id),
           eq(workspaceMembers.userId, newPrimaryOwnerUserId),
+          isNull(workspaceMembers.deletedAt),
         ),
       });
       if (!targetMembership)
@@ -179,13 +180,21 @@ export class WorkspaceModel {
   promoteToOwner = async (id: string, targetUserId: string) => {
     return this.db.transaction(async (tx) => {
       const actor = await tx.query.workspaceMembers.findFirst({
-        where: and(eq(workspaceMembers.workspaceId, id), eq(workspaceMembers.userId, this.userId)),
+        where: and(
+          eq(workspaceMembers.workspaceId, id),
+          eq(workspaceMembers.userId, this.userId),
+          isNull(workspaceMembers.deletedAt),
+        ),
       });
       if (actor?.role !== 'owner')
         throw new Error('Only an owner can promote other members to owner');
 
       const target = await tx.query.workspaceMembers.findFirst({
-        where: and(eq(workspaceMembers.workspaceId, id), eq(workspaceMembers.userId, targetUserId)),
+        where: and(
+          eq(workspaceMembers.workspaceId, id),
+          eq(workspaceMembers.userId, targetUserId),
+          isNull(workspaceMembers.deletedAt),
+        ),
       });
       if (!target) throw new Error('Target user is not a member of this workspace');
       if (target.role === 'owner') return target;
@@ -213,12 +222,20 @@ export class WorkspaceModel {
         );
 
       const actor = await tx.query.workspaceMembers.findFirst({
-        where: and(eq(workspaceMembers.workspaceId, id), eq(workspaceMembers.userId, this.userId)),
+        where: and(
+          eq(workspaceMembers.workspaceId, id),
+          eq(workspaceMembers.userId, this.userId),
+          isNull(workspaceMembers.deletedAt),
+        ),
       });
       if (actor?.role !== 'owner') throw new Error('Only an owner can demote other owners');
 
       const target = await tx.query.workspaceMembers.findFirst({
-        where: and(eq(workspaceMembers.workspaceId, id), eq(workspaceMembers.userId, targetUserId)),
+        where: and(
+          eq(workspaceMembers.workspaceId, id),
+          eq(workspaceMembers.userId, targetUserId),
+          isNull(workspaceMembers.deletedAt),
+        ),
       });
       if (!target) throw new Error('Target user is not a member of this workspace');
       if (target.role !== 'owner') return target;
@@ -243,6 +260,7 @@ export class WorkspaceModel {
           eq(workspaceMembers.workspaceId, workspaceId),
           eq(workspaceMembers.role, 'owner'),
           ne(workspaceMembers.userId, excludeUserId),
+          isNull(workspaceMembers.deletedAt),
         ),
       );
     return result[0]?.count ?? 0;
@@ -265,11 +283,13 @@ export class WorkspaceModel {
         throw new Error('Only the primary owner can downgrade this workspace');
 
       const removedMembers = await tx
-        .delete(workspaceMembers)
+        .update(workspaceMembers)
+        .set({ deletedAt: new Date() })
         .where(
           and(
             eq(workspaceMembers.workspaceId, id),
             ne(workspaceMembers.userId, current.primaryOwnerId),
+            isNull(workspaceMembers.deletedAt),
           ),
         )
         .returning();

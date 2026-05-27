@@ -46,6 +46,7 @@ export const workspaceMembers = pgTable(
       .notNull(),
     role: text('role').notNull().default('member'),
     joinedAt: timestamptz('joined_at').notNull().defaultNow(),
+    deletedAt: timestamptz('deleted_at'),
   },
   (t) => [
     // Composite PK guarantees one row per (workspace, user). Without it the
