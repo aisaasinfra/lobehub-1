@@ -921,12 +921,12 @@ When I am ___, I need ___
   'startConversation': 'Start Conversation',
   'storage.actions.transfer.button': 'Transfer',
   'storage.actions.transfer.desc':
-    'Move agents and their data to a workspace you have access to. LobeAI, the default inbox Agent, cannot be transferred; use Copy Agents to Workspace instead.',
+    'Move agents and their data to a workspace you have access to. LobeAI, the default inbox Agent, cannot be transferred; use Copy Agents to copy it to a workspace or personal account instead.',
   'storage.actions.transfer.title': 'Agents Migration',
   'storage.actions.copyLobeAI.button': 'Copy',
   'storage.actions.copyLobeAI.desc':
-    'Copy agents, including LobeAI, into another workspace. Topics and messages are optional.',
-  'storage.actions.copyLobeAI.title': 'Copy Agents to Workspace',
+    'Copy agents, including LobeAI, into another workspace or personal account. Topics and messages are optional.',
+  'storage.actions.copyLobeAI.title': 'Copy Agents',
   'storage.actions.export.button': 'Export',
   'storage.actions.export.exportType.agent': 'Export Agent Settings',
   'storage.actions.export.exportType.agentWithMessage': 'Export Agent and Messages',
@@ -1450,6 +1450,19 @@ When I am ___, I need ___
   'workspace.general.transferAgents.personalAccount': 'Personal Account',
   'workspace.general.copyLobeAI.modal.back': 'Back',
   'workspace.general.copyLobeAI.modal.continue': 'Continue',
+  'workspace.general.copyLobeAI.modal.copyOptions.config.desc':
+    'Required. Copies the model, prompt, tools, and Agent profile.',
+  'workspace.general.copyLobeAI.modal.copyOptions.config.title': 'Agent configuration',
+  'workspace.general.copyLobeAI.modal.copyOptions.history.desc':
+    'Optional. Copies selected agents’ topics and messages into the new agents.',
+  'workspace.general.copyLobeAI.modal.copyOptions.history.title': 'Topics and messages',
+  'workspace.general.copyLobeAI.modal.copyOptions.knowledgeBase.reason':
+    'Not supported yet. Reconnect them in the target workspace or personal account after copying.',
+  'workspace.general.copyLobeAI.modal.copyOptions.knowledgeBase.title': 'Knowledge bases and files',
+  'workspace.general.copyLobeAI.modal.copyOptions.optional': 'Optional',
+  'workspace.general.copyLobeAI.modal.copyOptions.required': 'Selected by default',
+  'workspace.general.copyLobeAI.modal.copyOptions.title': 'Copy options',
+  'workspace.general.copyLobeAI.modal.copyOptions.unsupported': 'Unavailable',
   'workspace.general.copyLobeAI.modal.create': 'Copy {{count}} agent(s)',
   'workspace.general.copyLobeAI.modal.defaultInboxTitle': 'LobeAI',
   'workspace.general.copyLobeAI.modal.failed': 'Failed to copy agents',
@@ -1460,11 +1473,11 @@ When I am ___, I need ___
   'workspace.general.copyLobeAI.modal.noAgents': 'No agents available to copy',
   'workspace.general.copyLobeAI.modal.selected': 'selected',
   'workspace.general.copyLobeAI.modal.selectAgents': 'Select agents to copy.',
-  'workspace.general.copyLobeAI.modal.selectPlaceholder': 'Select workspace...',
+  'workspace.general.copyLobeAI.modal.selectPlaceholder': 'Select workspace or personal account...',
   'workspace.general.copyLobeAI.modal.selectTarget':
-    'Choose the target workspace. Agent configuration is copied by default.',
+    'Choose the target workspace or personal account. Agent configuration is copied by default.',
   'workspace.general.copyLobeAI.modal.success': '{{count}} agent(s) copied',
-  'workspace.general.copyLobeAI.modal.title': 'Copy Agents to Workspace',
+  'workspace.general.copyLobeAI.modal.title': 'Copy Agents',
   'workspace.general.copyLobeAI.modal.untitledAgent': 'Untitled Agent',
   'workspace.general.transferPrimary.cta': 'Transfer Primary Owner',
   'workspace.general.transferPrimary.description':

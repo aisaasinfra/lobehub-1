@@ -209,5 +209,19 @@
   "channel.wechatScanToConnect": "کد QR را برای اتصال اسکن کنید",
   "channel.wechatTips": "لطفاً وی‌چت را به آخرین نسخه به‌روزرسانی کنید و آن را مجدداً راه‌اندازی کنید. افزونه ClawBot به تدریج در حال انتشار است، بنابراین به تنظیمات > افزونه‌ها مراجعه کنید تا دسترسی را تأیید کنید.",
   "channel.wechatUserId": "شناسه کاربری وی‌چت",
-  "channel.wechatUserIdHint": "شناسه حساب وی‌چت که توسط جریان تأیید بازگردانده شده است."
+  "channel.wechatUserIdHint": "شناسه حساب وی‌چت که توسط جریان تأیید بازگردانده شده است.",
+  "transfer.button": "انتقال",
+  "transfer.confirm.botChannels": "اتصالات کانال‌های ربات ممکن است پس از انتقال نیاز به بازنشانی داشته باشند",
+  "transfer.confirm.chatGroups": "ارتباطات گروه‌های چندکاربره حذف خواهند شد",
+  "transfer.confirm.desc": "این عملیات نماینده و تمام داده‌های مرتبط (موضوعات، پیام‌ها، فایل‌ها و غیره) را به فضای کاری هدف منتقل می‌کند.",
+  "transfer.confirm.plugins": "افزونه‌های سفارشی ممکن است در فضای کاری هدف در دسترس نباشند",
+  "transfer.confirm.title": "انتقال نماینده",
+  "transfer.confirm.warning": "برخی ویژگی‌ها منتقل نمی‌شوند:",
+  "transfer.desc": "این نماینده را به فضای کاری دیگر یا حساب شخصی خود منتقل کنید.",
+  "transfer.error": "انتقال نماینده ناموفق بود",
+  "transfer.personalAccount": "حساب شخصی",
+  "transfer.searchWorkspace": "جستجوی فضاهای کاری...",
+  "transfer.selectTarget": "انتقال نماینده به",
+  "transfer.success": "نماینده با موفقیت منتقل شد",
+  "transfer.title": "انتقال"
 }

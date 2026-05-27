@@ -209,5 +209,19 @@
   "channel.wechatScanToConnect": "Scan QR-code om te verbinden",
   "channel.wechatTips": "Werk WeChat bij naar de nieuwste versie en start het opnieuw. De ClawBot-plug-in wordt geleidelijk uitgerold, dus controleer Instellingen > Plug-ins om toegang te bevestigen.",
   "channel.wechatUserId": "WeChat Gebruikers-ID",
-  "channel.wechatUserIdHint": "WeChat-accountidentificatie geretourneerd door de autorisatiestroom."
+  "channel.wechatUserIdHint": "WeChat-accountidentificatie geretourneerd door de autorisatiestroom.",
+  "transfer.button": "Overdragen",
+  "transfer.confirm.botChannels": "Botkanaalverbindingen moeten mogelijk worden vernieuwd na overdracht",
+  "transfer.confirm.chatGroups": "Associaties met multi-agent groepen worden verwijderd",
+  "transfer.confirm.desc": "Hiermee wordt de agent en alle bijbehorende gegevens (onderwerpen, berichten, bestanden, enz.) naar de doelwerkruimte verplaatst.",
+  "transfer.confirm.plugins": "Aangepaste plugins zijn mogelijk niet beschikbaar in de doelwerkruimte",
+  "transfer.confirm.title": "Agent Overdragen",
+  "transfer.confirm.warning": "Sommige functies worden niet overgedragen:",
+  "transfer.desc": "Draag deze agent over naar een andere werkruimte of uw persoonlijke account.",
+  "transfer.error": "Overdracht van agent mislukt",
+  "transfer.personalAccount": "Persoonlijk Account",
+  "transfer.searchWorkspace": "Werkruimtes zoeken...",
+  "transfer.selectTarget": "Agent Overdragen Naar",
+  "transfer.success": "Agent succesvol overgedragen",
+  "transfer.title": "Overdragen"
 }

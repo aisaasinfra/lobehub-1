@@ -209,5 +209,19 @@
   "channel.wechatScanToConnect": "Quét mã QR để kết nối",
   "channel.wechatTips": "Vui lòng cập nhật WeChat lên phiên bản mới nhất và khởi động lại. Plugin ClawBot đang được triển khai dần, hãy kiểm tra Cài đặt > Plugin để xác nhận quyền truy cập.",
   "channel.wechatUserId": "ID Người dùng WeChat",
-  "channel.wechatUserIdHint": "Định danh tài khoản WeChat được trả về bởi quy trình ủy quyền."
+  "channel.wechatUserIdHint": "Định danh tài khoản WeChat được trả về bởi quy trình ủy quyền.",
+  "transfer.button": "Chuyển",
+  "transfer.confirm.botChannels": "Kết nối kênh bot có thể cần được làm mới sau khi chuyển",
+  "transfer.confirm.chatGroups": "Liên kết nhóm nhiều tác nhân sẽ bị xóa",
+  "transfer.confirm.desc": "Điều này sẽ di chuyển tác nhân và tất cả dữ liệu liên quan (chủ đề, tin nhắn, tệp, v.v.) đến không gian làm việc mục tiêu.",
+  "transfer.confirm.plugins": "Plugin tùy chỉnh có thể không khả dụng trong không gian làm việc mục tiêu",
+  "transfer.confirm.title": "Chuyển Tác Nhân",
+  "transfer.confirm.warning": "Một số tính năng không được chuyển:",
+  "transfer.desc": "Chuyển tác nhân này sang không gian làm việc khác hoặc tài khoản cá nhân của bạn.",
+  "transfer.error": "Chuyển tác nhân thất bại",
+  "transfer.personalAccount": "Tài Khoản Cá Nhân",
+  "transfer.searchWorkspace": "Tìm kiếm không gian làm việc...",
+  "transfer.selectTarget": "Chuyển Tác Nhân Đến",
+  "transfer.success": "Tác nhân đã được chuyển thành công",
+  "transfer.title": "Chuyển"
 }
