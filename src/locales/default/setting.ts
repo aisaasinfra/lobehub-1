@@ -919,14 +919,14 @@ When I am ___, I need ___
     '[Skill Request] Summarize the skill you need in one sentence',
   'skillStore.wantMore.reachedEnd': "You've reached the end. Can't find what you need?",
   'startConversation': 'Start Conversation',
-  'storage.actions.transfer.button': 'Transfer',
+  'storage.actions.transfer.button': 'Transfer To',
   'storage.actions.transfer.desc':
     'Move agents and their data to a workspace you have access to. LobeAI, the default inbox Agent, cannot be transferred; use Copy Agents to copy it to a workspace or personal account instead.',
   'storage.actions.transfer.title': 'Agents Migration',
-  'storage.actions.copyLobeAI.button': 'Copy',
+  'storage.actions.copyLobeAI.button': 'Copy To',
   'storage.actions.copyLobeAI.desc':
     'Copy agents, including LobeAI, into another workspace or personal account. Topics and messages are optional.',
-  'storage.actions.copyLobeAI.title': 'Copy Agents',
+  'storage.actions.copyLobeAI.title': 'Agents Copy',
   'storage.actions.export.button': 'Export',
   'storage.actions.export.exportType.agent': 'Export Agent Settings',
   'storage.actions.export.exportType.agentWithMessage': 'Export Agent and Messages',
@@ -1444,7 +1444,7 @@ When I am ___, I need ___
   'workspace.general.transferAgents.modal.selected': 'selected',
   'workspace.general.transferAgents.modal.selectedAgent': 'Agent to transfer to {{target}}.',
   'workspace.general.transferAgents.modal.success': '{{count}} agent(s) transferred successfully',
-  'workspace.general.transferAgents.modal.title': 'Transfer Agents',
+  'workspace.general.transferAgents.modal.title': 'Agents Transfer',
   'workspace.general.transferAgents.modal.transfer': 'Transfer {{count}} agent(s)',
   'workspace.general.transferAgents.modal.warning':
     'Custom plugins may not be available and multi-agent group associations will be removed.',
