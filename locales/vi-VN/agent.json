@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "Plugin tùy chỉnh có thể không khả dụng trong không gian làm việc mục tiêu",
   "transfer.confirm.title": "Chuyển Tác Nhân",
   "transfer.confirm.warning": "Một số tính năng không được chuyển:",
+  "transfer.copyTo": "Sao chép đến",
   "transfer.desc": "Chuyển tác nhân này sang không gian làm việc khác hoặc tài khoản cá nhân của bạn.",
   "transfer.error": "Chuyển tác nhân thất bại",
   "transfer.personalAccount": "Tài Khoản Cá Nhân",
   "transfer.searchWorkspace": "Tìm kiếm không gian làm việc...",
   "transfer.selectTarget": "Chuyển Tác Nhân Đến",
   "transfer.success": "Tác nhân đã được chuyển thành công",
-  "transfer.title": "Chuyển"
+  "transfer.title": "Chuyển",
+  "transfer.transferTo": "Chuyển đến"
 }

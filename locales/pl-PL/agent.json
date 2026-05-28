@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "Niestandardowe wtyczki mogą nie być dostępne w docelowym miejscu pracy",
   "transfer.confirm.title": "Przenieś Agenta",
   "transfer.confirm.warning": "Niektóre funkcje nie zostaną przeniesione:",
+  "transfer.copyTo": "Kopiuj do",
   "transfer.desc": "Przenieś tego agenta do innego miejsca pracy lub na swoje osobiste konto.",
   "transfer.error": "Nie udało się przenieść agenta",
   "transfer.personalAccount": "Konto osobiste",
   "transfer.searchWorkspace": "Szukaj miejsc pracy...",
   "transfer.selectTarget": "Przenieś Agenta Do",
   "transfer.success": "Agent został pomyślnie przeniesiony",
-  "transfer.title": "Przenieś"
+  "transfer.title": "Przenieś",
+  "transfer.transferTo": "Przenieś do"
 }

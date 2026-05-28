@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "افزونه‌های سفارشی ممکن است در فضای کاری هدف در دسترس نباشند",
   "transfer.confirm.title": "انتقال نماینده",
   "transfer.confirm.warning": "برخی ویژگی‌ها منتقل نمی‌شوند:",
+  "transfer.copyTo": "کپی به",
   "transfer.desc": "این نماینده را به فضای کاری دیگر یا حساب شخصی خود منتقل کنید.",
   "transfer.error": "انتقال نماینده ناموفق بود",
   "transfer.personalAccount": "حساب شخصی",
   "transfer.searchWorkspace": "جستجوی فضاهای کاری...",
   "transfer.selectTarget": "انتقال نماینده به",
   "transfer.success": "نماینده با موفقیت منتقل شد",
-  "transfer.title": "انتقال"
+  "transfer.title": "انتقال",
+  "transfer.transferTo": "انتقال به"
 }
