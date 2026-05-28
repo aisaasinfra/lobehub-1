@@ -94,12 +94,11 @@ const createStorageBlockAction = (reason?: string) => {
     {
       size: 'small',
       type: 'primary',
-      onClick: () => openSettingsRoute(shouldOpenPlans ? '/settings/plans' : '/settings/storage'),
+      onClick: () => openSettingsRoute(shouldOpenPlans ? '/settings/plans' : '/settings/usage'),
     },
-    t(
-      shouldOpenPlans ? 'upload.storageBlock.viewPlans' : 'upload.storageBlock.openStorageSettings',
-      { ns: 'error' },
-    ),
+    t(shouldOpenPlans ? 'upload.storageBlock.viewPlans' : 'upload.storageBlock.viewUsage', {
+      ns: 'error',
+    }),
   );
 };
 
@@ -109,9 +108,9 @@ const createStorageSettingsAction = () =>
     {
       size: 'small',
       type: 'primary',
-      onClick: () => openSettingsRoute('/settings/storage'),
+      onClick: () => openSettingsRoute('/settings/usage'),
     },
-    t('upload.storageBlock.openStorageSettings', { ns: 'error' }),
+    t('upload.storageBlock.viewUsage', { ns: 'error' }),
   );
 
 export const createFileUploadSlice = (set: Setter, get: () => FileStore, _api?: unknown) =>

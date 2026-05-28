@@ -865,7 +865,7 @@
   "storageOverage.rate": "{{dailyRate}}/GB/day. Limited time: {{limitedMonthlyRate}}/GB/month (regular {{regularMonthlyRate}}).",
   "storageOverage.subscriptionRequired.action": "View plans",
   "storageOverage.subscriptionRequired.desc": "Subscribe to a plan to enable storage pay-as-you-go for overage usage.",
-  "storageOverage.title": "Storage Pay-as-you-go",
+  "storageOverage.title": "File Storage Pay-as-you-go",
   "storageOverage.toggle": "Enable overage billing",
   "storageOverage.unlimited": "Unlimited",
   "storageOverage.usage.current": "Usage",

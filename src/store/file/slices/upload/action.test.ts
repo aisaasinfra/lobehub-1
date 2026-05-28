@@ -742,9 +742,9 @@ describe('FileUploadAction', () => {
         useGlobalStore.setState({ navigationRef: { current: navigate } });
         const action = getLatestNotificationAction();
 
-        expect(action?.props.children).toBe('upload.storageBlock.openStorageSettings');
+        expect(action?.props.children).toBe('upload.storageBlock.viewUsage');
         action?.props.onClick();
-        expect(navigate).toHaveBeenCalledWith('/settings/storage');
+        expect(navigate).toHaveBeenCalledWith('/settings/usage');
       });
 
       it('should show a plans action when upload requires an upgraded plan', async () => {

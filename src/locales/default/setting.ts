@@ -1001,7 +1001,7 @@ When I am ___, I need ___
   'storageOverage.subscriptionRequired.action': 'View plans',
   'storageOverage.subscriptionRequired.desc':
     'Subscribe to a plan to enable storage pay-as-you-go for overage usage.',
-  'storageOverage.title': 'Storage Pay-as-you-go',
+  'storageOverage.title': 'File Storage Pay-as-you-go',
   'storageOverage.toggle': 'Enable overage billing',
   'storageOverage.unlimited': 'Unlimited',
   'storageOverage.usage.current': 'Usage',
