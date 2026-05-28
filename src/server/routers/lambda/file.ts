@@ -27,6 +27,7 @@ import { QueryFileListSchema, UploadFileSchema } from '@/types/files';
  * Returns a unified proxy URL format: ${APP_URL}/f/:id
  */
 const getFileProxyUrl = (fileId: string): string => `${appEnv.APP_URL}/f/${fileId}`;
+const fileTransferEntityTypeSchema = z.enum(['document', 'file', 'folder']);
 
 const filterKnowledgeItems = <
   T extends {
@@ -625,7 +626,7 @@ export const fileRouter = router({
     .use(withScopedPermission('file:upload'))
     .input(
       z.object({
-        entityType: z.enum(['file', 'folder']),
+        entityType: fileTransferEntityTypeSchema,
         id: z.string(),
         targetWorkspaceId: z.string().nullable(),
       }),
@@ -658,9 +659,14 @@ export const fileRouter = router({
         }
       }
 
-      if (input.entityType === 'folder') {
-        const folder = await ctx.documentModel.findById(input.id);
-        if (!folder) throw new TRPCError({ code: 'NOT_FOUND', message: 'Folder not found' });
+      if (input.entityType === 'folder' || input.entityType === 'document') {
+        const document = await ctx.documentModel.findById(input.id);
+        if (!document) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: input.entityType === 'folder' ? 'Folder not found' : 'Document not found',
+          });
+        }
         return ctx.documentModel.transferTo(input.id, input.targetWorkspaceId, ctx.userId);
       }
 
@@ -673,7 +679,7 @@ export const fileRouter = router({
     .use(withScopedPermission('file:upload'))
     .input(
       z.object({
-        entityType: z.enum(['file', 'folder']),
+        entityType: fileTransferEntityTypeSchema,
         id: z.string(),
         targetWorkspaceId: z.string().nullable(),
       }),
@@ -699,9 +705,14 @@ export const fileRouter = router({
         }
       }
 
-      if (input.entityType === 'folder') {
-        const folder = await ctx.documentModel.findById(input.id);
-        if (!folder) throw new TRPCError({ code: 'NOT_FOUND', message: 'Folder not found' });
+      if (input.entityType === 'folder' || input.entityType === 'document') {
+        const document = await ctx.documentModel.findById(input.id);
+        if (!document) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: input.entityType === 'folder' ? 'Folder not found' : 'Document not found',
+          });
+        }
         return ctx.documentModel.copyToWorkspace(input.id, input.targetWorkspaceId, ctx.userId);
       }
 

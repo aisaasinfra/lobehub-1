@@ -141,7 +141,7 @@ export class FileService {
 
   transferEntity = async (
     id: string,
-    entityType: 'file' | 'folder',
+    entityType: 'document' | 'file' | 'folder',
     targetWorkspaceId: string | null,
   ) => {
     return lambdaClient.file.transferEntity.mutate({ entityType, id, targetWorkspaceId });
@@ -149,7 +149,7 @@ export class FileService {
 
   copyEntityToWorkspace = async (
     id: string,
-    entityType: 'file' | 'folder',
+    entityType: 'document' | 'file' | 'folder',
     targetWorkspaceId: string | null,
   ) => {
     return lambdaClient.file.copyEntityToWorkspace.mutate({ entityType, id, targetWorkspaceId });

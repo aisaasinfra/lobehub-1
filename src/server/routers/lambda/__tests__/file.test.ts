@@ -158,6 +158,9 @@ vi.mock('@/server/services/file', () => ({
 
 const mockKnowledgeRepoQuery = vi.fn().mockResolvedValue([]);
 const mockDocumentServiceDeleteDocuments = vi.fn();
+const mockDocumentModelCopyToWorkspace = vi.fn();
+const mockDocumentModelFindById = vi.fn();
+const mockDocumentModelTransferTo = vi.fn();
 
 vi.mock('@/database/repositories/knowledge', () => ({
   KnowledgeRepo: vi.fn(() => ({
@@ -166,7 +169,11 @@ vi.mock('@/database/repositories/knowledge', () => ({
 }));
 
 vi.mock('@/database/models/document', () => ({
-  DocumentModel: vi.fn(() => ({})),
+  DocumentModel: vi.fn(() => ({
+    copyToWorkspace: mockDocumentModelCopyToWorkspace,
+    findById: mockDocumentModelFindById,
+    transferTo: mockDocumentModelTransferTo,
+  })),
 }));
 
 vi.mock('@/server/services/document', () => ({
@@ -632,6 +639,41 @@ describe('fileRouter', () => {
       expect(mockDocumentServiceDeleteDocuments).toHaveBeenCalledWith(['doc-1']);
       expect(mockFileModelDeleteMany).toHaveBeenCalledWith(['file-2'], false);
       expect(result).toEqual({ count: 2 });
+    });
+  });
+
+  describe('transferEntity', () => {
+    it('should transfer document resources via documentModel', async () => {
+      ctx.workspaceId = 'workspace-active';
+      mockDocumentModelFindById.mockResolvedValue({ id: 'doc-1' });
+      mockDocumentModelTransferTo.mockResolvedValue({ id: 'doc-1' });
+
+      await caller.transferEntity({
+        entityType: 'document',
+        id: 'doc-1',
+        targetWorkspaceId: null,
+      });
+
+      expect(mockDocumentModelFindById).toHaveBeenCalledWith('doc-1');
+      expect(mockDocumentModelTransferTo).toHaveBeenCalledWith('doc-1', null, 'test-user');
+      expect(mockFileModelFindById).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('copyEntityToWorkspace', () => {
+    it('should copy document resources via documentModel', async () => {
+      mockDocumentModelCopyToWorkspace.mockResolvedValue({ id: 'doc-1' });
+      mockDocumentModelFindById.mockResolvedValue({ id: 'doc-1' });
+
+      await caller.copyEntityToWorkspace({
+        entityType: 'document',
+        id: 'doc-1',
+        targetWorkspaceId: null,
+      });
+
+      expect(mockDocumentModelFindById).toHaveBeenCalledWith('doc-1');
+      expect(mockDocumentModelCopyToWorkspace).toHaveBeenCalledWith('doc-1', null, 'test-user');
+      expect(mockFileModelFindById).not.toHaveBeenCalled();
     });
   });
 

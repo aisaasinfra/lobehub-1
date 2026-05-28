@@ -39,10 +39,27 @@ const EMPTY_NAV_KEY = 'empty';
 const SETTINGS_NAV_KEY = 'settings';
 const WORKSPACE_SETTINGS_NAV_KEY = 'workspace-settings';
 
+const DEDICATED_ROUTE_NAV_SEGMENTS = new Set([
+  'community',
+  'eval',
+  'group',
+  'image',
+  'memory',
+  'page',
+  'resource',
+  'video',
+]);
+
 const getActiveNavKey = () => currentSnapshot?.key ?? FALLBACK_NAV_KEY;
 
 export const useActiveNavKey = () =>
   useSyncExternalStore(subscribeNavPanel, getActiveNavKey, getActiveNavKey);
+
+const getMainRouteSegment = (pathname: string, activeSlug: string | null) => {
+  const segments = pathname.split('/').filter(Boolean);
+  if (activeSlug && segments[0] === activeSlug) return segments[1];
+  return segments[0];
+};
 
 const NavPanel = memo(() => {
   const { pathname } = useLocation();
@@ -86,7 +103,10 @@ const NavPanel = memo(() => {
       }
     : null;
   const routeFallback = agentFallback || workspaceSettingsFallback || personalSettingsFallback;
-  const isStaleHomeSnapshot = panelContent?.key === FALLBACK_NAV_KEY && !isHomeRoute;
+  const mainRouteSegment = getMainRouteSegment(pathname, activeSlug);
+  const hasDedicatedRouteNavPanel = DEDICATED_ROUTE_NAV_SEGMENTS.has(mainRouteSegment ?? '');
+  const isStaleHomeSnapshot =
+    panelContent?.key === FALLBACK_NAV_KEY && hasDedicatedRouteNavPanel && !isHomeRoute;
 
   const resolvedPanelContent =
     routeFallback && panelContent?.key === FALLBACK_NAV_KEY
@@ -102,7 +122,7 @@ const NavPanel = memo(() => {
   const activeContent =
     resolvedPanelContent ||
     routeFallback ||
-    (isHomeRoute
+    (isHomeRoute || !hasDedicatedRouteNavPanel
       ? ({ key: FALLBACK_NAV_KEY, node: <SidebarContent /> } satisfies NavPanelSnapshot)
       : ({ key: EMPTY_NAV_KEY, node: null } satisfies NavPanelSnapshot));
 

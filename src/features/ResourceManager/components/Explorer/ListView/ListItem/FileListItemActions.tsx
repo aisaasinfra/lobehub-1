@@ -73,7 +73,10 @@ const FileListItemActions = ({
   t,
 }: FileListItemActionsProps) => {
   const { allowed: canEditResources } = usePermission('edit_own_content');
-  const transferMenuItems = useFileTransferMenuItem(id, isFolder ? 'folder' : 'file');
+  const transferMenuItems = useFileTransferMenuItem(
+    id,
+    isPage ? 'document' : isFolder ? 'folder' : 'file',
+  );
 
   const mergedMenuItems = useMemo(() => {
     const baseItems = typeof menuItems === 'function' ? menuItems() : menuItems;

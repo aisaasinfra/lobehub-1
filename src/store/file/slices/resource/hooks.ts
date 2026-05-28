@@ -10,6 +10,12 @@ import { mergeServerResourcesWithOptimistic } from './utils';
 
 const SWR_KEY_RESOURCES = 'SWR_RESOURCES';
 
+const isResourceSWRKey = (key: unknown, queryParams: ResourceQueryParams) => {
+  if (!Array.isArray(key)) return false;
+
+  return key[0] === SWR_KEY_RESOURCES && isEqual(key[1], queryParams);
+};
+
 /**
  * Revalidate resources with current or specific query params
  * This can be called from outside React components (e.g., store actions)
@@ -17,7 +23,13 @@ const SWR_KEY_RESOURCES = 'SWR_RESOURCES';
 export const revalidateResources = async (params?: ResourceQueryParams) => {
   const queryParams = params || useFileStore.getState().queryParams;
   if (queryParams) {
-    await mutate([SWR_KEY_RESOURCES, queryParams]);
+    await mutate(
+      (key) => isResourceSWRKey(key, queryParams),
+      async (currentData) => currentData,
+      {
+        revalidate: true,
+      },
+    );
   }
 };
 

@@ -146,4 +146,26 @@ describe('NavPanel', () => {
     });
     expect(screen.getByTestId('nav-panel')).not.toHaveAttribute('data-nav-key', 'home');
   });
+
+  it.each(['/lobe-team/tasks', '/lobe-team/task/task-1'])(
+    'keeps the home sidebar on %s because it has no route sidebar',
+    async (route) => {
+      pathname = route;
+      const { default: NavPanel, NavPanelPortal } = await import('./index');
+
+      render(
+        <>
+          <NavPanelPortal navKey="home">
+            <div>Home navigation snapshot</div>
+          </NavPanelPortal>
+          <NavPanel />
+        </>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Home navigation snapshot')).toBeInTheDocument();
+      });
+      expect(screen.getByTestId('nav-panel')).toHaveAttribute('data-nav-key', 'home');
+    },
+  );
 });
