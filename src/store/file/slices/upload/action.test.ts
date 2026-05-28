@@ -166,6 +166,49 @@ describe('FileUploadAction', () => {
         }),
       ).rejects.toThrow('Upload failed');
     });
+
+    it('should show a storage block notification when base64 create is blocked', async () => {
+      const { result } = renderHook(() => useStore());
+
+      const base64Data = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA';
+      const mockMetadata = {
+        date: '12345',
+        dirname: '/test',
+        filename: 'test.png',
+        path: '/test/test.png',
+      };
+
+      vi.mocked(getImageDimensions).mockResolvedValue(undefined);
+      vi.spyOn(uploadService, 'uploadBase64ToS3').mockResolvedValue({
+        fileType: 'image/png',
+        hash: 'mock-hash',
+        metadata: mockMetadata,
+        size: 1024,
+      });
+      vi.spyOn(fileService, 'createFile').mockRejectedValue(
+        new Error('storage_block:no_payment_method'),
+      );
+
+      const uploadResult = await act(async () => {
+        return await result.current.uploadBase64FileWithProgress(base64Data);
+      });
+
+      expect(uploadResult).toBeUndefined();
+      expect(notification.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          actions: expect.anything(),
+          description: 'upload.storageBlock.noPaymentMethod',
+        }),
+      );
+
+      const navigate = vi.fn();
+      useGlobalStore.setState({ navigationRef: { current: navigate } });
+      const action = getLatestNotificationAction();
+
+      expect(action?.props.children).toBe('upload.storageBlock.viewUsage');
+      action?.props.onClick();
+      expect(navigate).toHaveBeenCalledWith('/settings/usage');
+    });
   });
 
   describe('uploadWithProgress', () => {

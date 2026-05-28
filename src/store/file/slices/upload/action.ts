@@ -8,10 +8,10 @@ import { createElement } from 'react';
 import { message, notification } from '@/components/AntdStaticMethods';
 import { fileService } from '@/services/file';
 import { uploadService } from '@/services/upload';
-import { useGlobalStore } from '@/store/global';
 import { type StoreSetter } from '@/store/types';
 import { type FileMetadata, type UploadFileItem } from '@/types/files';
 import { getImageDimensions } from '@/utils/client/imageDimensions';
+import { getStableNavigate } from '@/utils/stableNavigate';
 
 import { type FileStore } from '../../store';
 
@@ -74,8 +74,17 @@ const normalizeUploadedImageFileType = async (
 type Setter = StoreSetter<FileStore>;
 type UploadStorageBlockReason = Exclude<StorageBlockReason, typeof StorageBlockReason.WithinLimit>;
 
+const errorKeyMap = {
+  [StorageBlockReason.MonthlyCapReached]: 'upload.storageBlock.monthlyCapReached',
+  [StorageBlockReason.NoPaymentMethod]: 'upload.storageBlock.noPaymentMethod',
+  [StorageBlockReason.OverageNotEnabled]: 'upload.storageBlock.overageNotEnabled',
+  [StorageBlockReason.SubscriptionPastDue]: 'upload.storageBlock.subscriptionPastDue',
+  [StorageBlockReason.SubscriptionUnpaid]: 'upload.storageBlock.subscriptionUnpaid',
+  [StorageBlockReason.UpgradeRequired]: 'upload.storageBlock.upgradeRequired',
+} as const satisfies Record<UploadStorageBlockReason, string>;
+
 const openSettingsRoute = (path: string) => {
-  const navigate = useGlobalStore.getState().navigationRef.current;
+  const navigate = getStableNavigate();
   if (navigate) {
     navigate(path);
     return;
@@ -113,6 +122,23 @@ const createStorageSettingsAction = () =>
     t('upload.storageBlock.viewUsage', { ns: 'error' }),
   );
 
+const handleStorageBlockError = (error: unknown, onBlocked?: () => void) => {
+  const errorMessage = error instanceof Error ? error.message : '';
+  if (!errorMessage.startsWith('storage_block:')) return false;
+
+  const reason = errorMessage.replace('storage_block:', '');
+  onBlocked?.();
+
+  notification.error({
+    actions: createStorageBlockAction(reason),
+    description: Object.hasOwn(errorKeyMap, reason)
+      ? t(errorKeyMap[reason as UploadStorageBlockReason], { ns: 'error' })
+      : t('upload.storageLimitExceeded', { ns: 'error' }),
+    message: t('upload.uploadFailed', { ns: 'error' }),
+  });
+  return true;
+};
+
 export const createFileUploadSlice = (set: Setter, get: () => FileStore, _api?: unknown) =>
   new FileUploadActionImpl(set, get, _api);
 
@@ -126,20 +152,26 @@ export class FileUploadActionImpl {
   uploadBase64FileWithProgress = async (
     base64: string,
   ): Promise<UploadWithProgressResult | undefined> => {
-    // Extract image dimensions from base64 data
-    const dimensions = await getImageDimensions(base64);
+    try {
+      // Extract image dimensions from base64 data
+      const dimensions = await getImageDimensions(base64);
 
-    const { metadata, fileType, size, hash } = await uploadService.uploadBase64ToS3(base64);
+      const { metadata, fileType, size, hash } = await uploadService.uploadBase64ToS3(base64);
 
-    const res = await fileService.createFile({
-      fileType,
-      hash,
-      metadata,
-      name: metadata.filename,
-      size,
-      url: metadata.path,
-    });
-    return { ...res, dimensions, filename: metadata.filename };
+      const res = await fileService.createFile({
+        fileType,
+        hash,
+        metadata,
+        name: metadata.filename,
+        size,
+        url: metadata.path,
+      });
+      return { ...res, dimensions, filename: metadata.filename };
+    } catch (error) {
+      if (handleStorageBlockError(error)) return;
+
+      throw error;
+    }
   };
 
   uploadWithProgress = async ({
@@ -243,31 +275,13 @@ export class FileUploadActionImpl {
 
       return { ...data, dimensions, filename: normalizedFile.name };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '';
-
-      // Handle structured storage block reasons (storage_block:<reason>)
-      if (errorMessage.startsWith('storage_block:')) {
-        const reason = errorMessage.replace('storage_block:', '');
-        onStatusUpdate?.({ id: statusId, type: 'removeFile' });
-
-        const errorKeyMap = {
-          [StorageBlockReason.MonthlyCapReached]: 'upload.storageBlock.monthlyCapReached',
-          [StorageBlockReason.NoPaymentMethod]: 'upload.storageBlock.noPaymentMethod',
-          [StorageBlockReason.OverageNotEnabled]: 'upload.storageBlock.overageNotEnabled',
-          [StorageBlockReason.SubscriptionPastDue]: 'upload.storageBlock.subscriptionPastDue',
-          [StorageBlockReason.SubscriptionUnpaid]: 'upload.storageBlock.subscriptionUnpaid',
-          [StorageBlockReason.UpgradeRequired]: 'upload.storageBlock.upgradeRequired',
-        } as const satisfies Record<UploadStorageBlockReason, string>;
-
-        notification.error({
-          actions: createStorageBlockAction(reason),
-          description: Object.hasOwn(errorKeyMap, reason)
-            ? t(errorKeyMap[reason as UploadStorageBlockReason], { ns: 'error' })
-            : t('upload.storageLimitExceeded', { ns: 'error' }),
-          message: t('upload.uploadFailed', { ns: 'error' }),
-        });
+      if (
+        handleStorageBlockError(error, () => onStatusUpdate?.({ id: statusId, type: 'removeFile' }))
+      ) {
         return;
       }
+
+      const errorMessage = error instanceof Error ? error.message : '';
 
       // Legacy fallback
       if (errorMessage.includes('beyond the plan limit')) {
