@@ -1442,6 +1442,7 @@ When I am ___, I need ___
   'workspace.general.transferAgents.modal.selectTarget':
     'Choose a workspace or personal account to transfer agents to.',
   'workspace.general.transferAgents.modal.selected': 'selected',
+  'workspace.general.transferAgents.modal.selectedAgent': 'Agent to transfer to {{target}}.',
   'workspace.general.transferAgents.modal.success': '{{count}} agent(s) transferred successfully',
   'workspace.general.transferAgents.modal.title': 'Transfer Agents',
   'workspace.general.transferAgents.modal.transfer': 'Transfer {{count}} agent(s)',
@@ -1472,6 +1473,7 @@ When I am ___, I need ___
   'workspace.general.copyLobeAI.modal.loadFailed': 'Failed to load agents',
   'workspace.general.copyLobeAI.modal.noAgents': 'No agents available to copy',
   'workspace.general.copyLobeAI.modal.selected': 'selected',
+  'workspace.general.copyLobeAI.modal.selectedAgent': 'Agent to copy.',
   'workspace.general.copyLobeAI.modal.selectAgents': 'Select agents to copy.',
   'workspace.general.copyLobeAI.modal.selectPlaceholder': 'Select workspace or personal account...',
   'workspace.general.copyLobeAI.modal.selectTarget':

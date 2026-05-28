@@ -5,6 +5,7 @@ import { memo, useLayoutEffect, useRef, useSyncExternalStore } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import WorkspaceSettingsSideBarContent from '@/features/WorkspaceSetting/SideBar/Content';
+import AgentSidebarContent from '@/routes/(main)/agent/_layout/Sidebar/Content';
 import SidebarContent from '@/routes/(main)/home/_layout/SidebarContent';
 import SettingsSidebarContent from '@/routes/(main)/settings/_layout/SidebarContent';
 import { useWorkspaceStore, workspaceSelectors } from '@/store/workspace';
@@ -33,6 +34,7 @@ const setNavPanelSnapshot = (snapshot: NavPanelSnapshot) => {
 };
 
 const FALLBACK_NAV_KEY = 'home';
+const AGENT_NAV_KEY = 'agent';
 const SETTINGS_NAV_KEY = 'settings';
 const WORKSPACE_SETTINGS_NAV_KEY = 'workspace-settings';
 
@@ -54,6 +56,18 @@ const NavPanel = memo(() => {
     !!activeSlug &&
     (pathname === `/${activeSlug}/settings` || pathname.startsWith(`/${activeSlug}/settings/`));
   const isPersonalSettingsRoute = pathname === '/settings' || pathname.startsWith('/settings/');
+  const isWorkspaceAgentRoute =
+    !!activeSlug &&
+    (pathname === `/${activeSlug}/agent` || pathname.startsWith(`/${activeSlug}/agent/`));
+  const isPersonalAgentRoute = pathname === '/agent' || pathname.startsWith('/agent/');
+
+  const agentFallback =
+    isWorkspaceAgentRoute || isPersonalAgentRoute
+      ? {
+          key: AGENT_NAV_KEY,
+          node: <AgentSidebarContent />,
+        }
+      : null;
 
   const workspaceSettingsFallback = isWorkspaceSettingsRoute
     ? {
@@ -67,7 +81,7 @@ const NavPanel = memo(() => {
         node: <SettingsSidebarContent />,
       }
     : null;
-  const routeFallback = workspaceSettingsFallback || personalSettingsFallback;
+  const routeFallback = agentFallback || workspaceSettingsFallback || personalSettingsFallback;
 
   const resolvedPanelContent =
     routeFallback && panelContent?.key === FALLBACK_NAV_KEY ? routeFallback : panelContent;

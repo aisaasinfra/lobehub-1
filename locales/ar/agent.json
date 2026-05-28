@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "قد لا تكون الإضافات المخصصة متاحة في مساحة العمل المستهدفة",
   "transfer.confirm.title": "نقل الوكيل",
   "transfer.confirm.warning": "بعض الميزات لا يتم نقلها:",
+  "transfer.copyTo": "نسخ إلى",
   "transfer.desc": "قم بنقل هذا الوكيل إلى مساحة عمل أخرى أو إلى حسابك الشخصي.",
   "transfer.error": "فشل في نقل الوكيل",
   "transfer.personalAccount": "الحساب الشخصي",
   "transfer.searchWorkspace": "البحث في مساحات العمل...",
   "transfer.selectTarget": "نقل الوكيل إلى",
   "transfer.success": "تم نقل الوكيل بنجاح",
-  "transfer.title": "نقل"
+  "transfer.title": "نقل",
+  "transfer.transferTo": "نقل إلى"
 }

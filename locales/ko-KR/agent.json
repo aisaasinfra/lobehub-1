@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "사용자 정의 플러그인이 대상 워크스페이스에서 사용 불가능할 수 있습니다.",
   "transfer.confirm.title": "에이전트 전송",
   "transfer.confirm.warning": "일부 기능은 전송되지 않습니다:",
+  "transfer.copyTo": "복사하기",
   "transfer.desc": "이 에이전트를 다른 워크스페이스 또는 개인 계정으로 전송합니다.",
   "transfer.error": "에이전트 전송에 실패했습니다.",
   "transfer.personalAccount": "개인 계정",
   "transfer.searchWorkspace": "워크스페이스 검색...",
   "transfer.selectTarget": "에이전트를 전송할 대상",
   "transfer.success": "에이전트가 성공적으로 전송되었습니다.",
-  "transfer.title": "전송"
+  "transfer.title": "전송",
+  "transfer.transferTo": "전송하기"
 }

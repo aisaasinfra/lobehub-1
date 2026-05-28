@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "Özel eklentiler hedef çalışma alanında mevcut olmayabilir",
   "transfer.confirm.title": "Temsilciyi Transfer Et",
   "transfer.confirm.warning": "Bazı özellikler transfer edilmez:",
+  "transfer.copyTo": "Kopyala",
   "transfer.desc": "Bu temsilciyi başka bir çalışma alanına veya kişisel hesabınıza transfer edin.",
   "transfer.error": "Temsilci transfer edilemedi",
   "transfer.personalAccount": "Kişisel Hesap",
   "transfer.searchWorkspace": "Çalışma alanlarını ara...",
   "transfer.selectTarget": "Temsilciyi Şuraya Transfer Et",
   "transfer.success": "Temsilci başarıyla transfer edildi",
-  "transfer.title": "Transfer"
+  "transfer.title": "Transfer",
+  "transfer.transferTo": "Aktar"
 }

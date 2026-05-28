@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "Plugins personalizados podem não estar disponíveis no espaço de trabalho de destino",
   "transfer.confirm.title": "Transferir Agente",
   "transfer.confirm.warning": "Alguns recursos não são transferidos:",
+  "transfer.copyTo": "Copiar Para",
   "transfer.desc": "Transfira este agente para outro espaço de trabalho ou para sua conta pessoal.",
   "transfer.error": "Falha ao transferir o agente",
   "transfer.personalAccount": "Conta Pessoal",
   "transfer.searchWorkspace": "Pesquisar espaços de trabalho...",
   "transfer.selectTarget": "Transferir Agente Para",
   "transfer.success": "Agente transferido com sucesso",
-  "transfer.title": "Transferir"
+  "transfer.title": "Transferir",
+  "transfer.transferTo": "Transferir Para"
 }

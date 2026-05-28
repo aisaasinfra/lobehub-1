@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "自定义插件在目标工作空间中可能不可用",
   "transfer.confirm.title": "迁移 Agent",
   "transfer.confirm.warning": "部分功能不会被迁移：",
+  "transfer.copyTo": "复制到",
   "transfer.desc": "将此 Agent 迁移到其他工作空间或你的个人账号。",
   "transfer.error": "Agent 迁移失败",
   "transfer.personalAccount": "个人账号",
   "transfer.searchWorkspace": "搜索工作空间...",
   "transfer.selectTarget": "迁移 Agent 到",
   "transfer.success": "Agent 迁移成功",
-  "transfer.title": "迁移"
+  "transfer.title": "迁移",
+  "transfer.transferTo": "转移到"
 }

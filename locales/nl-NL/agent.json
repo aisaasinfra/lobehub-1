@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "Aangepaste plugins zijn mogelijk niet beschikbaar in de doelwerkruimte",
   "transfer.confirm.title": "Agent Overdragen",
   "transfer.confirm.warning": "Sommige functies worden niet overgedragen:",
+  "transfer.copyTo": "Kopiëren naar",
   "transfer.desc": "Draag deze agent over naar een andere werkruimte of uw persoonlijke account.",
   "transfer.error": "Overdracht van agent mislukt",
   "transfer.personalAccount": "Persoonlijk Account",
   "transfer.searchWorkspace": "Werkruimtes zoeken...",
   "transfer.selectTarget": "Agent Overdragen Naar",
   "transfer.success": "Agent succesvol overgedragen",
-  "transfer.title": "Overdragen"
+  "transfer.title": "Overdragen",
+  "transfer.transferTo": "Overdragen naar"
 }

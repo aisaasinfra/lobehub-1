@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "Персонализираните плъгини може да не са налични в целевото работно пространство",
   "transfer.confirm.title": "Прехвърляне на агент",
   "transfer.confirm.warning": "Някои функции не се прехвърлят:",
+  "transfer.copyTo": "Копирай в",
   "transfer.desc": "Прехвърлете този агент в друго работно пространство или във вашия личен акаунт.",
   "transfer.error": "Неуспешно прехвърляне на агент",
   "transfer.personalAccount": "Личен акаунт",
   "transfer.searchWorkspace": "Търсене на работни пространства...",
   "transfer.selectTarget": "Прехвърляне на агент към",
   "transfer.success": "Агентът беше успешно прехвърлен",
-  "transfer.title": "Прехвърляне"
+  "transfer.title": "Прехвърляне",
+  "transfer.transferTo": "Прехвърли в"
 }

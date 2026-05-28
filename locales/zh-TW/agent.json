@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "自定義插件可能無法在目標工作區使用",
   "transfer.confirm.title": "轉移代理",
   "transfer.confirm.warning": "部分功能無法轉移：",
+  "transfer.copyTo": "複製到",
   "transfer.desc": "將此代理轉移到另一個工作區或您的個人帳戶。",
   "transfer.error": "代理轉移失敗",
   "transfer.personalAccount": "個人帳戶",
   "transfer.searchWorkspace": "搜索工作區...",
   "transfer.selectTarget": "轉移代理到",
   "transfer.success": "代理轉移成功",
-  "transfer.title": "轉移"
+  "transfer.title": "轉移",
+  "transfer.transferTo": "轉移到"
 }

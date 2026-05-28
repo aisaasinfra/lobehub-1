@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "Benutzerdefinierte Plugins sind möglicherweise im Zielarbeitsbereich nicht verfügbar",
   "transfer.confirm.title": "Agent übertragen",
   "transfer.confirm.warning": "Einige Funktionen werden nicht übertragen:",
+  "transfer.copyTo": "Kopieren nach",
   "transfer.desc": "Übertragen Sie diesen Agenten in einen anderen Arbeitsbereich oder Ihr persönliches Konto.",
   "transfer.error": "Agent konnte nicht übertragen werden",
   "transfer.personalAccount": "Persönliches Konto",
   "transfer.searchWorkspace": "Arbeitsbereiche durchsuchen...",
   "transfer.selectTarget": "Agent übertragen nach",
   "transfer.success": "Agent erfolgreich übertragen",
-  "transfer.title": "Übertragen"
+  "transfer.title": "Übertragen",
+  "transfer.transferTo": "Übertragen nach"
 }

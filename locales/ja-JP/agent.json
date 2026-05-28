@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "カスタムプラグインはターゲットワークスペースで利用できない場合があります",
   "transfer.confirm.title": "エージェントの転送",
   "transfer.confirm.warning": "一部の機能は転送されません:",
+  "transfer.copyTo": "コピー先",
   "transfer.desc": "このエージェントを別のワークスペースまたは個人アカウントに転送します。",
   "transfer.error": "エージェントの転送に失敗しました",
   "transfer.personalAccount": "個人アカウント",
   "transfer.searchWorkspace": "ワークスペースを検索...",
   "transfer.selectTarget": "エージェントの転送先",
   "transfer.success": "エージェントが正常に転送されました",
-  "transfer.title": "転送"
+  "transfer.title": "転送",
+  "transfer.transferTo": "転送先"
 }

@@ -217,11 +217,13 @@
   "transfer.confirm.plugins": "Пользовательские плагины могут быть недоступны в целевом рабочем пространстве",
   "transfer.confirm.title": "Перенос агента",
   "transfer.confirm.warning": "Некоторые функции не переносятся:",
+  "transfer.copyTo": "Копировать в",
   "transfer.desc": "Перенесите этого агента в другое рабочее пространство или на ваш личный аккаунт.",
   "transfer.error": "Не удалось перенести агента",
   "transfer.personalAccount": "Личный аккаунт",
   "transfer.searchWorkspace": "Поиск рабочих пространств...",
   "transfer.selectTarget": "Перенести агента в",
   "transfer.success": "Агент успешно перенесен",
-  "transfer.title": "Перенос"
+  "transfer.title": "Перенос",
+  "transfer.transferTo": "Переместить в"
 }

@@ -149,41 +149,41 @@ const Header = memo(() => {
   }, [activeAgentId, canEdit, modal, navigate, removeAgent, t]);
 
   const importMenuItem = useBusinessAgentImportMenuItem(activeAgentId ?? undefined);
-  const transferMenuItem = useAgentTransferMenuItem(activeAgentId ?? undefined);
+  const transferMenuItems = useAgentTransferMenuItem(activeAgentId ?? undefined);
 
-  const menuItems = useMemo(
-    () =>
-      [
-        {
-          icon: <Icon icon={Settings2Icon} />,
-          key: 'advanced-settings',
-          label: t('advancedSettings', { ns: 'setting' }),
-          onClick: () => useAgentStore.setState({ showAgentSetting: true }),
-        },
-        { type: 'divider' as const },
-        {
-          disabled: !canEdit,
-          icon: <Icon icon={ShapesUploadIcon} />,
-          key: 'publish',
-          label: t('publishToCommunity', { ns: 'setting' }),
-          onClick: handlePublishClick,
-        },
-        importMenuItem ? { type: 'divider' as const } : null,
-        importMenuItem,
-        transferMenuItem ? { type: 'divider' as const } : null,
-        transferMenuItem,
-        { type: 'divider' as const },
-        {
-          danger: true,
-          disabled: !canEdit,
-          icon: <Icon icon={Trash} />,
-          key: 'delete',
-          label: t('delete', { ns: 'common' }),
-          onClick: handleDelete,
-        },
-      ].filter(Boolean),
-    [canEdit, handlePublishClick, handleDelete, t, importMenuItem, transferMenuItem],
-  );
+  const menuItems = useMemo(() => {
+    const businessTransferMenuItems = transferMenuItems ?? [];
+
+    return [
+      {
+        icon: <Icon icon={Settings2Icon} />,
+        key: 'advanced-settings',
+        label: t('advancedSettings', { ns: 'setting' }),
+        onClick: () => useAgentStore.setState({ showAgentSetting: true }),
+      },
+      { type: 'divider' as const },
+      {
+        disabled: !canEdit,
+        icon: <Icon icon={ShapesUploadIcon} />,
+        key: 'publish',
+        label: t('publishToCommunity', { ns: 'setting' }),
+        onClick: handlePublishClick,
+      },
+      importMenuItem ? { type: 'divider' as const } : null,
+      importMenuItem,
+      businessTransferMenuItems.length > 0 ? { type: 'divider' as const } : null,
+      ...businessTransferMenuItems,
+      { type: 'divider' as const },
+      {
+        danger: true,
+        disabled: !canEdit,
+        icon: <Icon icon={Trash} />,
+        key: 'delete',
+        label: t('delete', { ns: 'common' }),
+        onClick: handleDelete,
+      },
+    ].filter(Boolean);
+  }, [canEdit, handlePublishClick, handleDelete, t, importMenuItem, transferMenuItems]);
 
   return (
     <>

@@ -45,9 +45,15 @@ vi.mock('@/routes/(main)/settings/_layout/SidebarContent', () => ({
   default: () => <div>Personal settings sidebar</div>,
 }));
 
+vi.mock('@/routes/(main)/agent/_layout/Sidebar/Content', () => ({
+  default: () => <div>Agent sidebar</div>,
+}));
+
 vi.mock('./components/NavPanelDraggable', () => ({
   NavPanelDraggable: ({ activeContent }: NavPanelDraggableMockProps) => (
-    <div data-nav-key={activeContent.key}>{activeContent.node}</div>
+    <div data-nav-key={activeContent.key} data-testid="nav-panel">
+      {activeContent.node}
+    </div>
   ),
 }));
 
@@ -90,6 +96,26 @@ describe('NavPanel', () => {
     await waitFor(() => {
       expect(screen.getByText('Personal settings sidebar')).toBeInTheDocument();
     });
+    expect(screen.queryByText('Stale home snapshot')).not.toBeInTheDocument();
+  });
+
+  it('uses agent sidebar instead of a stale home snapshot on workspace agent routes', async () => {
+    pathname = '/lobe-team/agent/agent-1';
+    const { default: NavPanel, NavPanelPortal } = await import('./index');
+
+    render(
+      <>
+        <NavPanelPortal navKey="home">
+          <div>Stale home snapshot</div>
+        </NavPanelPortal>
+        <NavPanel />
+      </>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('nav-panel')).toHaveAttribute('data-nav-key', 'agent');
+    });
+    expect(screen.getByText('Agent sidebar')).toBeInTheDocument();
     expect(screen.queryByText('Stale home snapshot')).not.toBeInTheDocument();
   });
 });
