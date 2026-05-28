@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { knowledgeBaseRouter } from '@/server/routers/lambda/knowledgeBase';
+import { TransferErrorCode } from '@/types/transferError';
 
 const routerMocks = vi.hoisted(() => ({
   businessFileTransferStorageCheck: vi.fn(),
@@ -8,6 +9,7 @@ const routerMocks = vi.hoisted(() => ({
 
 const mockKnowledgeBaseModelCountFileUsage = vi.fn();
 const mockKnowledgeBaseModelCopyToWorkspace = vi.fn();
+const mockKnowledgeBaseModelFindById = vi.fn();
 const mockKnowledgeBaseModelTransferTo = vi.fn();
 
 vi.mock('@/business/server/lambda-routers/file', () => ({
@@ -18,6 +20,7 @@ vi.mock('@/database/models/knowledgeBase', () => ({
   KnowledgeBaseModel: vi.fn(() => ({
     copyToWorkspace: mockKnowledgeBaseModelCopyToWorkspace,
     countFileUsage: mockKnowledgeBaseModelCountFileUsage,
+    findById: mockKnowledgeBaseModelFindById,
     transferTo: mockKnowledgeBaseModelTransferTo,
   })),
 }));
@@ -36,6 +39,7 @@ describe('knowledgeBaseRouter', () => {
     routerMocks.businessFileTransferStorageCheck.mockResolvedValue(undefined);
     mockKnowledgeBaseModelCopyToWorkspace.mockResolvedValue({ id: 'kb-copy' });
     mockKnowledgeBaseModelCountFileUsage.mockResolvedValue(4096);
+    mockKnowledgeBaseModelFindById.mockResolvedValue({ id: 'kb-1' });
     mockKnowledgeBaseModelTransferTo.mockResolvedValue({ id: 'kb-1' });
   });
 
@@ -53,6 +57,23 @@ describe('knowledgeBaseRouter', () => {
         targetWorkspaceId: null,
       });
       expect(mockKnowledgeBaseModelTransferTo).toHaveBeenCalledWith('kb-1', null, 'test-user');
+    });
+
+    it('returns a stable error code when the library no longer exists', async () => {
+      mockKnowledgeBaseModelFindById.mockResolvedValue(undefined);
+
+      await expect(
+        caller.transferKnowledgeBase({
+          id: 'missing-kb',
+          targetWorkspaceId: null,
+        }),
+      ).rejects.toMatchObject({
+        cause: {
+          data: {
+            code: TransferErrorCode.ResourceNotFound,
+          },
+        },
+      });
     });
   });
 

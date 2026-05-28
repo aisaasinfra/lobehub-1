@@ -12,6 +12,7 @@ import { router } from '@/libs/trpc/lambda';
 import { serverDatabase } from '@/libs/trpc/lambda/middleware';
 import { FileService } from '@/server/services/file';
 import { type KnowledgeBaseItem } from '@/types/knowledgeBase';
+import { TransferErrorCode } from '@/types/transferError';
 
 const knowledgeBaseProcedure = wsCompatProcedure.use(serverDatabase).use(async (opts) => {
   const { ctx } = opts;
@@ -75,6 +76,15 @@ export const knowledgeBaseRouter = router({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      const knowledgeBase = await ctx.knowledgeBaseModel.findById(input.id);
+      if (!knowledgeBase) {
+        throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.ResourceNotFound } },
+          code: 'NOT_FOUND',
+          message: 'Knowledge base not found',
+        });
+      }
+
       if (input.targetWorkspaceId) {
         const [targetMembership] = await ctx.serverDB
           .select({ role: workspaceMembers.role })
@@ -89,6 +99,7 @@ export const knowledgeBaseRouter = router({
           .limit(1);
         if (!targetMembership || targetMembership.role === 'viewer') {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.TargetNoWriteAccess } },
             code: 'FORBIDDEN',
             message: 'No write access to target workspace',
           });
@@ -167,8 +178,18 @@ export const knowledgeBaseRouter = router({
     .mutation(async ({ input, ctx }) => {
       if (input.targetWorkspaceId === (ctx.workspaceId ?? null)) {
         throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.SameWorkspace } },
           code: 'BAD_REQUEST',
           message: 'Cannot transfer to the same workspace',
+        });
+      }
+
+      const knowledgeBase = await ctx.knowledgeBaseModel.findById(input.id);
+      if (!knowledgeBase) {
+        throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.ResourceNotFound } },
+          code: 'NOT_FOUND',
+          message: 'Knowledge base not found',
         });
       }
 
@@ -186,6 +207,7 @@ export const knowledgeBaseRouter = router({
           .limit(1);
         if (!targetMembership || targetMembership.role === 'viewer') {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.TargetNoWriteAccess } },
             code: 'FORBIDDEN',
             message: 'No write access to target workspace',
           });

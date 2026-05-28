@@ -24,6 +24,7 @@ import { FileService } from '@/server/services/file';
 import { AsyncTaskStatus, AsyncTaskType, type IAsyncTaskError } from '@/types/asyncTask';
 import type { FileListItem, KnowledgeItemStatus } from '@/types/files';
 import { QueryFileListSchema, UploadFileSchema } from '@/types/files';
+import { TransferErrorCode } from '@/types/transferError';
 
 /**
  * Generate file proxy URL
@@ -639,6 +640,7 @@ export const fileRouter = router({
     .mutation(async ({ ctx, input }) => {
       if (input.targetWorkspaceId === (ctx.workspaceId ?? null)) {
         throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.SameWorkspace } },
           code: 'BAD_REQUEST',
           message: 'Cannot transfer to the same workspace',
         });
@@ -658,6 +660,7 @@ export const fileRouter = router({
           .limit(1);
         if (!targetMembership || targetMembership.role === 'viewer') {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.TargetNoWriteAccess } },
             code: 'FORBIDDEN',
             message: 'No write access to target workspace',
           });
@@ -668,6 +671,7 @@ export const fileRouter = router({
         const document = await ctx.documentModel.findById(input.id);
         if (!document) {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.ResourceNotFound } },
             code: 'NOT_FOUND',
             message: input.entityType === 'folder' ? 'Folder not found' : 'Document not found',
           });
@@ -682,7 +686,12 @@ export const fileRouter = router({
       }
 
       const file = await ctx.fileModel.findById(input.id);
-      if (!file) throw new TRPCError({ code: 'NOT_FOUND', message: 'File not found' });
+      if (!file)
+        throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.ResourceNotFound } },
+          code: 'NOT_FOUND',
+          message: 'File not found',
+        });
       await businessFileTransferStorageCheck({
         additionalSize: file.size,
         targetUserId: ctx.userId,
@@ -715,6 +724,7 @@ export const fileRouter = router({
           .limit(1);
         if (!targetMembership || targetMembership.role === 'viewer') {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.TargetNoWriteAccess } },
             code: 'FORBIDDEN',
             message: 'No write access to target workspace',
           });
@@ -725,6 +735,7 @@ export const fileRouter = router({
         const document = await ctx.documentModel.findById(input.id);
         if (!document) {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.ResourceNotFound } },
             code: 'NOT_FOUND',
             message: input.entityType === 'folder' ? 'Folder not found' : 'Document not found',
           });
@@ -739,7 +750,12 @@ export const fileRouter = router({
       }
 
       const file = await ctx.fileModel.findById(input.id);
-      if (!file) throw new TRPCError({ code: 'NOT_FOUND', message: 'File not found' });
+      if (!file)
+        throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.ResourceNotFound } },
+          code: 'NOT_FOUND',
+          message: 'File not found',
+        });
       await businessFileTransferStorageCheck({
         additionalSize: file.size,
         targetUserId: ctx.userId,

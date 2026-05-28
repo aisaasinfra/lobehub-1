@@ -17,6 +17,7 @@ import { workspaceMembers } from '@/database/schemas';
 import { router } from '@/libs/trpc/lambda';
 import { serverDatabase } from '@/libs/trpc/lambda/middleware';
 import { AgentService } from '@/server/services/agent';
+import { TransferErrorCode } from '@/types/transferError';
 
 const agentProcedure = wsCompatProcedure.use(serverDatabase).use(async (opts) => {
   const { ctx } = opts;
@@ -350,7 +351,11 @@ export const agentRouter = router({
       // 1. Fetch the agent to check ownership
       const agent = await ctx.agentModel.getAgentConfigById(input.agentId);
       if (!agent) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Agent not found' });
+        throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.ResourceNotFound } },
+          code: 'NOT_FOUND',
+          message: 'Agent not found',
+        });
       }
 
       // 2. In workspace mode, members can only transfer agents they created;
@@ -370,6 +375,7 @@ export const agentRouter = router({
 
         if (!membership || membership.role !== 'owner') {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.OwnerOnly } },
             code: 'FORBIDDEN',
             message: 'Only workspace owners can transfer agents created by others',
           });
@@ -392,6 +398,7 @@ export const agentRouter = router({
 
         if (!targetMembership || targetMembership.role === 'viewer') {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.TargetNoWriteAccess } },
             code: 'FORBIDDEN',
             message: 'No write access to target workspace',
           });
@@ -401,6 +408,7 @@ export const agentRouter = router({
       // 4. Cannot transfer to the same workspace
       if (input.targetWorkspaceId === ctx.workspaceId) {
         throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.SameWorkspace } },
           code: 'BAD_REQUEST',
           message: 'Cannot transfer agent to the same workspace',
         });

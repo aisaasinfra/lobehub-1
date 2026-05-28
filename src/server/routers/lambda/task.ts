@@ -17,6 +17,7 @@ import { serverDatabase } from '@/libs/trpc/lambda/middleware';
 import { TaskService } from '@/server/services/task';
 import { TaskLifecycleService } from '@/server/services/taskLifecycle';
 import { TaskRunnerService } from '@/server/services/taskRunner';
+import { TransferErrorCode } from '@/types/transferError';
 
 const taskProcedure = wsCompatProcedure.use(serverDatabase).use(async (opts) => {
   const { ctx } = opts;
@@ -1027,7 +1028,12 @@ export const taskRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const task = await ctx.taskModel.resolve(input.taskId);
-      if (!task) throw new TRPCError({ code: 'NOT_FOUND', message: 'Task not found' });
+      if (!task)
+        throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.ResourceNotFound } },
+          code: 'NOT_FOUND',
+          message: 'Task not found',
+        });
 
       if (ctx.workspaceId && task.createdByUserId !== ctx.userId) {
         const [membership] = await ctx.serverDB
@@ -1043,6 +1049,7 @@ export const taskRouter = router({
           .limit(1);
         if (!membership || membership.role !== 'owner') {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.OwnerOnly } },
             code: 'FORBIDDEN',
             message: 'Only workspace owners can transfer tasks created by others',
           });
@@ -1051,6 +1058,7 @@ export const taskRouter = router({
 
       if (input.targetWorkspaceId === (ctx.workspaceId ?? null)) {
         throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.SameWorkspace } },
           code: 'BAD_REQUEST',
           message: 'Cannot transfer task to the same workspace',
         });
@@ -1070,6 +1078,7 @@ export const taskRouter = router({
           .limit(1);
         if (!targetMembership || targetMembership.role === 'viewer') {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.TargetNoWriteAccess } },
             code: 'FORBIDDEN',
             message: 'No write access to target workspace',
           });
@@ -1088,7 +1097,12 @@ export const taskRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const task = await ctx.taskModel.resolve(input.taskId);
-      if (!task) throw new TRPCError({ code: 'NOT_FOUND', message: 'Task not found' });
+      if (!task)
+        throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.ResourceNotFound } },
+          code: 'NOT_FOUND',
+          message: 'Task not found',
+        });
 
       if (input.targetWorkspaceId) {
         const [targetMembership] = await ctx.serverDB
@@ -1104,6 +1118,7 @@ export const taskRouter = router({
           .limit(1);
         if (!targetMembership || targetMembership.role === 'viewer') {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.TargetNoWriteAccess } },
             code: 'FORBIDDEN',
             message: 'No write access to target workspace',
           });

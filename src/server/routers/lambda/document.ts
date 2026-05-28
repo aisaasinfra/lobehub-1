@@ -14,6 +14,7 @@ import { workspaceMembers } from '@/database/schemas';
 import { router } from '@/libs/trpc/lambda';
 import { serverDatabase } from '@/libs/trpc/lambda/middleware';
 import { DocumentService } from '@/server/services/document';
+import { TransferErrorCode } from '@/types/transferError';
 
 import {
   compareDocumentHistoryItemsInputSchema,
@@ -277,7 +278,12 @@ export const documentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const doc = await ctx.documentModel.findById(input.documentId);
-      if (!doc) throw new TRPCError({ code: 'NOT_FOUND', message: 'Document not found' });
+      if (!doc)
+        throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.ResourceNotFound } },
+          code: 'NOT_FOUND',
+          message: 'Document not found',
+        });
 
       // Workspace mode: only owners can transfer items created by others
       if (ctx.workspaceId && doc.userId !== ctx.userId) {
@@ -294,6 +300,7 @@ export const documentRouter = router({
           .limit(1);
         if (!membership || membership.role !== 'owner') {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.OwnerOnly } },
             code: 'FORBIDDEN',
             message: 'Only workspace owners can transfer items created by others',
           });
@@ -302,6 +309,7 @@ export const documentRouter = router({
 
       if (input.targetWorkspaceId === (ctx.workspaceId ?? null)) {
         throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.SameWorkspace } },
           code: 'BAD_REQUEST',
           message: 'Cannot transfer document to the same workspace',
         });
@@ -321,6 +329,7 @@ export const documentRouter = router({
           .limit(1);
         if (!targetMembership || targetMembership.role === 'viewer') {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.TargetNoWriteAccess } },
             code: 'FORBIDDEN',
             message: 'No write access to target workspace',
           });
@@ -347,7 +356,12 @@ export const documentRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const doc = await ctx.documentModel.findById(input.documentId);
-      if (!doc) throw new TRPCError({ code: 'NOT_FOUND', message: 'Document not found' });
+      if (!doc)
+        throw new TRPCError({
+          cause: { data: { code: TransferErrorCode.ResourceNotFound } },
+          code: 'NOT_FOUND',
+          message: 'Document not found',
+        });
 
       if (input.targetWorkspaceId) {
         const [targetMembership] = await ctx.serverDB
@@ -363,11 +377,19 @@ export const documentRouter = router({
           .limit(1);
         if (!targetMembership || targetMembership.role === 'viewer') {
           throw new TRPCError({
+            cause: { data: { code: TransferErrorCode.TargetNoWriteAccess } },
             code: 'FORBIDDEN',
             message: 'No write access to target workspace',
           });
         }
       }
+
+      const additionalSize = await ctx.documentModel.countFileUsageInSubtree(input.documentId);
+      await businessFileTransferStorageCheck({
+        additionalSize,
+        targetUserId: ctx.userId,
+        targetWorkspaceId: input.targetWorkspaceId,
+      });
 
       return ctx.documentModel.copyToWorkspace(
         input.documentId,
