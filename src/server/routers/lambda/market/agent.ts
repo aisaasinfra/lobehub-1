@@ -119,6 +119,13 @@ const buildMarketAuthHeaders = (ctx: {
 };
 
 interface ForkAgentItemInput {
+  /**
+   * When present, fork is attributed to the given Market organization account.
+   * Forwarded as `X-Lobe-Owner-Account-Id` so the Market resolves writes to the
+   * organization instead of the calling user. The actor must be a member of the
+   * target org (enforced server-side by `resolveActingAccount`).
+   */
+  actAs?: number;
   identifier: string;
   name?: string;
   sourceIdentifier: string;
@@ -129,10 +136,15 @@ interface ForkAgentItemInput {
 
 const forkOneAgent = async (
   item: ForkAgentItemInput,
-  headers: Record<string, string>,
+  baseHeaders: Record<string, string>,
 ): Promise<AgentForkBatchResult> => {
   try {
     const forkUrl = `${MARKET_BASE_URL}/api/v1/agents/${item.sourceIdentifier}/fork`;
+    // Clone so per-item actAs doesn't leak across the batch.
+    const headers = { ...baseHeaders };
+    if (item.actAs !== undefined) {
+      headers['x-lobe-owner-account-id'] = String(item.actAs);
+    }
     const response = await fetch(forkUrl, {
       body: JSON.stringify({
         identifier: item.identifier,
@@ -181,6 +193,13 @@ const forkOneAgent = async (
 };
 
 const forkAgentItemSchema = z.object({
+  /**
+   * Optional Market organization account id to attribute the fork to. Triggers
+   * `X-Lobe-Owner-Account-Id` on the fork request. Caller is responsible for
+   * resolving the workspace → marketAccountId mapping
+   * (`WorkspaceMarketIdentityService.ensureOrganization`).
+   */
+  actAs: z.number().int().positive().optional(),
   identifier: z.string(),
   name: z.string().optional(),
   sourceIdentifier: z.string(),

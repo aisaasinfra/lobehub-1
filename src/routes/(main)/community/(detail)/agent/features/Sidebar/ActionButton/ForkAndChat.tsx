@@ -11,11 +11,13 @@ import { SESSION_CHAT_URL } from '@/const/url';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { usePermission } from '@/hooks/usePermission';
 import { useMarketAuth } from '@/layout/AuthProvider/MarketAuth';
+import { lambdaClient } from '@/libs/trpc/client';
 import { agentService } from '@/services/agent';
 import { discoverService } from '@/services/discover';
 import { marketApiService } from '@/services/marketApi';
 import { useAgentStore } from '@/store/agent';
 import { useHomeStore } from '@/store/home';
+import { useWorkspaceStore, workspaceSelectors } from '@/store/workspace';
 
 import { useDetailContext } from '../../DetailProvider';
 
@@ -45,6 +47,9 @@ const ForkAndChat = memo<{ mobile?: boolean }>(({ mobile }) => {
   const { t } = useTranslation('discover');
   const { isAuthenticated, signIn } = useMarketAuth();
   const { allowed: canCreate } = usePermission('create_content');
+  const activeWorkspaceId = useWorkspaceStore(
+    (s) => workspaceSelectors.activeWorkspaceId(s) ?? null,
+  );
 
   const meta = {
     avatar,
@@ -82,9 +87,27 @@ const ForkAndChat = memo<{ mobile?: boolean }>(({ mobile }) => {
       // Generate a unique identifier for the forked agent
       const newIdentifier = generateMarketIdentifier();
 
+      // When forking inside a workspace, attribute the fork to the workspace's
+      // Market organization mirror so `agents.ownerId` ends up on the org
+      // account rather than the actor. Provisioning is idempotent.
+      let actAs: number | undefined;
+      if (activeWorkspaceId) {
+        try {
+          const { marketAccountId } =
+            await lambdaClient.workspace.ensureMarketOrganization.mutate();
+          actAs = marketAccountId;
+        } catch (error) {
+          console.warn(
+            'Failed to provision Market organization for workspace; falling back to personal fork:',
+            error,
+          );
+        }
+      }
+
       // Step 2: Fork the agent via Market API (single-item batch)
       const [forkOutcome] = await marketApiService.forkAgent([
         {
+          actAs,
           identifier: newIdentifier,
           name: title,
           sourceIdentifier: identifier!,

@@ -24,6 +24,14 @@ export interface AgentForkRequest {
  * but is carried in the body for batch payloads).
  */
 export interface AgentForkBatchInput extends AgentForkRequest {
+  /**
+   * Optional Market organization account id to attribute the fork to. When
+   * present, the cloud forwards `X-Lobe-Owner-Account-Id` so the resulting
+   * `agents.ownerId` points at the organization rather than the calling user.
+   * Callers in a workspace context should resolve this via
+   * `WorkspaceMarketIdentityService.ensureOrganization`.
+   */
+  actAs?: number;
   /** Source agent identifier to fork from */
   sourceIdentifier: string;
 }

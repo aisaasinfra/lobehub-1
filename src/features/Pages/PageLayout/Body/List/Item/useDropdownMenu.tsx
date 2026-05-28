@@ -5,6 +5,7 @@ import { CopyPlus, PanelTop, Pencil, Trash2 } from 'lucide-react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useDocumentTransferMenuItem } from '@/business/client/hooks/useDocumentTransferMenuItem';
 import { isDesktop } from '@/const/version';
 import { pluginRegistry } from '@/features/Electron/titlebar/RecentlyViewed/plugins';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
@@ -29,6 +30,7 @@ export const useDropdownMenu = ({
   const addTab = useElectronStore((s) => s.addTab);
   const removePage = usePageStore((s) => s.removePage);
   const duplicatePage = usePageStore((s) => s.duplicatePage);
+  const transferMenuItems = useDocumentTransferMenuItem(pageId);
 
   const handleDelete = () => {
     if (!canEditPage) return;
@@ -99,6 +101,7 @@ export const useDropdownMenu = ({
           label: t('pageList.duplicate', { ns: 'file' }),
           onClick: handleDuplicate,
         },
+        ...(transferMenuItems ?? []),
         { type: 'divider' },
         {
           danger: true,
@@ -119,6 +122,7 @@ export const useDropdownMenu = ({
       pageId,
       addTab,
       navigate,
+      transferMenuItems,
     ],
   );
 };

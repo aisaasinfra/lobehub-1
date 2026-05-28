@@ -1,3 +1,5 @@
+import { TRPCError } from '@trpc/server';
+import { and, eq, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { withScopedPermission } from '@/business/server/trpc-middlewares/rbacPermission';
@@ -7,6 +9,7 @@ import { ChunkModel } from '@/database/models/chunk';
 import { DocumentModel } from '@/database/models/document';
 import { FileModel } from '@/database/models/file';
 import { MessageModel } from '@/database/models/message';
+import { workspaceMembers } from '@/database/schemas';
 import { router } from '@/libs/trpc/lambda';
 import { serverDatabase } from '@/libs/trpc/lambda/middleware';
 import { DocumentService } from '@/server/services/document';
@@ -261,5 +264,107 @@ export const documentRouter = router({
       });
 
       return result;
+    }),
+
+  transferDocument: documentProcedure
+    .use(withScopedPermission('document:update'))
+    .input(
+      z.object({
+        documentId: z.string(),
+        targetWorkspaceId: z.string().nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const doc = await ctx.documentModel.findById(input.documentId);
+      if (!doc) throw new TRPCError({ code: 'NOT_FOUND', message: 'Document not found' });
+
+      // Workspace mode: only owners can transfer items created by others
+      if (ctx.workspaceId && doc.userId !== ctx.userId) {
+        const [membership] = await ctx.serverDB
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, ctx.workspaceId),
+              eq(workspaceMembers.userId, ctx.userId),
+              isNull(workspaceMembers.deletedAt),
+            ),
+          )
+          .limit(1);
+        if (!membership || membership.role !== 'owner') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Only workspace owners can transfer items created by others',
+          });
+        }
+      }
+
+      if (input.targetWorkspaceId === (ctx.workspaceId ?? null)) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Cannot transfer document to the same workspace',
+        });
+      }
+
+      if (input.targetWorkspaceId) {
+        const [targetMembership] = await ctx.serverDB
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, input.targetWorkspaceId),
+              eq(workspaceMembers.userId, ctx.userId),
+              isNull(workspaceMembers.deletedAt),
+            ),
+          )
+          .limit(1);
+        if (!targetMembership || targetMembership.role === 'viewer') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'No write access to target workspace',
+          });
+        }
+      }
+
+      return ctx.documentModel.transferTo(input.documentId, input.targetWorkspaceId, ctx.userId);
+    }),
+
+  copyDocumentToWorkspace: documentProcedure
+    .use(withScopedPermission('document:create'))
+    .input(
+      z.object({
+        documentId: z.string(),
+        targetWorkspaceId: z.string().nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const doc = await ctx.documentModel.findById(input.documentId);
+      if (!doc) throw new TRPCError({ code: 'NOT_FOUND', message: 'Document not found' });
+
+      if (input.targetWorkspaceId) {
+        const [targetMembership] = await ctx.serverDB
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, input.targetWorkspaceId),
+              eq(workspaceMembers.userId, ctx.userId),
+              isNull(workspaceMembers.deletedAt),
+            ),
+          )
+          .limit(1);
+        if (!targetMembership || targetMembership.role === 'viewer') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'No write access to target workspace',
+          });
+        }
+      }
+
+      return ctx.documentModel.copyToWorkspace(
+        input.documentId,
+        input.targetWorkspaceId,
+        ctx.userId,
+      );
     }),
 });
