@@ -1031,6 +1031,21 @@ describe('KnowledgeBaseModel', () => {
       expect(transferredDocument?.workspaceId).toBe('workspace-target');
       expect(transferredLink?.workspaceId).toBe('workspace-target');
     });
+
+    it('should rename the transferred knowledge base when the target has the same name', async () => {
+      await createWorkspace('workspace-rename-target', 'workspace-rename-target');
+      const targetModel = new KnowledgeBaseModel(serverDB, userId, 'workspace-rename-target');
+      await targetModel.create({ name: 'Shared KB' });
+      const { id: knowledgeBaseId } = await knowledgeBaseModel.create({ name: 'Shared KB' });
+
+      await knowledgeBaseModel.transferTo(knowledgeBaseId, 'workspace-rename-target', userId);
+
+      const transferredKb = await serverDB.query.knowledgeBases.findFirst({
+        where: eq(knowledgeBases.id, knowledgeBaseId),
+      });
+
+      expect(transferredKb?.name).toBe('Shared KB (1)');
+    });
   });
 
   describe('copyToWorkspace', () => {
@@ -1120,6 +1135,25 @@ describe('KnowledgeBaseModel', () => {
         copiedDocs.find((doc) => doc.title === 'Folder')?.id,
       );
       expect(originalKb?.workspaceId).toBeNull();
+    });
+
+    it('should rename the copied knowledge base when the target has the same name', async () => {
+      await createWorkspace('workspace-copy-rename-target', 'workspace-copy-rename-target');
+      const targetModel = new KnowledgeBaseModel(serverDB, userId, 'workspace-copy-rename-target');
+      await targetModel.create({ name: 'Shared KB' });
+      const { id: knowledgeBaseId } = await knowledgeBaseModel.create({ name: 'Shared KB' });
+
+      const result = await knowledgeBaseModel.copyToWorkspace(
+        knowledgeBaseId,
+        'workspace-copy-rename-target',
+        userId,
+      );
+
+      const copiedKb = await serverDB.query.knowledgeBases.findFirst({
+        where: eq(knowledgeBases.id, result.id),
+      });
+
+      expect(copiedKb?.name).toBe('Shared KB (1)');
     });
   });
 

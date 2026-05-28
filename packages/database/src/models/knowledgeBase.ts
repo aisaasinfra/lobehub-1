@@ -180,6 +180,40 @@ export class KnowledgeBaseModel {
       .set({ ...value, updatedAt: new Date() })
       .where(and(eq(knowledgeBases.id, id), this.ownership()));
 
+  private resolveAvailableName = async (
+    db: LobeChatDatabase,
+    name: string,
+    targetWorkspaceId: string | null,
+    targetUserId: string,
+    excludeId?: string,
+  ): Promise<string> => {
+    const existingKnowledgeBases = await db
+      .select({ id: knowledgeBases.id, name: knowledgeBases.name })
+      .from(knowledgeBases)
+      .where(
+        buildWorkspaceWhere(
+          { userId: targetUserId, workspaceId: targetWorkspaceId ?? undefined },
+          knowledgeBases,
+        ),
+      );
+    const existingNames = new Set(
+      existingKnowledgeBases
+        .filter((knowledgeBase) => knowledgeBase.id !== excludeId)
+        .map((knowledgeBase) => knowledgeBase.name),
+    );
+
+    if (!existingNames.has(name)) return name;
+
+    let index = 1;
+    let candidate = `${name} (${index})`;
+    while (existingNames.has(candidate)) {
+      index += 1;
+      candidate = `${name} (${index})`;
+    }
+
+    return candidate;
+  };
+
   transferTo = async (
     id: string,
     targetWorkspaceId: string | null,
@@ -200,10 +234,17 @@ export class KnowledgeBaseModel {
       const fileIds = fileLinks.map((item) => item.fileId);
       const now = new Date();
       const ownershipUpdate = { userId: targetUserId, workspaceId: targetWorkspaceId };
+      const targetName = await this.resolveAvailableName(
+        trx as LobeChatDatabase,
+        knowledgeBase.name,
+        targetWorkspaceId,
+        targetUserId,
+        id,
+      );
 
       await trx
         .update(knowledgeBases)
-        .set({ ...ownershipUpdate, updatedAt: now })
+        .set({ ...ownershipUpdate, name: targetName, updatedAt: now })
         .where(eq(knowledgeBases.id, id));
 
       await trx
@@ -244,6 +285,12 @@ export class KnowledgeBaseModel {
         .where(and(eq(knowledgeBases.id, id), this.ownership()))
         .limit(1);
       if (!knowledgeBase) throw new Error('Knowledge base not found');
+      const targetName = await this.resolveAvailableName(
+        trx as LobeChatDatabase,
+        knowledgeBase.name,
+        targetWorkspaceId,
+        targetUserId,
+      );
 
       const [copiedKnowledgeBase] = await trx
         .insert(knowledgeBases)
@@ -251,7 +298,7 @@ export class KnowledgeBaseModel {
           avatar: knowledgeBase.avatar,
           description: knowledgeBase.description,
           isPublic: knowledgeBase.isPublic,
-          name: knowledgeBase.name,
+          name: targetName,
           settings: knowledgeBase.settings,
           type: knowledgeBase.type,
           userId: targetUserId,
