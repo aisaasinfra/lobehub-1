@@ -984,7 +984,10 @@ When I am ___, I need ___
   'storageOverage.consent.rate':
     '{{dailyRate}}/GB/day. Limited time: {{limitedMonthlyRate}}/GB/month (regular {{regularMonthlyRate}}).',
   'storageOverage.consent.title': 'Enable Storage Pay-as-you-go',
-  'storageOverage.desc': 'Enable metered billing for storage exceeding your plan quota.',
+  'storageOverage.currentPlanLocked.desc':
+    'Your current plan does not support storage pay-as-you-go. After it ends, subscribe to a plan to enable it.',
+  'storageOverage.desc':
+    'Subscription plans can enable metered billing for storage beyond the included quota.',
   'storageOverage.disableFailed': 'Failed to disable storage pay-as-you-go.',
   'storageOverage.disabled': 'Storage pay-as-you-go disabled.',
   'storageOverage.enableFailed': 'Failed to enable storage pay-as-you-go.',
@@ -995,6 +998,9 @@ When I am ___, I need ___
   'storageOverage.noPaymentMethod': 'Please add a payment method to enable storage pay-as-you-go.',
   'storageOverage.rate':
     '{{dailyRate}}/GB/day. Limited time: {{limitedMonthlyRate}}/GB/month (regular {{regularMonthlyRate}}).',
+  'storageOverage.subscriptionRequired.action': 'View plans',
+  'storageOverage.subscriptionRequired.desc':
+    'Subscribe to a plan to enable storage pay-as-you-go for overage usage.',
   'storageOverage.title': 'Storage Pay-as-you-go',
   'storageOverage.toggle': 'Enable overage billing',
   'storageOverage.unlimited': 'Unlimited',

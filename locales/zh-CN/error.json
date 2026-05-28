@@ -161,6 +161,7 @@
   "upload.storageBlock.subscriptionPastDue": "订阅扣款失败。请更新支付方式后继续上传。",
   "upload.storageBlock.subscriptionUnpaid": "订阅已暂停。请处理未支付账单后继续上传。",
   "upload.storageBlock.upgradeRequired": "文件存储空间已达到当前套餐上限，请升级套餐或删除不需要的文件。",
+  "upload.storageBlock.viewPlans": "查看套餐",
   "upload.storageLimitExceeded": "文件存储空间已达到当前套餐上限，请升级套餐或删除不需要的文件以释放空间。",
   "upload.title": "上传未能完成",
   "upload.unknownError": "原因：{{reason}}",

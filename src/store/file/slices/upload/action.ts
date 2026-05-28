@@ -74,16 +74,33 @@ const normalizeUploadedImageFileType = async (
 type Setter = StoreSetter<FileStore>;
 type UploadStorageBlockReason = Exclude<StorageBlockReason, typeof StorageBlockReason.WithinLimit>;
 
-const openStorageSettings = () => {
+const openSettingsRoute = (path: string) => {
   const navigate = useGlobalStore.getState().navigationRef.current;
   if (navigate) {
-    navigate('/settings/storage');
+    navigate(path);
     return;
   }
 
   if (typeof window !== 'undefined') {
-    window.location.assign('/settings/storage');
+    window.location.assign(path);
   }
+};
+
+const createStorageBlockAction = (reason?: string) => {
+  const shouldOpenPlans = reason === StorageBlockReason.UpgradeRequired;
+
+  return createElement(
+    Button,
+    {
+      size: 'small',
+      type: 'primary',
+      onClick: () => openSettingsRoute(shouldOpenPlans ? '/settings/plans' : '/settings/storage'),
+    },
+    t(
+      shouldOpenPlans ? 'upload.storageBlock.viewPlans' : 'upload.storageBlock.openStorageSettings',
+      { ns: 'error' },
+    ),
+  );
 };
 
 const createStorageSettingsAction = () =>
@@ -92,7 +109,7 @@ const createStorageSettingsAction = () =>
     {
       size: 'small',
       type: 'primary',
-      onClick: openStorageSettings,
+      onClick: () => openSettingsRoute('/settings/storage'),
     },
     t('upload.storageBlock.openStorageSettings', { ns: 'error' }),
   );
@@ -244,7 +261,7 @@ export class FileUploadActionImpl {
         } as const satisfies Record<UploadStorageBlockReason, string>;
 
         notification.error({
-          actions: createStorageSettingsAction(),
+          actions: createStorageBlockAction(reason),
           description: Object.hasOwn(errorKeyMap, reason)
             ? t(errorKeyMap[reason as UploadStorageBlockReason], { ns: 'error' })
             : t('upload.storageLimitExceeded', { ns: 'error' }),

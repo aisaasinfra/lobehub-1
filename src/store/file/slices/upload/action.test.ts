@@ -4,6 +4,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import { message, notification } from '@/components/AntdStaticMethods';
 import { fileService } from '@/services/file';
 import { uploadService } from '@/services/upload';
+import { useGlobalStore } from '@/store/global';
 import { getImageDimensions } from '@/utils/client/imageDimensions';
 
 import { useFileStore as useStore } from '../../store';
@@ -47,6 +48,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  useGlobalStore.setState({ navigationRef: { current: null } });
 });
 
 afterEach(() => {
@@ -54,6 +56,15 @@ afterEach(() => {
 });
 
 describe('FileUploadAction', () => {
+  const getLatestNotificationAction = () => {
+    const calls = vi.mocked(notification.error).mock.calls;
+    const latestCall = calls.at(-1)?.[0] as
+      | { actions?: { props: { children: string; onClick: () => void } } }
+      | undefined;
+
+    return latestCall?.actions;
+  };
+
   describe('uploadBase64FileWithProgress', () => {
     it('should upload base64 image and return result with dimensions', async () => {
       const { result } = renderHook(() => useStore());
@@ -726,6 +737,55 @@ describe('FileUploadAction', () => {
             description: 'upload.storageBlock.overageNotEnabled',
           }),
         );
+
+        const navigate = vi.fn();
+        useGlobalStore.setState({ navigationRef: { current: navigate } });
+        const action = getLatestNotificationAction();
+
+        expect(action?.props.children).toBe('upload.storageBlock.openStorageSettings');
+        action?.props.onClick();
+        expect(navigate).toHaveBeenCalledWith('/settings/storage');
+      });
+
+      it('should show a plans action when upload requires an upgraded plan', async () => {
+        const { uploadWithProgress } = useStore.getState();
+
+        const mockFile = new File(['test content'], 'blocked.png', { type: 'image/png' });
+        const mockCheckResult = { isExist: false };
+        const onStatusUpdate = vi.fn();
+
+        vi.mocked(getImageDimensions).mockResolvedValue(undefined);
+        vi.spyOn(fileService, 'checkFileHash').mockResolvedValue(mockCheckResult);
+        vi.spyOn(uploadService, 'uploadFileToS3').mockRejectedValue(
+          new Error('storage_block:upgrade_required'),
+        );
+
+        const result = await act(async () => {
+          return await uploadWithProgress({
+            file: mockFile,
+            onStatusUpdate,
+          });
+        });
+
+        expect(result).toBeUndefined();
+        expect(onStatusUpdate).toHaveBeenCalledWith({
+          id: mockFile.name,
+          type: 'removeFile',
+        });
+        expect(notification.error).toHaveBeenCalledWith(
+          expect.objectContaining({
+            actions: expect.anything(),
+            description: 'upload.storageBlock.upgradeRequired',
+          }),
+        );
+
+        const navigate = vi.fn();
+        useGlobalStore.setState({ navigationRef: { current: navigate } });
+        const action = getLatestNotificationAction();
+
+        expect(action?.props.children).toBe('upload.storageBlock.viewPlans');
+        action?.props.onClick();
+        expect(navigate).toHaveBeenCalledWith('/settings/plans');
       });
 
       it('should handle checkFileHash errors', async () => {
