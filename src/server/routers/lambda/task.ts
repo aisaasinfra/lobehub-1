@@ -1,6 +1,7 @@
 import { TASK_STATUSES } from '@lobechat/builtin-tool-task';
 import type { TaskListItem, TaskParticipant } from '@lobechat/types';
 import { TRPCError } from '@trpc/server';
+import { and, eq, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { withScopedPermission } from '@/business/server/trpc-middlewares/rbacPermission';
@@ -10,6 +11,7 @@ import { BriefModel } from '@/database/models/brief';
 import { TaskModel } from '@/database/models/task';
 import { TaskTopicModel } from '@/database/models/taskTopic';
 import { TopicModel } from '@/database/models/topic';
+import { workspaceMembers } from '@/database/schemas';
 import { router } from '@/libs/trpc/lambda';
 import { serverDatabase } from '@/libs/trpc/lambda/middleware';
 import { TaskService } from '@/server/services/task';
@@ -1014,5 +1016,100 @@ export const taskRouter = router({
           message: 'Failed to update status',
         });
       }
+    }),
+
+  transferTask: taskProcedureWrite
+    .input(
+      z.object({
+        targetWorkspaceId: z.string().nullable(),
+        taskId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const task = await ctx.taskModel.resolve(input.taskId);
+      if (!task) throw new TRPCError({ code: 'NOT_FOUND', message: 'Task not found' });
+
+      if (ctx.workspaceId && task.createdByUserId !== ctx.userId) {
+        const [membership] = await ctx.serverDB
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, ctx.workspaceId),
+              eq(workspaceMembers.userId, ctx.userId),
+              isNull(workspaceMembers.deletedAt),
+            ),
+          )
+          .limit(1);
+        if (!membership || membership.role !== 'owner') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Only workspace owners can transfer tasks created by others',
+          });
+        }
+      }
+
+      if (input.targetWorkspaceId === (ctx.workspaceId ?? null)) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Cannot transfer task to the same workspace',
+        });
+      }
+
+      if (input.targetWorkspaceId) {
+        const [targetMembership] = await ctx.serverDB
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, input.targetWorkspaceId),
+              eq(workspaceMembers.userId, ctx.userId),
+              isNull(workspaceMembers.deletedAt),
+            ),
+          )
+          .limit(1);
+        if (!targetMembership || targetMembership.role === 'viewer') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'No write access to target workspace',
+          });
+        }
+      }
+
+      return ctx.taskModel.transferTo(task.id, input.targetWorkspaceId, ctx.userId);
+    }),
+
+  copyTaskToWorkspace: taskProcedureWrite
+    .input(
+      z.object({
+        targetWorkspaceId: z.string().nullable(),
+        taskId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const task = await ctx.taskModel.resolve(input.taskId);
+      if (!task) throw new TRPCError({ code: 'NOT_FOUND', message: 'Task not found' });
+
+      if (input.targetWorkspaceId) {
+        const [targetMembership] = await ctx.serverDB
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, input.targetWorkspaceId),
+              eq(workspaceMembers.userId, ctx.userId),
+              isNull(workspaceMembers.deletedAt),
+            ),
+          )
+          .limit(1);
+        if (!targetMembership || targetMembership.role === 'viewer') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'No write access to target workspace',
+          });
+        }
+      }
+
+      return ctx.taskModel.copyToWorkspace(task.id, input.targetWorkspaceId, ctx.userId);
     }),
 });

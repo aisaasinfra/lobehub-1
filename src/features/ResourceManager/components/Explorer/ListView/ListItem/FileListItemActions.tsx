@@ -3,7 +3,9 @@ import { Button, Flexbox, stopPropagation } from '@lobehub/ui';
 import type { ItemType } from 'antd/es/menu/interface';
 import { isNull } from 'es-toolkit/compat';
 import { FileBoxIcon } from 'lucide-react';
+import { useMemo } from 'react';
 
+import { useFileTransferMenuItem } from '@/business/client/hooks/useFileTransferMenuItem';
 import { usePermission } from '@/hooks/usePermission';
 
 import DropdownMenu from '../../ItemDropdown/DropdownMenu';
@@ -44,6 +46,13 @@ const FileListItemActions = ({
   t,
 }: FileListItemActionsProps) => {
   const { allowed: canEditResources } = usePermission('edit_own_content');
+  const transferMenuItems = useFileTransferMenuItem(id, isFolder ? 'folder' : 'file');
+
+  const mergedMenuItems = useMemo(() => {
+    const baseItems = typeof menuItems === 'function' ? menuItems() : menuItems;
+    if (!transferMenuItems || transferMenuItems.length === 0) return baseItems;
+    return [...baseItems, ...transferMenuItems];
+  }, [menuItems, transferMenuItems]);
 
   return (
     <Flexbox
@@ -97,7 +106,7 @@ const FileListItemActions = ({
             />
           </div>
         ))}
-      <DropdownMenu className={styles.hover} items={menuItems} />
+      <DropdownMenu className={styles.hover} items={mergedMenuItems} />
     </Flexbox>
   );
 };

@@ -1,4 +1,5 @@
 import { TRPCError } from '@trpc/server';
+import { and, eq, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { businessFileUploadCheck } from '@/business/server/lambda-routers/file';
@@ -11,6 +12,7 @@ import { ChunkModel } from '@/database/models/chunk';
 import { DocumentModel } from '@/database/models/document';
 import { FileModel } from '@/database/models/file';
 import { KnowledgeRepo } from '@/database/repositories/knowledge';
+import { workspaceMembers } from '@/database/schemas';
 import { appEnv } from '@/envs/app';
 import { router } from '@/libs/trpc/lambda';
 import { serverDatabase } from '@/libs/trpc/lambda/middleware';
@@ -617,6 +619,95 @@ export const fileRouter = router({
       }
 
       return { success: true };
+    }),
+
+  transferEntity: fileProcedure
+    .use(withScopedPermission('file:upload'))
+    .input(
+      z.object({
+        entityType: z.enum(['file', 'folder']),
+        id: z.string(),
+        targetWorkspaceId: z.string().nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (input.targetWorkspaceId === (ctx.workspaceId ?? null)) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Cannot transfer to the same workspace',
+        });
+      }
+
+      if (input.targetWorkspaceId) {
+        const [targetMembership] = await ctx.serverDB
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, input.targetWorkspaceId),
+              eq(workspaceMembers.userId, ctx.userId),
+              isNull(workspaceMembers.deletedAt),
+            ),
+          )
+          .limit(1);
+        if (!targetMembership || targetMembership.role === 'viewer') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'No write access to target workspace',
+          });
+        }
+      }
+
+      if (input.entityType === 'folder') {
+        const folder = await ctx.documentModel.findById(input.id);
+        if (!folder) throw new TRPCError({ code: 'NOT_FOUND', message: 'Folder not found' });
+        return ctx.documentModel.transferTo(input.id, input.targetWorkspaceId, ctx.userId);
+      }
+
+      const file = await ctx.fileModel.findById(input.id);
+      if (!file) throw new TRPCError({ code: 'NOT_FOUND', message: 'File not found' });
+      return ctx.fileModel.transferTo(input.id, input.targetWorkspaceId, ctx.userId);
+    }),
+
+  copyEntityToWorkspace: fileProcedure
+    .use(withScopedPermission('file:upload'))
+    .input(
+      z.object({
+        entityType: z.enum(['file', 'folder']),
+        id: z.string(),
+        targetWorkspaceId: z.string().nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (input.targetWorkspaceId) {
+        const [targetMembership] = await ctx.serverDB
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, input.targetWorkspaceId),
+              eq(workspaceMembers.userId, ctx.userId),
+              isNull(workspaceMembers.deletedAt),
+            ),
+          )
+          .limit(1);
+        if (!targetMembership || targetMembership.role === 'viewer') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'No write access to target workspace',
+          });
+        }
+      }
+
+      if (input.entityType === 'folder') {
+        const folder = await ctx.documentModel.findById(input.id);
+        if (!folder) throw new TRPCError({ code: 'NOT_FOUND', message: 'Folder not found' });
+        return ctx.documentModel.copyToWorkspace(input.id, input.targetWorkspaceId, ctx.userId);
+      }
+
+      const file = await ctx.fileModel.findById(input.id);
+      if (!file) throw new TRPCError({ code: 'NOT_FOUND', message: 'File not found' });
+      return ctx.fileModel.copyToWorkspace(input.id, input.targetWorkspaceId, ctx.userId);
     }),
 });
 

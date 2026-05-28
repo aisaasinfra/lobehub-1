@@ -860,4 +860,200 @@ export class TaskModel {
       .returning();
     return comment;
   }
+
+  // ========== Transfer / Copy ==========
+
+  /**
+   * Collect a task and all its descendants (parentTaskId-linked) via BFS.
+   * Honors the current ownership scope.
+   */
+  private async collectTaskSubtree(rootId: string, runner: LobeChatDatabase): Promise<TaskItem[]> {
+    const [root] = await runner
+      .select()
+      .from(tasks)
+      .where(and(eq(tasks.id, rootId), this.ownership()))
+      .limit(1);
+    if (!root) return [];
+
+    const collected: TaskItem[] = [root];
+    let frontier: string[] = [root.id];
+
+    while (frontier.length > 0) {
+      const children = await runner
+        .select()
+        .from(tasks)
+        .where(and(inArray(tasks.parentTaskId, frontier), this.ownership()));
+      if (children.length === 0) break;
+      collected.push(...children);
+      frontier = children.map((c) => c.id);
+    }
+
+    return collected;
+  }
+
+  /**
+   * Allocate a contiguous block of seq numbers + identifiers in the target
+   * scope. Returns the next available seq baseline.
+   */
+  private async nextSeqIn(
+    runner: LobeChatDatabase,
+    targetWorkspaceId: string | null,
+    targetUserId: string,
+  ): Promise<number> {
+    const where = targetWorkspaceId
+      ? eq(tasks.workspaceId, targetWorkspaceId)
+      : and(eq(tasks.createdByUserId, targetUserId), isNull(tasks.workspaceId));
+    const [{ maxSeq }] = await runner
+      .select({ maxSeq: sql<number>`COALESCE(MAX(${tasks.seq}), 0)` })
+      .from(tasks)
+      .where(where!);
+    return Number(maxSeq) + 1;
+  }
+
+  /**
+   * Transfer a task subtree to another workspace / personal scope. Reallocates
+   * `identifier`/`seq` in the target scope and rewrites every dependent child
+   * table (`task_dependencies`, `task_documents`, `task_topics`,
+   * `task_comments`, `briefs`) so the ownership predicates remain consistent.
+   *
+   * Cross-scope references that may no longer be valid are cleared:
+   *   - `assigneeAgentId` (workspace move: agent likely doesn't exist there)
+   *   - `currentTopicId` (topic ownership is also moving but the link is
+   *     reset to avoid surfacing a stale active topic in the new scope)
+   */
+  async transferTo(
+    taskId: string,
+    targetWorkspaceId: string | null,
+    targetUserId: string,
+  ): Promise<{ taskIds: string[] }> {
+    return this.db.transaction(async (trx) => {
+      const scoped = new TaskModel(trx as LobeChatDatabase, this.userId, this.workspaceId);
+      const subtree = await scoped.collectTaskSubtree(taskId, trx as LobeChatDatabase);
+      if (subtree.length === 0) throw new Error('Task not found');
+
+      const ids = subtree.map((t) => t.id);
+
+      // Reallocate identifier + seq in target scope to avoid collisions.
+      const baseSeq = await this.nextSeqIn(
+        trx as LobeChatDatabase,
+        targetWorkspaceId,
+        targetUserId,
+      );
+      // Update each task individually because identifier/seq are per-row.
+      for (const [idx, task] of subtree.entries()) {
+        const seq = baseSeq + idx;
+        const identifier = `T-${seq}`;
+        await (trx as LobeChatDatabase)
+          .update(tasks)
+          .set({
+            // Clear cross-scope refs: agent / topic may be invalid in new scope.
+            assigneeAgentId: targetWorkspaceId === this.workspaceId ? task.assigneeAgentId : null,
+            createdByUserId: targetUserId,
+            currentTopicId: null,
+            identifier,
+            seq,
+            updatedAt: new Date(),
+            workspaceId: targetWorkspaceId,
+          })
+          .where(eq(tasks.id, task.id));
+      }
+
+      // Update child tables that key off taskId.
+      const ownershipUpdate = { userId: targetUserId, workspaceId: targetWorkspaceId };
+      await (trx as LobeChatDatabase)
+        .update(taskDependencies)
+        .set(ownershipUpdate)
+        .where(inArray(taskDependencies.taskId, ids));
+      await (trx as LobeChatDatabase)
+        .update(taskDocuments)
+        .set(ownershipUpdate)
+        .where(inArray(taskDocuments.taskId, ids));
+      await (trx as LobeChatDatabase)
+        .update(taskComments)
+        .set(ownershipUpdate)
+        .where(inArray(taskComments.taskId, ids));
+
+      return { taskIds: ids };
+    });
+  }
+
+  /**
+   * Deep clone a task subtree into another workspace / personal scope. Fresh
+   * ids, fresh identifiers, preserved parent/child topology. Cross-scope refs
+   * (agent / topic / brief / current topic) are cleared on the clones so the
+   * copies start clean in the new scope.
+   */
+  async copyToWorkspace(
+    taskId: string,
+    targetWorkspaceId: string | null,
+    targetUserId: string,
+  ): Promise<{ rootId: string }> {
+    return this.db.transaction(async (trx) => {
+      const scoped = new TaskModel(trx as LobeChatDatabase, this.userId, this.workspaceId);
+      const subtree = await scoped.collectTaskSubtree(taskId, trx as LobeChatDatabase);
+      if (subtree.length === 0) throw new Error('Task not found');
+
+      // BFS clone — parent inserted before children, so we always know the
+      // new parentTaskId by the time we reach the child.
+      const idMap = new Map<string, string>();
+      const byId = new Map(subtree.map((t) => [t.id, t]));
+      const queue: string[] = [taskId];
+      const seen = new Set<string>();
+
+      let seq = await this.nextSeqIn(trx as LobeChatDatabase, targetWorkspaceId, targetUserId);
+
+      while (queue.length > 0) {
+        const currentId = queue.shift()!;
+        if (seen.has(currentId)) continue;
+        seen.add(currentId);
+        const original = byId.get(currentId);
+        if (!original) continue;
+
+        const newParentId =
+          currentId === taskId ? null : (idMap.get(original.parentTaskId!) ?? null);
+
+        const identifier = `T-${seq}`;
+        const inserted = (await (trx as LobeChatDatabase)
+          .insert(tasks)
+          .values({
+            assigneeAgentId: null,
+            assigneeUserId: null,
+            automationMode: original.automationMode,
+            config: original.config ?? {},
+            context: { ...original.context, duplicatedFrom: original.id },
+            createdByAgentId: null,
+            createdByUserId: targetUserId,
+            currentTopicId: null,
+            description: original.description,
+            error: null,
+            heartbeatInterval: original.heartbeatInterval,
+            heartbeatTimeout: original.heartbeatTimeout,
+            identifier,
+            instruction: original.instruction,
+            maxTopics: original.maxTopics,
+            name: original.name,
+            parentTaskId: newParentId,
+            priority: original.priority,
+            schedulePattern: original.schedulePattern,
+            scheduleTimezone: original.scheduleTimezone,
+            seq,
+            sortOrder: original.sortOrder,
+            // Reset lifecycle: copy starts fresh, not mid-run.
+            status: 'backlog',
+            totalTopics: 0,
+            workspaceId: targetWorkspaceId,
+          } as NewTask)
+          .returning({ id: tasks.id })) as { id: string }[];
+
+        idMap.set(original.id, inserted[0]!.id);
+        seq++;
+
+        for (const c of subtree) {
+          if (c.parentTaskId === original.id) queue.push(c.id);
+        }
+      }
+
+      return { rootId: idMap.get(taskId)! };
+    });
+  }
 }

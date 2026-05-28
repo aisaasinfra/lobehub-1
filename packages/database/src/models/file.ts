@@ -465,4 +465,81 @@ export class FileModel {
 
     return chunkIds;
   };
+
+  // ========== Transfer / Copy ==========
+
+  /**
+   * Transfer a single file (not a folder — folders live in `documents` and are
+   * handled by `DocumentModel.transferTo`, which already cascades into `files`
+   * via `parentId`). Updates ownership + knowledgeBaseFiles linkage so the
+   * file remains visible in the target scope's resource manager.
+   */
+  transferTo = async (
+    fileId: string,
+    targetWorkspaceId: string | null,
+    targetUserId: string,
+  ): Promise<{ fileId: string }> => {
+    return this.db.transaction(async (trx) => {
+      const file = await trx.query.files.findFirst({
+        where: and(eq(files.id, fileId), this.ownership()),
+      });
+      if (!file) throw new Error('File not found');
+
+      const ownershipUpdate = { userId: targetUserId, workspaceId: targetWorkspaceId };
+
+      await trx
+        .update(files)
+        .set({ ...ownershipUpdate, updatedAt: new Date() })
+        .where(eq(files.id, fileId));
+
+      // Knowledge base links are scoped per-user; keep them pointed at the new owner.
+      await trx
+        .update(knowledgeBaseFiles)
+        .set({ userId: targetUserId })
+        .where(eq(knowledgeBaseFiles.fileId, fileId));
+
+      return { fileId };
+    });
+  };
+
+  /**
+   * Clone a file record into another workspace / personal scope. The physical
+   * blob is shared via `fileHash` → `globalFiles`, so we only copy the row. AI
+   * index references (`chunkTaskId` / `embeddingTaskId`) are reset; the new
+   * scope is expected to re-index lazily.
+   */
+  copyToWorkspace = async (
+    fileId: string,
+    targetWorkspaceId: string | null,
+    targetUserId: string,
+  ): Promise<{ fileId: string }> => {
+    return this.db.transaction(async (trx) => {
+      const file = await trx.query.files.findFirst({
+        where: and(eq(files.id, fileId), this.ownership()),
+      });
+      if (!file) throw new Error('File not found');
+
+      const inserted = (await trx
+        .insert(files)
+        .values({
+          chunkTaskId: null,
+          clientId: null,
+          embeddingTaskId: null,
+          fileHash: file.fileHash,
+          fileType: file.fileType,
+          metadata: { ...file.metadata, duplicatedFrom: file.id },
+          name: file.name,
+          // parentId would dangle in target scope; the user can drag it under a folder later.
+          parentId: null,
+          size: file.size,
+          source: file.source,
+          url: file.url,
+          userId: targetUserId,
+          workspaceId: targetWorkspaceId,
+        } as NewFile)
+        .returning({ id: files.id })) as { id: string }[];
+
+      return { fileId: inserted[0]!.id };
+    });
+  };
 }

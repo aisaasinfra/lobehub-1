@@ -20,6 +20,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useTaskTransferMenuItem } from '@/business/client/hooks/useTaskTransferMenuItem';
 import { useAppOrigin } from '@/hooks/useAppOrigin';
 import { usePermission } from '@/hooks/usePermission';
 import { useAgentStore } from '@/store/agent';
@@ -303,10 +304,39 @@ export const useTaskContextMenuActions = (): TaskContextMenuActions => {
 
 export const useTaskItemContextMenu = (task: TaskContextMenuTarget): TaskItemContextMenu => {
   const { buildItems, installKeyboardHandlers } = useTaskContextMenuActions();
-  const items = useMemo(
-    () => buildItems(task),
-    [buildItems, task.identifier, task.status, task.priority, task.assigneeAgentId],
-  );
+  const transferItems = useTaskTransferMenuItem(task.identifier) as ContextMenuItem[] | null;
+  const items = useMemo(() => {
+    const base = buildItems(task);
+    if (!transferItems || transferItems.length === 0) return base;
+
+    // Insert transfer/copy entries above the final divider + delete pair so
+    // they sit next to the other lifecycle actions but kept distinct from
+    // in-place state changes.
+    const deleteAnchor = base.findIndex(
+      (item) =>
+        item !== null &&
+        typeof item === 'object' &&
+        'key' in item &&
+        (item as { key?: string }).key === 'delete',
+    );
+    if (deleteAnchor === -1) return [...base, ...transferItems];
+
+    const insertAt =
+      deleteAnchor > 0 &&
+      base[deleteAnchor - 1] !== null &&
+      typeof base[deleteAnchor - 1] === 'object' &&
+      'type' in (base[deleteAnchor - 1] as object) &&
+      (base[deleteAnchor - 1] as { type?: string }).type === 'divider'
+        ? deleteAnchor - 1
+        : deleteAnchor;
+
+    return [
+      ...base.slice(0, insertAt),
+      ...transferItems,
+      { type: 'divider' } as ContextMenuItem,
+      ...base.slice(insertAt),
+    ];
+  }, [buildItems, task, transferItems]);
   const onContextMenu = useCallback(
     () => installKeyboardHandlers(task),
     [installKeyboardHandlers, task.identifier, task.status, task.priority],
