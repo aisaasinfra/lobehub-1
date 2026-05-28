@@ -2,6 +2,7 @@ import { TRPCError } from '@trpc/server';
 import { and, eq, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 
+import { businessFileTransferStorageCheck } from '@/business/server/lambda-routers/file';
 import { withScopedPermission } from '@/business/server/trpc-middlewares/rbacPermission';
 import { wsCompatProcedure } from '@/business/server/trpc-middlewares/workspaceAuth';
 import { serverDBEnv } from '@/config/db';
@@ -94,6 +95,13 @@ export const knowledgeBaseRouter = router({
         }
       }
 
+      const additionalSize = await ctx.knowledgeBaseModel.countFileUsage(input.id);
+      await businessFileTransferStorageCheck({
+        additionalSize,
+        targetUserId: ctx.userId,
+        targetWorkspaceId: input.targetWorkspaceId,
+      });
+
       return ctx.knowledgeBaseModel.copyToWorkspace(input.id, input.targetWorkspaceId, ctx.userId);
     }),
 
@@ -183,6 +191,13 @@ export const knowledgeBaseRouter = router({
           });
         }
       }
+
+      const additionalSize = await ctx.knowledgeBaseModel.countFileUsage(input.id);
+      await businessFileTransferStorageCheck({
+        additionalSize,
+        targetUserId: ctx.userId,
+        targetWorkspaceId: input.targetWorkspaceId,
+      });
 
       return ctx.knowledgeBaseModel.transferTo(input.id, input.targetWorkspaceId, ctx.userId);
     }),

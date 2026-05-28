@@ -729,6 +729,12 @@ export const fileRouter = router({
             message: input.entityType === 'folder' ? 'Folder not found' : 'Document not found',
           });
         }
+        const additionalSize = await ctx.documentModel.countFileUsageInSubtree(input.id);
+        await businessFileTransferStorageCheck({
+          additionalSize,
+          targetUserId: ctx.userId,
+          targetWorkspaceId: input.targetWorkspaceId,
+        });
         return ctx.documentModel.copyToWorkspace(input.id, input.targetWorkspaceId, ctx.userId);
       }
 

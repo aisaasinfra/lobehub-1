@@ -200,6 +200,7 @@ export default {
   'resourceList.transferFolderTitle': 'Transfer folder',
   'resourceList.transferSuccess': 'Resource transferred',
   'resourceList.transferTo': 'Transfer to…',
+  'resourceList.viewTransferred': 'View',
   'portal.openInPageEditor': 'Edit in Page',
   'preview.downloadFile': 'Download File',
   'preview.unsupportedFileAndContact':

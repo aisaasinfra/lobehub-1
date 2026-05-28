@@ -1,5 +1,5 @@
 import type { KnowledgeBaseItem } from '@lobechat/types';
-import { and, count, desc, eq, inArray, or } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, or, sum } from 'drizzle-orm';
 
 import type { NewDocument, NewFile, NewKnowledgeBase } from '../schemas';
 import { documents, files, knowledgeBaseFiles, knowledgeBases } from '../schemas';
@@ -171,6 +171,24 @@ export class KnowledgeBaseModel {
     return this.db.query.knowledgeBases.findFirst({
       where: and(eq(knowledgeBases.id, id), this.ownership()),
     });
+  };
+
+  countFileUsage = async (id: string): Promise<number> => {
+    const result = await this.db
+      .select({ totalSize: sum(files.size) })
+      .from(knowledgeBaseFiles)
+      .innerJoin(files, eq(files.id, knowledgeBaseFiles.fileId))
+      .where(
+        and(
+          eq(knowledgeBaseFiles.knowledgeBaseId, id),
+          buildWorkspaceWhere(
+            { userId: this.userId, workspaceId: this.workspaceId },
+            knowledgeBaseFiles,
+          ),
+        ),
+      );
+
+    return parseInt(result[0]?.totalSize ?? '0') || 0;
   };
 
   // update

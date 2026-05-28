@@ -186,6 +186,7 @@
   "resourceList.transferFolderTitle": "Переместить папку",
   "resourceList.transferSuccess": "Ресурс перемещён",
   "resourceList.transferTo": "Переместить в…",
+  "resourceList.viewTransferred": "Просмотр",
   "searchFilePlaceholder": "Поиск файлов",
   "searchPagePlaceholder": "Поиск страниц",
   "tab.all": "Все",

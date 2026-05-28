@@ -186,6 +186,7 @@
   "resourceList.transferFolderTitle": "폴더 이동",
   "resourceList.transferSuccess": "리소스가 이동되었습니다",
   "resourceList.transferTo": "이동 대상…",
+  "resourceList.viewTransferred": "보기",
   "searchFilePlaceholder": "파일 검색",
   "searchPagePlaceholder": "문서 검색",
   "tab.all": "전체",

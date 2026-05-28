@@ -756,6 +756,7 @@ describe('fileRouter', () => {
     it('should copy document resources via documentModel', async () => {
       mockDocumentModelCopyToWorkspace.mockResolvedValue({ id: 'doc-1' });
       mockDocumentModelFindById.mockResolvedValue({ id: 'doc-1' });
+      mockDocumentModelCountFileUsageInSubtree.mockResolvedValue(4096);
 
       await caller.copyEntityToWorkspace({
         entityType: 'document',
@@ -764,6 +765,12 @@ describe('fileRouter', () => {
       });
 
       expect(mockDocumentModelFindById).toHaveBeenCalledWith('doc-1');
+      expect(mockDocumentModelCountFileUsageInSubtree).toHaveBeenCalledWith('doc-1');
+      expect(routerMocks.businessFileTransferStorageCheck).toHaveBeenCalledWith({
+        additionalSize: 4096,
+        targetUserId: 'test-user',
+        targetWorkspaceId: null,
+      });
       expect(mockDocumentModelCopyToWorkspace).toHaveBeenCalledWith('doc-1', null, 'test-user');
       expect(mockFileModelFindById).not.toHaveBeenCalled();
     });

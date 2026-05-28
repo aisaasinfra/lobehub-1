@@ -186,6 +186,7 @@
   "resourceList.transferFolderTitle": "フォルダーを移動",
   "resourceList.transferSuccess": "リソースが移動されました",
   "resourceList.transferTo": "移動先…",
+  "resourceList.viewTransferred": "表示",
   "searchFilePlaceholder": "ファイルを検索",
   "searchPagePlaceholder": "文書を検索",
   "tab.all": "すべて",
