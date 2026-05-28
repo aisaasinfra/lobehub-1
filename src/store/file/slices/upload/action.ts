@@ -1,17 +1,15 @@
-import { LOBE_CHAT_CLOUD, StorageBlockReason } from '@lobechat/business-const';
+import { LOBE_CHAT_CLOUD } from '@lobechat/business-const';
 import { inferImageMimeTypeFromBytes } from '@lobechat/utils';
-import { Button } from '@lobehub/ui';
 import { t } from 'i18next';
 import { sha256 } from 'js-sha256';
-import { createElement } from 'react';
 
-import { message, notification } from '@/components/AntdStaticMethods';
+import { handleFileUploadError } from '@/business/client/handleFileUploadError';
+import { message } from '@/components/AntdStaticMethods';
 import { fileService } from '@/services/file';
 import { uploadService } from '@/services/upload';
 import { type StoreSetter } from '@/store/types';
 import { type FileMetadata, type UploadFileItem } from '@/types/files';
 import { getImageDimensions } from '@/utils/client/imageDimensions';
-import { getStableNavigate } from '@/utils/stableNavigate';
 
 import { type FileStore } from '../../store';
 
@@ -72,72 +70,6 @@ const normalizeUploadedImageFileType = async (
 };
 
 type Setter = StoreSetter<FileStore>;
-type UploadStorageBlockReason = Exclude<StorageBlockReason, typeof StorageBlockReason.WithinLimit>;
-
-const errorKeyMap = {
-  [StorageBlockReason.MonthlyCapReached]: 'upload.storageBlock.monthlyCapReached',
-  [StorageBlockReason.NoPaymentMethod]: 'upload.storageBlock.noPaymentMethod',
-  [StorageBlockReason.OverageNotEnabled]: 'upload.storageBlock.overageNotEnabled',
-  [StorageBlockReason.SubscriptionPastDue]: 'upload.storageBlock.subscriptionPastDue',
-  [StorageBlockReason.SubscriptionUnpaid]: 'upload.storageBlock.subscriptionUnpaid',
-  [StorageBlockReason.UpgradeRequired]: 'upload.storageBlock.upgradeRequired',
-} as const satisfies Record<UploadStorageBlockReason, string>;
-
-const openSettingsRoute = (path: string) => {
-  const navigate = getStableNavigate();
-  if (navigate) {
-    navigate(path);
-    return;
-  }
-
-  if (typeof window !== 'undefined') {
-    window.location.assign(path);
-  }
-};
-
-const createStorageBlockAction = (reason?: string) => {
-  const shouldOpenPlans = reason === StorageBlockReason.UpgradeRequired;
-
-  return createElement(
-    Button,
-    {
-      size: 'small',
-      type: 'primary',
-      onClick: () => openSettingsRoute(shouldOpenPlans ? '/settings/plans' : '/settings/usage'),
-    },
-    t(shouldOpenPlans ? 'upload.storageBlock.viewPlans' : 'upload.storageBlock.viewUsage', {
-      ns: 'error',
-    }),
-  );
-};
-
-const createStorageSettingsAction = () =>
-  createElement(
-    Button,
-    {
-      size: 'small',
-      type: 'primary',
-      onClick: () => openSettingsRoute('/settings/usage'),
-    },
-    t('upload.storageBlock.viewUsage', { ns: 'error' }),
-  );
-
-const handleStorageBlockError = (error: unknown, onBlocked?: () => void) => {
-  const errorMessage = error instanceof Error ? error.message : '';
-  if (!errorMessage.startsWith('storage_block:')) return false;
-
-  const reason = errorMessage.replace('storage_block:', '');
-  onBlocked?.();
-
-  notification.error({
-    actions: createStorageBlockAction(reason),
-    description: Object.hasOwn(errorKeyMap, reason)
-      ? t(errorKeyMap[reason as UploadStorageBlockReason], { ns: 'error' })
-      : t('upload.storageLimitExceeded', { ns: 'error' }),
-    message: t('upload.uploadFailed', { ns: 'error' }),
-  });
-  return true;
-};
 
 export const createFileUploadSlice = (set: Setter, get: () => FileStore, _api?: unknown) =>
   new FileUploadActionImpl(set, get, _api);
@@ -168,7 +100,7 @@ export class FileUploadActionImpl {
       });
       return { ...res, dimensions, filename: metadata.filename };
     } catch (error) {
-      if (handleStorageBlockError(error)) return;
+      if (handleFileUploadError(error)) return;
 
       throw error;
     }
@@ -276,21 +208,10 @@ export class FileUploadActionImpl {
       return { ...data, dimensions, filename: normalizedFile.name };
     } catch (error) {
       if (
-        handleStorageBlockError(error, () => onStatusUpdate?.({ id: statusId, type: 'removeFile' }))
+        handleFileUploadError(error, {
+          onUploadBlocked: () => onStatusUpdate?.({ id: statusId, type: 'removeFile' }),
+        })
       ) {
-        return;
-      }
-
-      const errorMessage = error instanceof Error ? error.message : '';
-
-      // Legacy fallback
-      if (errorMessage.includes('beyond the plan limit')) {
-        onStatusUpdate?.({ id: statusId, type: 'removeFile' });
-        notification.error({
-          actions: createStorageSettingsAction(),
-          description: t('upload.storageLimitExceeded', { ns: 'error' }),
-          message: t('upload.uploadFailed', { ns: 'error' }),
-        });
         return;
       }
 
