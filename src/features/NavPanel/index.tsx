@@ -35,6 +35,7 @@ const setNavPanelSnapshot = (snapshot: NavPanelSnapshot) => {
 
 const FALLBACK_NAV_KEY = 'home';
 const AGENT_NAV_KEY = 'agent';
+const EMPTY_NAV_KEY = 'empty';
 const SETTINGS_NAV_KEY = 'settings';
 const WORKSPACE_SETTINGS_NAV_KEY = 'workspace-settings';
 
@@ -55,6 +56,9 @@ const NavPanel = memo(() => {
   const isWorkspaceSettingsRoute =
     !!activeSlug &&
     (pathname === `/${activeSlug}/settings` || pathname.startsWith(`/${activeSlug}/settings/`));
+  const isHomeRoute =
+    pathname === '/' ||
+    (!!activeSlug && (pathname === `/${activeSlug}` || pathname === `/${activeSlug}/`));
   const isPersonalSettingsRoute = pathname === '/settings' || pathname.startsWith('/settings/');
   const isWorkspaceAgentRoute =
     !!activeSlug &&
@@ -82,9 +86,14 @@ const NavPanel = memo(() => {
       }
     : null;
   const routeFallback = agentFallback || workspaceSettingsFallback || personalSettingsFallback;
+  const isStaleHomeSnapshot = panelContent?.key === FALLBACK_NAV_KEY && !isHomeRoute;
 
   const resolvedPanelContent =
-    routeFallback && panelContent?.key === FALLBACK_NAV_KEY ? routeFallback : panelContent;
+    routeFallback && panelContent?.key === FALLBACK_NAV_KEY
+      ? routeFallback
+      : isStaleHomeSnapshot
+        ? null
+        : panelContent;
 
   // Fallback renders the home sidebar's content directly — using `<Sidebar />`
   // (the portal wrapper) here loops with the portal's unmount cleanup:
@@ -93,7 +102,9 @@ const NavPanel = memo(() => {
   const activeContent =
     resolvedPanelContent ||
     routeFallback ||
-    ({ key: FALLBACK_NAV_KEY, node: <SidebarContent /> } satisfies NavPanelSnapshot);
+    (isHomeRoute
+      ? ({ key: FALLBACK_NAV_KEY, node: <SidebarContent /> } satisfies NavPanelSnapshot)
+      : ({ key: EMPTY_NAV_KEY, node: null } satisfies NavPanelSnapshot));
 
   return (
     <>

@@ -118,4 +118,32 @@ describe('NavPanel', () => {
     expect(screen.getByText('Agent sidebar')).toBeInTheDocument();
     expect(screen.queryByText('Stale home snapshot')).not.toBeInTheDocument();
   });
+
+  it.each([
+    '/lobe-team/resource',
+    '/lobe-team/community',
+    '/lobe-team/memory',
+    '/lobe-team/page',
+    '/lobe-team/image',
+    '/lobe-team/video',
+    '/lobe-team/eval',
+    '/lobe-team/group/group-1',
+  ])('does not keep a stale home snapshot on %s', async (route) => {
+    pathname = route;
+    const { default: NavPanel, NavPanelPortal } = await import('./index');
+
+    render(
+      <>
+        <NavPanelPortal navKey="home">
+          <div>Stale home snapshot</div>
+        </NavPanelPortal>
+        <NavPanel />
+      </>,
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByText('Stale home snapshot')).not.toBeInTheDocument();
+    });
+    expect(screen.getByTestId('nav-panel')).not.toHaveAttribute('data-nav-key', 'home');
+  });
 });

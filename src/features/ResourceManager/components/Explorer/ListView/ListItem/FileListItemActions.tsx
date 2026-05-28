@@ -29,6 +29,33 @@ interface FileListItemActionsProps {
   t: any;
 }
 
+const isDeleteMenuItem = (item: ItemType) =>
+  item !== null && 'key' in item && item.key === 'delete';
+
+const isDividerMenuItem = (item: ItemType) =>
+  item !== null && 'type' in item && item.type === 'divider';
+
+export const appendTransferMenuItemsBeforeDelete = (
+  baseItems: ItemType[],
+  transferMenuItems: ItemType[] | null,
+) => {
+  if (!transferMenuItems || transferMenuItems.length === 0) return baseItems;
+
+  const deleteIndex = baseItems.findIndex(isDeleteMenuItem);
+  if (deleteIndex === -1) return [...baseItems, ...transferMenuItems];
+
+  const insertIndex =
+    deleteIndex > 0 && isDividerMenuItem(baseItems[deleteIndex - 1])
+      ? deleteIndex - 1
+      : deleteIndex;
+
+  return [
+    ...baseItems.slice(0, insertIndex),
+    ...transferMenuItems,
+    ...baseItems.slice(insertIndex),
+  ];
+};
+
 const FileListItemActions = ({
   chunkCount,
   chunkingError,
@@ -50,8 +77,7 @@ const FileListItemActions = ({
 
   const mergedMenuItems = useMemo(() => {
     const baseItems = typeof menuItems === 'function' ? menuItems() : menuItems;
-    if (!transferMenuItems || transferMenuItems.length === 0) return baseItems;
-    return [...baseItems, ...transferMenuItems];
+    return appendTransferMenuItemsBeforeDelete(baseItems, transferMenuItems);
   }, [menuItems, transferMenuItems]);
 
   return (
