@@ -10,7 +10,15 @@ const routerMocks = vi.hoisted(() => {
 
   return {
     businessFileUploadCheck: vi.fn(),
+    businessFileTransferStorageCheck: vi.fn(),
     serverDB: {
+      select: vi.fn(() => ({
+        from: vi.fn(() => ({
+          where: vi.fn(() => ({
+            limit: vi.fn().mockResolvedValue([{ role: 'member' }]),
+          })),
+        })),
+      })),
       transaction: vi.fn(async (callback: (trx: unknown) => unknown) =>
         callback(transactionClient),
       ),
@@ -66,7 +74,15 @@ function createCallerWithCtx(partialCtx: any = {}) {
   };
 
   const ctx = {
-    serverDB: {} as any,
+    serverDB: {
+      select: vi.fn(() => ({
+        from: vi.fn(() => ({
+          where: vi.fn(() => ({
+            limit: vi.fn().mockResolvedValue([{ role: 'member' }]),
+          })),
+        })),
+      })),
+    } as any,
     userId: 'test-user',
     asyncTaskModel,
     chunkModel,
@@ -98,6 +114,7 @@ vi.mock('@/database/core/db-adaptor', () => ({
 }));
 
 vi.mock('@/business/server/lambda-routers/file', () => ({
+  businessFileTransferStorageCheck: routerMocks.businessFileTransferStorageCheck,
   businessFileUploadCheck: routerMocks.businessFileUploadCheck,
 }));
 
@@ -130,6 +147,8 @@ const mockFileModelFindById = vi.fn();
 const mockFileModelFindByIds = vi.fn();
 const mockFileModelQuery = vi.fn();
 const mockFileModelClear = vi.fn();
+const mockFileModelTransferTo = vi.fn();
+const mockFileModelCopyToWorkspace = vi.fn();
 
 vi.mock('@/database/models/file', () => ({
   FileModel: vi.fn(() => ({
@@ -141,6 +160,8 @@ vi.mock('@/database/models/file', () => ({
     findByIds: mockFileModelFindByIds,
     query: mockFileModelQuery,
     clear: mockFileModelClear,
+    copyToWorkspace: mockFileModelCopyToWorkspace,
+    transferTo: mockFileModelTransferTo,
   })),
 }));
 
@@ -158,6 +179,7 @@ vi.mock('@/server/services/file', () => ({
 
 const mockKnowledgeRepoQuery = vi.fn().mockResolvedValue([]);
 const mockDocumentServiceDeleteDocuments = vi.fn();
+const mockDocumentModelCountFileUsageInSubtree = vi.fn();
 const mockDocumentModelCopyToWorkspace = vi.fn();
 const mockDocumentModelFindById = vi.fn();
 const mockDocumentModelTransferTo = vi.fn();
@@ -170,6 +192,7 @@ vi.mock('@/database/repositories/knowledge', () => ({
 
 vi.mock('@/database/models/document', () => ({
   DocumentModel: vi.fn(() => ({
+    countFileUsageInSubtree: mockDocumentModelCountFileUsageInSubtree,
     copyToWorkspace: mockDocumentModelCopyToWorkspace,
     findById: mockDocumentModelFindById,
     transferTo: mockDocumentModelTransferTo,
@@ -190,6 +213,7 @@ describe('fileRouter', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     routerMocks.businessFileUploadCheck.mockResolvedValue(undefined);
+    routerMocks.businessFileTransferStorageCheck.mockResolvedValue(undefined);
 
     mockFile = {
       id: 'test-id',
@@ -646,6 +670,7 @@ describe('fileRouter', () => {
     it('should transfer document resources via documentModel', async () => {
       ctx.workspaceId = 'workspace-active';
       mockDocumentModelFindById.mockResolvedValue({ id: 'doc-1' });
+      mockDocumentModelCountFileUsageInSubtree.mockResolvedValue(4096);
       mockDocumentModelTransferTo.mockResolvedValue({ id: 'doc-1' });
 
       await caller.transferEntity({
@@ -655,12 +680,58 @@ describe('fileRouter', () => {
       });
 
       expect(mockDocumentModelFindById).toHaveBeenCalledWith('doc-1');
+      expect(mockDocumentModelCountFileUsageInSubtree).toHaveBeenCalledWith('doc-1');
+      expect(routerMocks.businessFileTransferStorageCheck).toHaveBeenCalledWith({
+        additionalSize: 4096,
+        targetUserId: 'test-user',
+        targetWorkspaceId: null,
+      });
       expect(mockDocumentModelTransferTo).toHaveBeenCalledWith('doc-1', null, 'test-user');
       expect(mockFileModelFindById).not.toHaveBeenCalled();
+    });
+
+    it('should check target storage before transferring a file resource', async () => {
+      mockFileModelFindById.mockResolvedValue({ id: 'file-1', size: 2048 });
+      mockFileModelTransferTo.mockResolvedValue({ fileId: 'file-1' });
+
+      await caller.transferEntity({
+        entityType: 'file',
+        id: 'file-1',
+        targetWorkspaceId: 'workspace-target',
+      });
+
+      expect(routerMocks.businessFileTransferStorageCheck).toHaveBeenCalledWith({
+        additionalSize: 2048,
+        targetUserId: 'test-user',
+        targetWorkspaceId: 'workspace-target',
+      });
+      expect(mockFileModelTransferTo).toHaveBeenCalledWith(
+        'file-1',
+        'workspace-target',
+        'test-user',
+      );
     });
   });
 
   describe('copyEntityToWorkspace', () => {
+    it('should check target storage before copying a file resource', async () => {
+      mockFileModelFindById.mockResolvedValue({ id: 'file-1', size: 2048 });
+      mockFileModelCopyToWorkspace.mockResolvedValue({ fileId: 'file-new' });
+
+      await caller.copyEntityToWorkspace({
+        entityType: 'file',
+        id: 'file-1',
+        targetWorkspaceId: null,
+      });
+
+      expect(routerMocks.businessFileTransferStorageCheck).toHaveBeenCalledWith({
+        additionalSize: 2048,
+        targetUserId: 'test-user',
+        targetWorkspaceId: null,
+      });
+      expect(mockFileModelCopyToWorkspace).toHaveBeenCalledWith('file-1', null, 'test-user');
+    });
+
     it('should copy document resources via documentModel', async () => {
       mockDocumentModelCopyToWorkspace.mockResolvedValue({ id: 'doc-1' });
       mockDocumentModelFindById.mockResolvedValue({ id: 'doc-1' });

@@ -2,7 +2,10 @@ import { TRPCError } from '@trpc/server';
 import { and, eq, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { businessFileUploadCheck } from '@/business/server/lambda-routers/file';
+import {
+  businessFileTransferStorageCheck,
+  businessFileUploadCheck,
+} from '@/business/server/lambda-routers/file';
 import { checkFileStorageUsage } from '@/business/server/trpc-middlewares/lambda';
 import { withScopedPermission } from '@/business/server/trpc-middlewares/rbacPermission';
 import { wsCompatProcedure } from '@/business/server/trpc-middlewares/workspaceAuth';
@@ -667,11 +670,22 @@ export const fileRouter = router({
             message: input.entityType === 'folder' ? 'Folder not found' : 'Document not found',
           });
         }
+        const additionalSize = await ctx.documentModel.countFileUsageInSubtree(input.id);
+        await businessFileTransferStorageCheck({
+          additionalSize,
+          targetUserId: ctx.userId,
+          targetWorkspaceId: input.targetWorkspaceId,
+        });
         return ctx.documentModel.transferTo(input.id, input.targetWorkspaceId, ctx.userId);
       }
 
       const file = await ctx.fileModel.findById(input.id);
       if (!file) throw new TRPCError({ code: 'NOT_FOUND', message: 'File not found' });
+      await businessFileTransferStorageCheck({
+        additionalSize: file.size,
+        targetUserId: ctx.userId,
+        targetWorkspaceId: input.targetWorkspaceId,
+      });
       return ctx.fileModel.transferTo(input.id, input.targetWorkspaceId, ctx.userId);
     }),
 
@@ -718,6 +732,11 @@ export const fileRouter = router({
 
       const file = await ctx.fileModel.findById(input.id);
       if (!file) throw new TRPCError({ code: 'NOT_FOUND', message: 'File not found' });
+      await businessFileTransferStorageCheck({
+        additionalSize: file.size,
+        targetUserId: ctx.userId,
+        targetWorkspaceId: input.targetWorkspaceId,
+      });
       return ctx.fileModel.copyToWorkspace(input.id, input.targetWorkspaceId, ctx.userId);
     }),
 });

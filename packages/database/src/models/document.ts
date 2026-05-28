@@ -1,4 +1,4 @@
-import { and, count, desc, eq, inArray, isNull, notInArray } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, isNull, notInArray, sum } from 'drizzle-orm';
 
 import type { DocumentItem, NewDocument } from '../schemas';
 import { DOCUMENT_FOLDER_TYPE, documents, files } from '../schemas';
@@ -199,6 +199,27 @@ export class DocumentModel {
     }
 
     return collected;
+  };
+
+  countFileUsageInSubtree = async (
+    rootId: string,
+    runner: LobeChatDatabase = this.db,
+  ): Promise<number> => {
+    const subtree = await this.collectSubtree(rootId, runner);
+    if (subtree.length === 0) return 0;
+
+    const ids = subtree.map((d) => d.id);
+    const result = await runner
+      .select({ totalSize: sum(files.size) })
+      .from(files)
+      .where(
+        and(
+          buildWorkspaceWhere({ userId: this.userId, workspaceId: this.workspaceId }, files),
+          inArray(files.parentId, ids),
+        ),
+      );
+
+    return parseInt(result[0]?.totalSize ?? '0') || 0;
   };
 
   /**

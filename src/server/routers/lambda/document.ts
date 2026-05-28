@@ -2,6 +2,7 @@ import { TRPCError } from '@trpc/server';
 import { and, eq, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 
+import { businessFileTransferStorageCheck } from '@/business/server/lambda-routers/file';
 import { withScopedPermission } from '@/business/server/trpc-middlewares/rbacPermission';
 import { wsCompatProcedure } from '@/business/server/trpc-middlewares/workspaceAuth';
 import { FREE_DOCUMENT_HISTORY_WINDOW_DAYS } from '@/const/documentHistory';
@@ -325,6 +326,13 @@ export const documentRouter = router({
           });
         }
       }
+
+      const additionalSize = await ctx.documentModel.countFileUsageInSubtree(input.documentId);
+      await businessFileTransferStorageCheck({
+        additionalSize,
+        targetUserId: ctx.userId,
+        targetWorkspaceId: input.targetWorkspaceId,
+      });
 
       return ctx.documentModel.transferTo(input.documentId, input.targetWorkspaceId, ctx.userId);
     }),
