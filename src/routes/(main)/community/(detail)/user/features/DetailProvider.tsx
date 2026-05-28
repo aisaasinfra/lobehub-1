@@ -24,6 +24,7 @@ export interface UserDetailContextConfig {
   isOwner: boolean;
   mobile?: boolean;
   onEditProfile?: (onSuccess?: (profile: MarketUserProfile) => void) => void;
+  onEditWorkspaceProfile?: () => void;
   onStatusChange?: (
     identifier: string,
     action: 'publish' | 'unpublish' | 'deprecate',

@@ -14,10 +14,11 @@ import Banner from './Banner';
 
 const UserHeader = memo(() => {
   const { t } = useTranslation('discover');
-  const { user, isOwner, onEditProfile } = useUserDetailContext();
+  const { user, isOwner, onEditProfile, onEditWorkspaceProfile } = useUserDetailContext();
 
   const displayName = user.displayName || user.userName || user.namespace;
   const username = user.userName || user.namespace;
+  const showEditButton = !!onEditWorkspaceProfile || (isOwner && !!onEditProfile);
 
   // Normalize avatar URL - convert relative paths to absolute URLs
   const avatarUrl = useMemo(() => {
@@ -62,12 +63,19 @@ const UserHeader = memo(() => {
               @{username}
             </Text>
           </Flexbox>
-          {isOwner ? (
-            onEditProfile && (
-              <Button shape={'round'} onClick={() => onEditProfile()}>
-                {t('user.editProfile')}
-              </Button>
-            )
+          {showEditButton ? (
+            <Button
+              shape={'round'}
+              onClick={() => {
+                if (onEditWorkspaceProfile) {
+                  onEditWorkspaceProfile();
+                  return;
+                }
+                onEditProfile?.();
+              }}
+            >
+              {onEditWorkspaceProfile ? t('user.editWorkspaceProfile') : t('user.editProfile')}
+            </Button>
           ) : (
             <FollowButton userId={user.id} />
           )}

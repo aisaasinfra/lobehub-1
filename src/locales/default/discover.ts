@@ -1118,6 +1118,7 @@ export default {
   'user.downloads': 'Downloads',
 
   'user.editProfile': 'Edit Profile',
+  'user.editWorkspaceProfile': 'Edit Workspace',
 
   'user.favoriteAgents': 'Saved Agents',
 
@@ -1139,6 +1140,19 @@ export default {
   'user.logout': 'Logout',
 
   'user.myProfile': 'My Profile',
+
+  'user.workspaceProfile.cancel': 'Cancel',
+  'user.workspaceProfile.description': 'Update the public workspace profile shown in Community.',
+  'user.workspaceProfile.errors.displayName': 'Enter a workspace name',
+  'user.workspaceProfile.errors.url': 'Enter a valid URL',
+  'user.workspaceProfile.failed': 'Failed to update workspace profile',
+  'user.workspaceProfile.fields.avatarUrl': 'Avatar URL',
+  'user.workspaceProfile.fields.description': 'Description',
+  'user.workspaceProfile.fields.displayName': 'Workspace name',
+  'user.workspaceProfile.fields.websiteUrl': 'Website',
+  'user.workspaceProfile.save': 'Save',
+  'user.workspaceProfile.success': 'Workspace profile updated',
+  'user.workspaceProfile.title': 'Edit Workspace',
 
   'user.noAgents': 'This user hasn’t published any Agents yet',
 

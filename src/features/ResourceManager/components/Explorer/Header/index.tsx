@@ -7,6 +7,7 @@ import { BookMinusIcon, FileBoxIcon, Trash2Icon } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useFileBatchTransferActions } from '@/business/client/hooks/useFileBatchTransferActions';
 import NavHeader from '@/features/NavHeader';
 import { usePermission } from '@/hooks/usePermission';
 import { useResourceManagerStore } from '@/routes/(main)/resource/features/store';
@@ -45,6 +46,7 @@ const Header = memo(() => {
     total,
   });
   const hasSelected = selectAllState === 'all' || selectCount > 0;
+  const batchTransferActions = useFileBatchTransferActions(selectCount);
 
   // If no libraryId, show category name or "Resource" for All
   const leftContent = hasSelected ? (
@@ -81,6 +83,19 @@ const Header = memo(() => {
           await onActionClick('batchChunking');
         }}
       />
+
+      {batchTransferActions?.map((action) => (
+        <ActionIcon
+          disabled={!canEditResources}
+          icon={action.icon}
+          key={action.key}
+          title={canEditResources ? action.label : reason}
+          onClick={() => {
+            if (!canEditResources) return;
+            action.onClick();
+          }}
+        />
+      ))}
 
       <ActionIcon
         disabled={!canEditResources}

@@ -6,13 +6,18 @@ import { useParams } from 'react-router-dom';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useMarketAuth, useMarketUserProfile } from '@/layout/AuthProvider/MarketAuth';
 import { type MarketUserProfile } from '@/layout/AuthProvider/MarketAuth/types';
+import { useClientDataSWR } from '@/libs/swr';
+import { workspaceService } from '@/services/workspace';
 import { useDiscoverStore } from '@/store/discover';
+import { useWorkspaceStore, workspaceSelectors } from '@/store/workspace';
 
 import NotFound from '../components/NotFound';
 import { UserDetailProvider } from './features/DetailProvider';
 import UserHeader from './features/Header';
+import { shouldShowWorkspaceProfileEdit } from './features/resolveWorkspaceProfileEdit';
 import UserContent from './features/UserContent';
 import { useUserDetail } from './features/useUserDetail';
+import { openWorkspaceProfileModal } from './features/WorkspaceProfileModal';
 import Loading from './loading';
 
 interface UserDetailPageProps {
@@ -29,6 +34,15 @@ const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
 
   const useUserProfile = useDiscoverStore((s) => s.useUserProfile);
   const { data, isLoading, mutate } = useUserProfile({ username });
+  const activeWorkspaceId = useWorkspaceStore(workspaceSelectors.activeWorkspaceId);
+  const shouldFetchWorkspaceProfile = !!activeWorkspaceId && data?.user?.type === 'organization';
+  const { data: workspaceOrganizationProfile, mutate: mutateWorkspaceOrganizationProfile } =
+    useClientDataSWR(
+      shouldFetchWorkspaceProfile
+        ? ['community-workspace-organization-profile', activeWorkspaceId]
+        : null,
+      () => workspaceService.getMarketOrganizationProfile(),
+    );
 
   // Get current user's profile to check ownership by userName
   const currentUser = getCurrentUserInfo();
@@ -75,6 +89,17 @@ const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
     [data?.user?.userName, data?.user?.namespace, openProfileSetup, navigate, mutate],
   );
 
+  const handleEditWorkspaceProfile = useCallback(() => {
+    if (!data?.user) return;
+
+    openWorkspaceProfileModal({
+      onSuccess: async () => {
+        await Promise.all([mutate(), mutateWorkspaceOrganizationProfile()]);
+      },
+      user: data.user,
+    });
+  }, [data?.user, mutate, mutateWorkspaceOrganizationProfile]);
+
   const contextConfig = useMemo(() => {
     if (!data || !data.user) return null;
     const {
@@ -89,6 +114,12 @@ const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
       plugins,
     } = data;
     const totalInstalls = agents.reduce((sum, agent) => sum + (agent.installCount || 0), 0);
+    const canEditWorkspaceProfile = shouldShowWorkspaceProfileEdit({
+      canEdit: workspaceOrganizationProfile?.canEdit ?? false,
+      marketOrganizationProfile: workspaceOrganizationProfile?.profile ?? null,
+      user,
+    });
+
     return {
       agentCount: agents.length,
       agentGroups: agentGroups || [],
@@ -101,13 +132,23 @@ const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
       isOwner,
       mobile,
       onEditProfile: handleEditProfile,
+      onEditWorkspaceProfile: canEditWorkspaceProfile ? handleEditWorkspaceProfile : undefined,
       onStatusChange: isOwner ? handleStatusChange : undefined,
       plugins: plugins || [],
       skills: skills || [],
       totalInstalls,
       user,
     };
-  }, [data, isOwner, mobile, handleEditProfile, handleStatusChange]);
+  }, [
+    data,
+    handleEditProfile,
+    handleEditWorkspaceProfile,
+    handleStatusChange,
+    isOwner,
+    mobile,
+    workspaceOrganizationProfile?.canEdit,
+    workspaceOrganizationProfile?.profile,
+  ]);
 
   if (isLoading) return <Loading />;
   if (!contextConfig) return <NotFound />;
