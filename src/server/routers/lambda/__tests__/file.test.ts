@@ -310,6 +310,27 @@ describe('fileRouter', () => {
       );
     });
 
+    it('should pass workspace context into business upload check', async () => {
+      ({ caller } = createCallerWithCtx({ workspaceId: 'workspace-1' }));
+      mockFileModelCheckHash.mockResolvedValue({ isExist: false });
+      mockFileModelCreate.mockResolvedValue({ id: 'new-file-id' });
+
+      await caller.createFile({
+        hash: 'test-hash',
+        fileType: 'text',
+        name: 'test.txt',
+        size: 100,
+        url: 'files/test.txt',
+        metadata: {},
+      });
+
+      expect(routerMocks.businessFileUploadCheck).toHaveBeenCalledWith(
+        expect.objectContaining({
+          workspaceId: 'workspace-1',
+        }),
+      );
+    });
+
     it('should use actual file size from S3 instead of client-provided size (security fix)', async () => {
       // Setup: S3 returns actual size of 5000 bytes
       mockFileServiceGetFileMetadata.mockResolvedValue({

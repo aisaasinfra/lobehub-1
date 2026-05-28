@@ -1,8 +1,8 @@
 import type { KnowledgeBaseItem } from '@lobechat/types';
-import { and, count, desc, eq, inArray } from 'drizzle-orm';
+import { and, count, desc, eq, inArray, or } from 'drizzle-orm';
 
-import type { NewKnowledgeBase } from '../schemas';
-import { documents, knowledgeBaseFiles, knowledgeBases } from '../schemas';
+import type { NewDocument, NewFile, NewKnowledgeBase } from '../schemas';
+import { documents, files, knowledgeBaseFiles, knowledgeBases } from '../schemas';
 import type { LobeChatDatabase } from '../type';
 import { buildWorkspacePayload, buildWorkspaceWhere } from '../utils/workspace';
 import { FileModel } from './file';
@@ -179,6 +179,213 @@ export class KnowledgeBaseModel {
       .update(knowledgeBases)
       .set({ ...value, updatedAt: new Date() })
       .where(and(eq(knowledgeBases.id, id), this.ownership()));
+
+  transferTo = async (
+    id: string,
+    targetWorkspaceId: string | null,
+    targetUserId: string,
+  ): Promise<{ id: string }> => {
+    return this.db.transaction(async (trx) => {
+      const [knowledgeBase] = await trx
+        .select()
+        .from(knowledgeBases)
+        .where(and(eq(knowledgeBases.id, id), this.ownership()))
+        .limit(1);
+      if (!knowledgeBase) throw new Error('Knowledge base not found');
+
+      const fileLinks = await trx
+        .select({ fileId: knowledgeBaseFiles.fileId })
+        .from(knowledgeBaseFiles)
+        .where(eq(knowledgeBaseFiles.knowledgeBaseId, id));
+      const fileIds = fileLinks.map((item) => item.fileId);
+      const now = new Date();
+      const ownershipUpdate = { userId: targetUserId, workspaceId: targetWorkspaceId };
+
+      await trx
+        .update(knowledgeBases)
+        .set({ ...ownershipUpdate, updatedAt: now })
+        .where(eq(knowledgeBases.id, id));
+
+      await trx
+        .update(knowledgeBaseFiles)
+        .set(ownershipUpdate)
+        .where(eq(knowledgeBaseFiles.knowledgeBaseId, id));
+
+      if (fileIds.length > 0) {
+        await trx
+          .update(files)
+          .set({ ...ownershipUpdate, updatedAt: now })
+          .where(inArray(files.id, fileIds));
+      }
+
+      const documentWhere =
+        fileIds.length > 0
+          ? or(eq(documents.knowledgeBaseId, id), inArray(documents.fileId, fileIds))
+          : eq(documents.knowledgeBaseId, id);
+
+      await trx
+        .update(documents)
+        .set({ ...ownershipUpdate, updatedAt: now })
+        .where(documentWhere);
+
+      return { id };
+    });
+  };
+
+  copyToWorkspace = async (
+    id: string,
+    targetWorkspaceId: string | null,
+    targetUserId: string,
+  ): Promise<{ id: string }> => {
+    return this.db.transaction(async (trx) => {
+      const [knowledgeBase] = await trx
+        .select()
+        .from(knowledgeBases)
+        .where(and(eq(knowledgeBases.id, id), this.ownership()))
+        .limit(1);
+      if (!knowledgeBase) throw new Error('Knowledge base not found');
+
+      const [copiedKnowledgeBase] = await trx
+        .insert(knowledgeBases)
+        .values({
+          avatar: knowledgeBase.avatar,
+          description: knowledgeBase.description,
+          isPublic: knowledgeBase.isPublic,
+          name: knowledgeBase.name,
+          settings: knowledgeBase.settings,
+          type: knowledgeBase.type,
+          userId: targetUserId,
+          workspaceId: targetWorkspaceId,
+        } as NewKnowledgeBase)
+        .returning();
+
+      const fileLinks = await trx
+        .select({ fileId: knowledgeBaseFiles.fileId })
+        .from(knowledgeBaseFiles)
+        .where(eq(knowledgeBaseFiles.knowledgeBaseId, id));
+      const fileIds = fileLinks.map((item) => item.fileId);
+
+      const documentWhere =
+        fileIds.length > 0
+          ? or(eq(documents.knowledgeBaseId, id), inArray(documents.fileId, fileIds))
+          : eq(documents.knowledgeBaseId, id);
+      const sourceDocuments = await trx.select().from(documents).where(documentWhere);
+      const sourceDocumentIds = new Set(sourceDocuments.map((item) => item.id));
+      const documentIdMap = new Map<string, string>();
+      let pendingDocuments = [...sourceDocuments];
+
+      while (pendingDocuments.length > 0) {
+        const readyDocuments = pendingDocuments.filter(
+          (document) =>
+            !document.parentId ||
+            !sourceDocumentIds.has(document.parentId) ||
+            documentIdMap.has(document.parentId),
+        );
+        const documentsToCopy = readyDocuments.length > 0 ? readyDocuments : pendingDocuments;
+
+        for (const document of documentsToCopy) {
+          const metadata =
+            document.metadata && typeof document.metadata === 'object'
+              ? { ...document.metadata, duplicatedFrom: document.id }
+              : { duplicatedFrom: document.id };
+          const [copiedDocument] = await trx
+            .insert(documents)
+            .values({
+              clientId: null,
+              content: document.content,
+              description: document.description,
+              editorData: document.editorData,
+              fileId: null,
+              fileType: document.fileType,
+              filename: document.filename,
+              knowledgeBaseId:
+                document.knowledgeBaseId === id ? copiedKnowledgeBase.id : document.knowledgeBaseId,
+              metadata,
+              pages: document.pages,
+              parentId: document.parentId ? (documentIdMap.get(document.parentId) ?? null) : null,
+              source: document.source,
+              sourceType: document.sourceType,
+              title: document.title,
+              totalCharCount: document.totalCharCount,
+              totalLineCount: document.totalLineCount,
+              userId: targetUserId,
+              workspaceId: targetWorkspaceId,
+            } as NewDocument)
+            .returning({ id: documents.id });
+
+          documentIdMap.set(document.id, copiedDocument.id);
+        }
+
+        const copiedIds = new Set(documentsToCopy.map((document) => document.id));
+        pendingDocuments = pendingDocuments.filter((document) => !copiedIds.has(document.id));
+      }
+
+      const fileIdMap = new Map<string, string>();
+      if (fileIds.length > 0) {
+        const sourceFiles = await trx.select().from(files).where(inArray(files.id, fileIds));
+
+        for (const file of sourceFiles) {
+          const metadata =
+            file.metadata && typeof file.metadata === 'object'
+              ? { ...file.metadata, duplicatedFrom: file.id }
+              : { duplicatedFrom: file.id };
+          const [copiedFile] = await trx
+            .insert(files)
+            .values({
+              chunkTaskId: null,
+              clientId: null,
+              embeddingTaskId: null,
+              fileHash: file.fileHash,
+              fileType: file.fileType,
+              metadata,
+              name: file.name,
+              parentId: file.parentId ? (documentIdMap.get(file.parentId) ?? null) : null,
+              size: file.size,
+              source: file.source,
+              url: file.url,
+              userId: targetUserId,
+              workspaceId: targetWorkspaceId,
+            } as NewFile)
+            .returning({ id: files.id });
+
+          fileIdMap.set(file.id, copiedFile.id);
+        }
+
+        const copiedLinks = fileLinks.flatMap((link) => {
+          const fileId = fileIdMap.get(link.fileId);
+          if (!fileId) return [];
+
+          return [
+            {
+              fileId,
+              knowledgeBaseId: copiedKnowledgeBase.id,
+              userId: targetUserId,
+              workspaceId: targetWorkspaceId,
+            },
+          ];
+        });
+
+        if (copiedLinks.length > 0) {
+          await trx.insert(knowledgeBaseFiles).values(copiedLinks);
+        }
+      }
+
+      for (const document of sourceDocuments) {
+        if (!document.fileId) continue;
+
+        const copiedDocumentId = documentIdMap.get(document.id);
+        const copiedFileId = fileIdMap.get(document.fileId);
+        if (!copiedDocumentId || !copiedFileId) continue;
+
+        await trx
+          .update(documents)
+          .set({ fileId: copiedFileId })
+          .where(eq(documents.id, copiedDocumentId));
+      }
+
+      return { id: copiedKnowledgeBase.id };
+    });
+  };
 
   findExclusiveFileIds = async (knowledgeBaseId: string): Promise<string[]> => {
     const kbFiles = await this.db

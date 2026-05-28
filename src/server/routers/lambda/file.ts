@@ -174,6 +174,7 @@ export const fileRouter = router({
           inputSize: input.size,
           url: input.url,
           userId: ctx.userId,
+          workspaceId: ctx.workspaceId,
         });
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'File size cannot be negative' });
       }
@@ -186,6 +187,7 @@ export const fileRouter = router({
           transaction: trx,
           url: input.url,
           userId: ctx.userId,
+          workspaceId: ctx.workspaceId,
         });
 
         return ctx.fileModel.create(

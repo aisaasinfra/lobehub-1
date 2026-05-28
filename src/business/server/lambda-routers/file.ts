@@ -7,6 +7,7 @@ export interface BusinessFileUploadCheckParams {
   transaction?: Transaction;
   url: string;
   userId: string;
+  workspaceId?: string | null;
 }
 
 export async function businessFileUploadCheck(

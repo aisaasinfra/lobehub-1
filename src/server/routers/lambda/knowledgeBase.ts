@@ -1,11 +1,12 @@
 import { TRPCError } from '@trpc/server';
+import { and, eq, isNull } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { withScopedPermission } from '@/business/server/trpc-middlewares/rbacPermission';
 import { wsCompatProcedure } from '@/business/server/trpc-middlewares/workspaceAuth';
 import { serverDBEnv } from '@/config/db';
 import { KnowledgeBaseModel } from '@/database/models/knowledgeBase';
-import { insertKnowledgeBasesSchema } from '@/database/schemas';
+import { insertKnowledgeBasesSchema, workspaceMembers } from '@/database/schemas';
 import { router } from '@/libs/trpc/lambda';
 import { serverDatabase } from '@/libs/trpc/lambda/middleware';
 import { FileService } from '@/server/services/file';
@@ -64,6 +65,38 @@ export const knowledgeBaseRouter = router({
       return data?.id;
     }),
 
+  copyKnowledgeBaseToWorkspace: knowledgeBaseProcedure
+    .use(withScopedPermission('knowledge_base:create'))
+    .input(
+      z.object({
+        id: z.string(),
+        targetWorkspaceId: z.string().nullable(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (input.targetWorkspaceId) {
+        const [targetMembership] = await ctx.serverDB
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, input.targetWorkspaceId),
+              eq(workspaceMembers.userId, ctx.userId),
+              isNull(workspaceMembers.deletedAt),
+            ),
+          )
+          .limit(1);
+        if (!targetMembership || targetMembership.role === 'viewer') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'No write access to target workspace',
+          });
+        }
+      }
+
+      return ctx.knowledgeBaseModel.copyToWorkspace(input.id, input.targetWorkspaceId, ctx.userId);
+    }),
+
   getKnowledgeBaseById: knowledgeBaseProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }): Promise<KnowledgeBaseItem | undefined> => {
@@ -113,6 +146,45 @@ export const knowledgeBaseRouter = router({
           await fileService.deleteFiles(urls);
         }
       }
+    }),
+
+  transferKnowledgeBase: knowledgeBaseProcedure
+    .use(withScopedPermission('knowledge_base:create'))
+    .input(
+      z.object({
+        id: z.string(),
+        targetWorkspaceId: z.string().nullable(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (input.targetWorkspaceId === (ctx.workspaceId ?? null)) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Cannot transfer to the same workspace',
+        });
+      }
+
+      if (input.targetWorkspaceId) {
+        const [targetMembership] = await ctx.serverDB
+          .select({ role: workspaceMembers.role })
+          .from(workspaceMembers)
+          .where(
+            and(
+              eq(workspaceMembers.workspaceId, input.targetWorkspaceId),
+              eq(workspaceMembers.userId, ctx.userId),
+              isNull(workspaceMembers.deletedAt),
+            ),
+          )
+          .limit(1);
+        if (!targetMembership || targetMembership.role === 'viewer') {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'No write access to target workspace',
+          });
+        }
+      }
+
+      return ctx.knowledgeBaseModel.transferTo(input.id, input.targetWorkspaceId, ctx.userId);
     }),
 
   updateKnowledgeBase: knowledgeBaseProcedure

@@ -33,6 +33,7 @@ import { getRouteById } from '@/config/routes';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import { SIDEBAR_ACCORDION_KEYS } from '@/store/global/selectors/systemStatus';
+import { useWorkspaceStore, workspaceSelectors } from '@/store/workspace';
 
 // ---------------------------------------------------------------------------
 // Types & constants
@@ -40,7 +41,7 @@ import { SIDEBAR_ACCORDION_KEYS } from '@/store/global/selectors/systemStatus';
 
 const ACCORDION_GROUP_ID = 'accordion-group';
 
-interface SidebarItemConfig {
+export interface SidebarItemConfig {
   alwaysVisible?: boolean;
   id: string;
   labelKey: string;
@@ -58,9 +59,27 @@ const ALL_SIDEBAR_ITEMS: SidebarItemConfig[] = [
   { id: 'memory', labelKey: 'tab.memory', routeId: 'memory' },
 ];
 
+export const getAvailableSidebarItems = (isWorkspaceMode: boolean): SidebarItemConfig[] =>
+  ALL_SIDEBAR_ITEMS.filter((item) => !(isWorkspaceMode && item.id === 'memory'));
+
 const ITEM_MAP = new Map(ALL_SIDEBAR_ITEMS.map((item) => [item.id, item]));
 
 const isAccordionKey = (id: string) => SIDEBAR_ACCORDION_KEYS.has(id);
+
+const mergeAvailableSidebarItems = (
+  currentItems: string[],
+  nextAvailableItems: string[],
+  availableItemIds: Set<string>,
+): string[] => {
+  let nextAvailableIndex = 0;
+  const nextItems = currentItems.map((id) => {
+    if (!availableItemIds.has(id)) return id;
+
+    return nextAvailableItems[nextAvailableIndex++] ?? id;
+  });
+
+  return [...nextItems, ...nextAvailableItems.slice(nextAvailableIndex)];
+};
 
 // ---------------------------------------------------------------------------
 // Modal store
@@ -244,15 +263,24 @@ const CustomizeSidebarContent = memo(() => {
     systemStatusSelectors.hiddenSidebarSections(s),
     s.updateSystemStatus,
   ]);
+  const isWorkspaceMode = useWorkspaceStore((s) => !!workspaceSelectors.activeWorkspace(s)?.slug);
+  const availableItemIds = useMemo(
+    () => new Set(getAvailableSidebarItems(isWorkspaceMode).map((item) => item.id)),
+    [isWorkspaceMode],
+  );
+  const filteredStoreItems = useMemo(
+    () => storeItems.filter((id) => availableItemIds.has(id)),
+    [storeItems, availableItemIds],
+  );
 
   // Local state for drag operations — only persisted on dragEnd
-  const [items, setItems] = useState<string[]>(storeItems);
+  const [items, setItems] = useState<string[]>(filteredStoreItems);
   const [activeId, setActiveId] = useState<string | null>(null);
 
   // Sync local state when store changes (e.g. reset)
   useEffect(() => {
-    setItems(storeItems);
-  }, [storeItems]);
+    setItems(filteredStoreItems);
+  }, [filteredStoreItems]);
 
   // Derive outer (with group placeholder) and inner (accordion items)
   const { innerItems, outerItems } = useMemo(() => {
@@ -334,15 +362,17 @@ const CustomizeSidebarContent = memo(() => {
       }
 
       setItems(next);
-      updateSystemStatus({ sidebarItems: next });
+      updateSystemStatus({
+        sidebarItems: mergeAvailableSidebarItems(storeItems, next, availableItemIds),
+      });
     },
-    [innerItems, outerItems, updateSystemStatus],
+    [availableItemIds, innerItems, outerItems, storeItems, updateSystemStatus],
   );
 
   const handleDragCancel = useCallback(() => {
     setActiveId(null);
-    setItems(storeItems);
-  }, [storeItems]);
+    setItems(filteredStoreItems);
+  }, [filteredStoreItems]);
 
   const renderItem = (id: string) => (
     <SortableItem hiddenSections={hiddenSections} id={id} key={id} onToggle={toggleSection} />

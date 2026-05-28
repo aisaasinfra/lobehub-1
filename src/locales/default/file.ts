@@ -62,7 +62,19 @@ export default {
     'Fork this knowledge base into a workspace. Files are shared by reference; the original stays in your personal space.',
   'library.list.confirmRemoveLibrary':
     'You are about to delete this library. The files within it will not be deleted but moved to All Files. This action cannot be undone, so please proceed with caution.',
+  'library.list.copyDescription':
+    'Clone this library and all of its contents into another workspace.',
+  'library.list.copyFailed': 'Failed to copy library',
+  'library.list.copySuccess': 'Library copied',
+  'library.list.copyTitle': 'Copy library',
+  'library.list.copyTo': 'Copy to…',
   'library.list.empty': 'Click <1>+</1> to create a new library',
+  'library.list.transferDescription':
+    'Move this library and all of its contents to another workspace.',
+  'library.list.transferFailed': 'Failed to transfer library',
+  'library.list.transferSuccess': 'Library transferred',
+  'library.list.transferTitle': 'Transfer library',
+  'library.list.transferTo': 'Transfer to…',
   'library.new': 'New Library',
   'library.title': 'Library',
   'loadMore': 'Load More',

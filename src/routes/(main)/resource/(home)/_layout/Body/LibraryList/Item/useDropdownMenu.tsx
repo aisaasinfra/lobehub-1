@@ -5,6 +5,7 @@ import { FileText, PencilLine, Trash } from 'lucide-react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useKnowledgeBaseTransferMenuItem } from '@/business/client/hooks/useKnowledgeBaseTransferMenuItem';
 import { useCreateNewModal } from '@/features/LibraryModal';
 import { usePermission } from '@/hooks/usePermission';
 import { useKnowledgeBaseStore } from '@/store/library';
@@ -27,8 +28,9 @@ export const useDropdownMenu = ({
   const removeKnowledgeBase = useKnowledgeBaseStore((s) => s.removeKnowledgeBase);
   const { open } = useCreateNewModal();
   const { allowed: canEdit } = usePermission('edit_own_content');
+  const transferMenuItems = useKnowledgeBaseTransferMenuItem(id);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (!canEdit) return;
     if (!id) return;
 
@@ -40,15 +42,15 @@ export const useDropdownMenu = ({
       },
       title: t('library.list.confirmRemoveLibrary'),
     });
-  };
+  }, [canEdit, id, modal, removeKnowledgeBase, t]);
 
-  const handleEditDescription = () => {
+  const handleEditDescription = useCallback(() => {
     if (!canEdit) return;
     open({
       id,
       initialValues: { description: description || '', name },
     });
-  };
+  }, [canEdit, description, id, name, open]);
 
   return useCallback(
     () =>
@@ -73,6 +75,7 @@ export const useDropdownMenu = ({
             handleEditDescription();
           },
         },
+        ...(canEdit ? (transferMenuItems ?? []) : []),
         { type: 'divider' },
         {
           danger: true,
@@ -83,18 +86,6 @@ export const useDropdownMenu = ({
           onClick: handleDelete,
         },
       ].filter(Boolean) as MenuProps['items'],
-    [
-      canEdit,
-      t,
-      id,
-      name,
-      description,
-      modal,
-      removeKnowledgeBase,
-      toggleEditing,
-      handleDelete,
-      handleEditDescription,
-      open,
-    ],
+    [canEdit, t, toggleEditing, handleDelete, handleEditDescription, transferMenuItems],
   );
 };
