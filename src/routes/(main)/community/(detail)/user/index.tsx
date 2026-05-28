@@ -1,20 +1,23 @@
 'use client';
 
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
+import { useCommunityWorkspaceProfile } from '@/business/client/hooks/useCommunityWorkspaceProfile';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useMarketAuth, useMarketUserProfile } from '@/layout/AuthProvider/MarketAuth';
 import { type MarketUserProfile } from '@/layout/AuthProvider/MarketAuth/types';
-import { useClientDataSWR } from '@/libs/swr';
-import { workspaceService } from '@/services/workspace';
 import { useDiscoverStore } from '@/store/discover';
-import { useWorkspaceStore, workspaceSelectors } from '@/store/workspace';
+import type { DiscoverUserProfile } from '@/types/discover';
 
 import NotFound from '../components/NotFound';
 import { UserDetailProvider } from './features/DetailProvider';
 import UserHeader from './features/Header';
-import { shouldShowWorkspaceProfileEdit } from './features/resolveWorkspaceProfileEdit';
+import {
+  resolveCommunityProfileUsername,
+  resolveWorkspaceCommunityProfileRedirect,
+  shouldShowWorkspaceProfileEdit,
+} from './features/resolveWorkspaceProfileEdit';
 import UserContent from './features/UserContent';
 import { useUserDetail } from './features/useUserDetail';
 import { openWorkspaceProfileModal } from './features/WorkspaceProfileModal';
@@ -26,23 +29,75 @@ interface UserDetailPageProps {
 
 const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
   const params = useParams<{ slug: string }>();
-  const username = decodeURIComponent(params.slug ?? '');
+  const location = useLocation();
+  const routeUsername = decodeURIComponent(params.slug ?? '');
   const navigate = useWorkspaceAwareNavigate();
+  const {
+    avatarUrl: workspaceAvatarUrl,
+    canEdit: canEditWorkspaceProfile,
+    description: workspaceDescription,
+    displayName: workspaceDisplayName,
+    isWorkspaceScope,
+    profile: marketOrganizationProfile,
+    refresh: refreshWorkspaceProfile,
+    username: workspaceUsername,
+  } = useCommunityWorkspaceProfile();
 
   const { checkAndShowClaimableResources, getCurrentUserInfo, isAuthenticated, openProfileSetup } =
     useMarketAuth();
 
   const useUserProfile = useDiscoverStore((s) => s.useUserProfile);
+  const username = resolveCommunityProfileUsername({
+    routeUsername,
+    workspaceUsername,
+  });
   const { data, isLoading, mutate } = useUserProfile({ username });
-  const activeWorkspaceId = useWorkspaceStore(workspaceSelectors.activeWorkspaceId);
-  const shouldFetchWorkspaceProfile = !!activeWorkspaceId && data?.user?.type === 'organization';
-  const { data: workspaceOrganizationProfile, mutate: mutateWorkspaceOrganizationProfile } =
-    useClientDataSWR(
-      shouldFetchWorkspaceProfile
-        ? ['community-workspace-organization-profile', activeWorkspaceId]
-        : null,
-      () => workspaceService.getMarketOrganizationProfile(),
-    );
+  const workspaceFallbackProfile = useMemo<DiscoverUserProfile | null>(() => {
+    if (!isWorkspaceScope || !workspaceUsername) return null;
+
+    return {
+      agentGroups: [],
+      agents: [],
+      favoriteAgentGroups: [],
+      favoriteAgents: [],
+      forkedAgentGroups: [],
+      forkedAgents: [],
+      plugins: [],
+      skills: [],
+      user: {
+        avatarUrl: workspaceAvatarUrl ?? null,
+        bannerUrl: null,
+        createdAt: '',
+        description: workspaceDescription ?? null,
+        displayName: workspaceDisplayName ?? workspaceUsername,
+        followersCount: 0,
+        followingCount: 0,
+        id: marketOrganizationProfile?.accountId ?? 0,
+        namespace: workspaceUsername,
+        socialLinks: null,
+        type: 'organization',
+        userName: null,
+      },
+    };
+  }, [
+    isWorkspaceScope,
+    marketOrganizationProfile?.accountId,
+    workspaceAvatarUrl,
+    workspaceDescription,
+    workspaceDisplayName,
+    workspaceUsername,
+  ]);
+  const profileData = data ?? workspaceFallbackProfile;
+
+  useEffect(() => {
+    const redirectTo = resolveWorkspaceCommunityProfileRedirect({
+      isWorkspaceScope,
+      pathname: location.pathname,
+      search: location.search,
+      workspaceUsername,
+    });
+    if (redirectTo) navigate(redirectTo, { replace: true });
+  }, [isWorkspaceScope, location.pathname, location.search, navigate, workspaceUsername]);
 
   // Get current user's profile to check ownership by userName
   const currentUser = getCurrentUserInfo();
@@ -50,7 +105,10 @@ const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
 
   // Check if the current user is viewing their own profile
   const isOwner =
-    isAuthenticated && !!currentUser && data?.user?.namespace === currentUserProfile?.namespace;
+    !isWorkspaceScope &&
+    isAuthenticated &&
+    !!currentUser &&
+    profileData?.user?.namespace === currentUserProfile?.namespace;
 
   // Track if we've already checked for claimable resources in this session
   const hasCheckedClaimable = useRef(false);
@@ -71,7 +129,7 @@ const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
   // Handle profile edit with navigation on userName change
   const handleEditProfile = useCallback(
     (onSuccess?: (profile: MarketUserProfile) => void) => {
-      const currentUserName = data?.user?.userName || data?.user?.namespace;
+      const currentUserName = profileData?.user?.userName || profileData?.user?.namespace;
       openProfileSetup((profile) => {
         // Call the original onSuccess callback if provided
         onSuccess?.(profile);
@@ -86,22 +144,22 @@ const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
         }
       });
     },
-    [data?.user?.userName, data?.user?.namespace, openProfileSetup, navigate, mutate],
+    [profileData?.user?.userName, profileData?.user?.namespace, openProfileSetup, navigate, mutate],
   );
 
   const handleEditWorkspaceProfile = useCallback(() => {
-    if (!data?.user) return;
+    if (!profileData?.user) return;
 
     openWorkspaceProfileModal({
       onSuccess: async () => {
-        await Promise.all([mutate(), mutateWorkspaceOrganizationProfile()]);
+        await Promise.all([mutate(), refreshWorkspaceProfile()]);
       },
-      user: data.user,
+      user: profileData.user,
     });
-  }, [data?.user, mutate, mutateWorkspaceOrganizationProfile]);
+  }, [profileData?.user, mutate, refreshWorkspaceProfile]);
 
   const contextConfig = useMemo(() => {
-    if (!data || !data.user) return null;
+    if (!profileData || !profileData.user) return null;
     const {
       user,
       agents,
@@ -112,11 +170,11 @@ const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
       favoriteAgentGroups,
       skills,
       plugins,
-    } = data;
+    } = profileData;
     const totalInstalls = agents.reduce((sum, agent) => sum + (agent.installCount || 0), 0);
-    const canEditWorkspaceProfile = shouldShowWorkspaceProfileEdit({
-      canEdit: workspaceOrganizationProfile?.canEdit ?? false,
-      marketOrganizationProfile: workspaceOrganizationProfile?.profile ?? null,
+    const shouldRenderWorkspaceEdit = shouldShowWorkspaceProfileEdit({
+      canEdit: canEditWorkspaceProfile,
+      marketOrganizationProfile,
       user,
     });
 
@@ -129,10 +187,11 @@ const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
       forkedAgentGroups: forkedAgentGroups || [],
       forkedAgents: forkedAgents || [],
       groupCount: agentGroups?.length || 0,
+      hideFollowButton: isWorkspaceScope,
       isOwner,
       mobile,
-      onEditProfile: handleEditProfile,
-      onEditWorkspaceProfile: canEditWorkspaceProfile ? handleEditWorkspaceProfile : undefined,
+      onEditProfile: isWorkspaceScope ? undefined : handleEditProfile,
+      onEditWorkspaceProfile: shouldRenderWorkspaceEdit ? handleEditWorkspaceProfile : undefined,
       onStatusChange: isOwner ? handleStatusChange : undefined,
       plugins: plugins || [],
       skills: skills || [],
@@ -140,17 +199,18 @@ const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
       user,
     };
   }, [
-    data,
     handleEditProfile,
     handleEditWorkspaceProfile,
     handleStatusChange,
     isOwner,
+    isWorkspaceScope,
+    marketOrganizationProfile,
     mobile,
-    workspaceOrganizationProfile?.canEdit,
-    workspaceOrganizationProfile?.profile,
+    profileData,
+    canEditWorkspaceProfile,
   ]);
 
-  if (isLoading) return <Loading />;
+  if (isLoading && !workspaceFallbackProfile) return <Loading />;
   if (!contextConfig) return <NotFound />;
 
   return (

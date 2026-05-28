@@ -14,7 +14,8 @@ import Banner from './Banner';
 
 const UserHeader = memo(() => {
   const { t } = useTranslation('discover');
-  const { user, isOwner, onEditProfile, onEditWorkspaceProfile } = useUserDetailContext();
+  const { user, hideFollowButton, isOwner, onEditProfile, onEditWorkspaceProfile } =
+    useUserDetailContext();
 
   const displayName = user.displayName || user.userName || user.namespace;
   const username = user.userName || user.namespace;
@@ -76,12 +77,12 @@ const UserHeader = memo(() => {
             >
               {onEditWorkspaceProfile ? t('user.editWorkspaceProfile') : t('user.editProfile')}
             </Button>
-          ) : (
+          ) : hideFollowButton ? null : (
             <FollowButton userId={user.id} />
           )}
         </Flexbox>
 
-        <FollowStats />
+        {!hideFollowButton && <FollowStats />}
 
         {user.description && <Text as={'p'}>{user.description}</Text>}
 

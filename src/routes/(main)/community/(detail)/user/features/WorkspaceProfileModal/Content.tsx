@@ -6,7 +6,7 @@ import { App, Form } from 'antd';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { workspaceService } from '@/services/workspace';
+import { updateCommunityWorkspaceProfile } from '@/business/client/services/communityWorkspaceProfile';
 import type { DiscoverUserInfo } from '@/types/discover';
 
 interface FormValues {
@@ -39,7 +39,7 @@ export const Content = memo<ContentProps>(({ user, onSuccess }) => {
     const values = await form.validateFields();
     setLoading(true);
     try {
-      await workspaceService.updateMarketOrganizationProfile({
+      await updateCommunityWorkspaceProfile({
         avatarUrl: trimOptional(values.avatarUrl),
         description: trimOptional(values.description),
         displayName: values.displayName.trim(),

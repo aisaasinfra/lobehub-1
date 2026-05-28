@@ -275,6 +275,13 @@ export const sharedMainAreaChildren: RouteObject[] = [
             ),
             path: 'user/:slug',
           },
+          {
+            element: dynamicElement(
+              () => import('@/routes/(main)/community/(detail)/user'),
+              'Desktop > Discover > Detail > Organization',
+            ),
+            path: 'org/:slug',
+          },
         ],
         element: dynamicElement(
           () => import('@/routes/(main)/community/(detail)/_layout'),

@@ -7,7 +7,7 @@ import { createStaticStyles } from 'antd-style';
 import { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { lambdaClient, lambdaQuery } from '@/libs/trpc/client';
+import { useCredsApi } from '../useCredsApi';
 
 const styles = createStaticStyles(({ css, cssVar }) => ({
   connectionOption: css`
@@ -45,9 +45,9 @@ interface FormValues {
 const OAuthCredForm: FC<OAuthCredFormProps> = ({ disabled, onBack, onSuccess }) => {
   const { t } = useTranslation('setting');
   const [form] = Form.useForm<FormValues>();
+  const credsApi = useCredsApi();
 
-  const { data: connectionsData, isLoading } =
-    lambdaQuery.market.creds.listOAuthConnections.useQuery();
+  const { data: connectionsData, isLoading } = credsApi.query.listOAuthConnections.useQuery();
 
   const connections = connectionsData?.connections ?? [];
 
@@ -55,7 +55,7 @@ const OAuthCredForm: FC<OAuthCredFormProps> = ({ disabled, onBack, onSuccess }) 
     mutationFn: async (values: FormValues) => {
       if (disabled) return;
 
-      await lambdaClient.market.creds.createOAuth.mutate({
+      await credsApi.client.createOAuth.mutate({
         description: values.description,
         key: values.key,
         name: values.name,

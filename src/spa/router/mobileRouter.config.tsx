@@ -160,6 +160,16 @@ export const sharedMainAreaChildren: RouteObject[] = [
             ),
             path: 'user/:slug',
           },
+          {
+            element: dynamicElement(
+              () =>
+                import('@/routes/(main)/community/(detail)/user').then(
+                  (m) => m.MobileUserDetailPage,
+                ),
+              'Mobile > Discover > Detail > Organization',
+            ),
+            path: 'org/:slug',
+          },
         ],
         element: dynamicElement(
           () => import('@/routes/(mobile)/community/(detail)/_layout'),

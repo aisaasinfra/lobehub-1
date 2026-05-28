@@ -10,7 +10,8 @@ import { type FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { usePermission } from '@/hooks/usePermission';
-import { lambdaClient } from '@/libs/trpc/client';
+
+import { useCredsApi } from '../useCredsApi';
 
 const styles = createStaticStyles(({ css }) => ({
   footer: css`
@@ -43,6 +44,7 @@ const EditKVForm: FC<EditKVFormProps> = ({ cred, onCancel, onSuccess }) => {
   const { allowed: canManageCredentials } = usePermission('manage_provider_key');
   const [form] = Form.useForm<FormValues>();
   const [isLoading, setIsLoading] = useState(true);
+  const credsApi = useCredsApi();
 
   // Fetch decrypted values on mount
   useEffect(() => {
@@ -53,7 +55,7 @@ const EditKVForm: FC<EditKVFormProps> = ({ cred, onCancel, onSuccess }) => {
       }
 
       try {
-        const result = await lambdaClient.market.creds.get.query({
+        const result = await credsApi.client.get.query({
           decrypt: true,
           id: cred.id,
         });
@@ -83,7 +85,7 @@ const EditKVForm: FC<EditKVFormProps> = ({ cred, onCancel, onSuccess }) => {
     };
 
     fetchDecryptedValues();
-  }, [canManageCredentials, cred.id, cred.name, cred.description, form]);
+  }, [canManageCredentials, cred.id, cred.name, cred.description, credsApi, form]);
 
   const updateMutation = useMutation({
     mutationFn: async (values: FormValues) => {
@@ -100,7 +102,7 @@ const EditKVForm: FC<EditKVFormProps> = ({ cred, onCancel, onSuccess }) => {
         {} as Record<string, string>,
       );
 
-      await lambdaClient.market.creds.update.mutate({
+      await credsApi.client.update.mutate({
         description: values.description,
         id: cred.id,
         name: values.name,

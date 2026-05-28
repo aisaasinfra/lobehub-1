@@ -46,6 +46,15 @@ export interface MarketServiceOptions {
     clientId: string;
     clientSecret: string;
   };
+  /**
+   * Owner account id for organization-scoped operations.
+   *
+   * When set, Market attributes reads/writes (currently: creds and inject-creds)
+   * to the given organization account instead of the actor's personal account.
+   * Used by the workspace creds router after resolving a cloud workspace to
+   * its Market organization via {@link WorkspaceMarketIdentityService}.
+   */
+  ownerAccountId?: number;
   /** Pre-generated trusted client token (alternative to userInfo) */
   trustedClientToken?: string;
   /** User info for generating trusted client token */
@@ -81,7 +90,8 @@ export class MarketService {
   market: MarketSDK;
 
   constructor(options: MarketServiceOptions = {}) {
-    const { accessToken, userInfo, clientCredentials, trustedClientToken } = options;
+    const { accessToken, userInfo, clientCredentials, trustedClientToken, ownerAccountId } =
+      options;
 
     // Use provided trustedClientToken or generate from userInfo
     const resolvedTrustedClientToken =
@@ -92,15 +102,17 @@ export class MarketService {
       baseURL: MARKET_BASE_URL,
       clientId: clientCredentials?.clientId,
       clientSecret: clientCredentials?.clientSecret,
+      ownerAccountId,
       trustedClientToken: resolvedTrustedClientToken,
     });
 
     log(
-      'MarketService initialized: baseURL=%s, hasAccessToken=%s, hasTrustedToken=%s, hasClientCredentials=%s',
+      'MarketService initialized: baseURL=%s, hasAccessToken=%s, hasTrustedToken=%s, hasClientCredentials=%s, ownerAccountId=%s',
       MARKET_BASE_URL,
       !!accessToken,
       !!resolvedTrustedClientToken,
       !!clientCredentials,
+      ownerAccountId ?? 'none',
     );
   }
 

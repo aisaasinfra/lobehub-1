@@ -9,7 +9,8 @@ import { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { usePermission } from '@/hooks/usePermission';
-import { lambdaClient } from '@/libs/trpc/client';
+
+import { useCredsApi } from '../useCredsApi';
 
 const styles = createStaticStyles(({ css }) => ({
   footer: css`
@@ -35,12 +36,13 @@ const EditMetaForm: FC<EditMetaFormProps> = ({ cred, onCancel, onSuccess }) => {
   const { t } = useTranslation('setting');
   const { allowed: canManageCredentials } = usePermission('manage_provider_key');
   const [form] = Form.useForm<FormValues>();
+  const credsApi = useCredsApi();
 
   const updateMutation = useMutation({
     mutationFn: async (values: FormValues) => {
       if (!canManageCredentials) return;
 
-      await lambdaClient.market.creds.update.mutate({
+      await credsApi.client.update.mutate({
         description: values.description,
         id: cred.id,
         name: values.name,

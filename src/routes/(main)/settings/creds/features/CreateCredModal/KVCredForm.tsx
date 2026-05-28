@@ -8,7 +8,7 @@ import { Minus, Plus } from 'lucide-react';
 import { type FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { lambdaClient } from '@/libs/trpc/client';
+import { useCredsApi } from '../useCredsApi';
 
 const styles = createStaticStyles(({ css }) => ({
   footer: css`
@@ -41,6 +41,7 @@ interface FormValues {
 const KVCredForm: FC<KVCredFormProps> = ({ type, disabled, onBack, onSuccess }) => {
   const { t } = useTranslation('setting');
   const [form] = Form.useForm<FormValues>();
+  const credsApi = useCredsApi();
 
   const createMutation = useMutation({
     mutationFn: async (values: FormValues) => {
@@ -57,7 +58,7 @@ const KVCredForm: FC<KVCredFormProps> = ({ type, disabled, onBack, onSuccess }) 
         {} as Record<string, string>,
       );
 
-      await lambdaClient.market.creds.createKV.mutate({
+      await credsApi.client.createKV.mutate({
         description: values.description,
         key: values.key,
         name: values.name,

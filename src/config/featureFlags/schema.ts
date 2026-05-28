@@ -35,6 +35,7 @@ export const FeatureFlagsSchema = z.object({
   // Cloud feature flag. Keep here until cloud owns a separate runtime flag domain.
   auth_captcha: FeatureFlagValue.optional(),
   cloud_promotion: FeatureFlagValue.optional(),
+  workspace: FeatureFlagValue.optional(),
 
   // the flags below can only be used with commercial license
   // if you want to use it in the commercial usage
@@ -84,6 +85,7 @@ export const DEFAULT_FEATURE_FLAGS: IFeatureFlags = {
   agent_onboarding: isDev,
   auth_captcha: true,
   cloud_promotion: false,
+  workspace: false,
 
   market: true,
   speech_to_text: true,
@@ -119,6 +121,7 @@ export const mapFeatureFlagsEnvToState = (config: IFeatureFlags, userId?: string
     enableAuthCaptcha: evaluateFeatureFlag(config.auth_captcha, userId),
 
     showCloudPromotion: evaluateFeatureFlag(config.cloud_promotion, userId),
+    enableWorkspace: evaluateFeatureFlag(config.workspace, userId),
 
     showMarket: evaluateFeatureFlag(config.market, userId),
     enableSTT: evaluateFeatureFlag(config.speech_to_text, userId),

@@ -1160,6 +1160,8 @@ export default {
 
   'user.noAgents.title': 'No Agents yet',
 
+  'user.workspace.noAgents': 'This workspace has not published any Agents to Community yet.',
+
   'user.noFavoriteAgents': 'No saved Agents yet',
 
   'user.noFavoritePlugins': 'No saved Skills yet',

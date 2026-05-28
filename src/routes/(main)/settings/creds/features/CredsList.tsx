@@ -11,10 +11,10 @@ import { useTranslation } from 'react-i18next';
 
 import { usePermission } from '@/hooks/usePermission';
 import { useMarketAuth } from '@/layout/AuthProvider/MarketAuth';
-import { lambdaClient, lambdaQuery } from '@/libs/trpc/client';
 
 import CredItem from './CredItem';
 import EditCredModal from './EditCredModal';
+import { useCredsApi } from './useCredsApi';
 import ViewCredModal from './ViewCredModal';
 
 const styles = createStaticStyles(({ css }) => ({
@@ -44,15 +44,16 @@ const CredsList: FC = () => {
   const [viewingCred, setViewingCred] = useState<UserCredSummary | null>(null);
   const { isAuthenticated, isLoading: isAuthLoading, signIn } = useMarketAuth();
   const { allowed: canManageCredentials } = usePermission('manage_provider_key');
+  const credsApi = useCredsApi();
 
-  const { data, isLoading, refetch } = lambdaQuery.market.creds.list.useQuery(undefined, {
+  const { data, isLoading, refetch } = credsApi.query.list.useQuery(undefined, {
     enabled: isAuthenticated,
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
       if (!canManageCredentials) return;
-      await lambdaClient.market.creds.delete.mutate({ id });
+      await credsApi.client.delete.mutate({ id });
     },
     onSuccess: () => {
       refetch();

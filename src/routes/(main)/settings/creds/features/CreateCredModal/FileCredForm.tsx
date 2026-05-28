@@ -8,7 +8,7 @@ import { createStaticStyles } from 'antd-style';
 import { type FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { lambdaClient } from '@/libs/trpc/client';
+import { useCredsApi } from '../useCredsApi';
 
 const styles = createStaticStyles(({ css }) => ({
   footer: css`
@@ -37,6 +37,7 @@ const FileCredForm: FC<FileCredFormProps> = ({ disabled, onBack, onSuccess }) =>
   const [fileHashId, setFileHashId] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
+  const credsApi = useCredsApi();
 
   const createMutation = useMutation({
     mutationFn: async (values: FormValues) => {
@@ -46,7 +47,7 @@ const FileCredForm: FC<FileCredFormProps> = ({ disabled, onBack, onSuccess }) =>
         throw new Error('File is required');
       }
 
-      await lambdaClient.market.creds.createFile.mutate({
+      await credsApi.client.createFile.mutate({
         description: values.description,
         fileHashId,
         fileName,
@@ -74,8 +75,8 @@ const FileCredForm: FC<FileCredFormProps> = ({ disabled, onBack, onSuccess }) =>
       }
       const base64 = btoa(binary);
 
-      // Upload via TRPC
-      const result = await lambdaClient.market.creds.uploadFile.mutate({
+      // Upload via TRPC (personal or workspace, based on active CredsApi context)
+      const result = await credsApi.client.uploadFile.mutate({
         file: base64,
         fileName: file.name,
         fileType: file.type || 'application/octet-stream',

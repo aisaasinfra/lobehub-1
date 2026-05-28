@@ -282,6 +282,10 @@ export const sharedMainAreaChildren: RouteObject[] = [
             element: <CommunityDetailUserPage />,
             path: 'user/:slug',
           },
+          {
+            element: <CommunityDetailUserPage />,
+            path: 'org/:slug',
+          },
         ],
         element: <CommunityDetailLayout />,
       },
