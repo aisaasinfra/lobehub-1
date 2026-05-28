@@ -973,21 +973,28 @@ When I am ___, I need ___
   'storageOverage.capped': 'Monthly spending cap reached. Overage uploads are paused.',
   'storageOverage.capUpdateFailed': 'Failed to update monthly cap.',
   'storageOverage.capUpdated': 'Monthly cap updated.',
-  'storageOverage.consent.agree': 'I understand and agree to the pricing terms',
   'storageOverage.consent.billedTogether': 'Billed together with your subscription',
   'storageOverage.consent.canDisable': 'Can be disabled anytime',
   'storageOverage.consent.description': 'Storage exceeding your plan quota will be charged:',
-  'storageOverage.consent.enable': 'Enable',
-  'storageOverage.consent.enableDisabledTooltip':
-    'Review and accept the pricing terms before enabling.',
+  'storageOverage.consent.enable': 'Agree and enable',
   'storageOverage.consent.onlyOverage': 'Only overage is charged',
   'storageOverage.consent.rate':
-    '{{dailyRate}}/GB/day. Limited time: {{limitedMonthlyRate}}/GB/month (regular {{regularMonthlyRate}}).',
+    'About {{limitedMonthlyRate}}/GB/month for a limited time (regular {{regularMonthlyRate}}).',
   'storageOverage.consent.title': 'Enable Storage Pay-as-you-go',
   'storageOverage.currentPlanLocked.desc':
     'Your current plan does not support storage pay-as-you-go. After it ends, subscribe to a plan to enable it.',
   'storageOverage.desc':
     'Subscription plans can enable metered billing for storage beyond the included quota.',
+  'storageOverage.disableConfirm.blockUploads':
+    'If your storage is still above the included quota, new uploads will be blocked.',
+  'storageOverage.disableConfirm.canEnableAgain':
+    'You can enable storage pay-as-you-go again later.',
+  'storageOverage.disableConfirm.confirm': 'Disable',
+  'storageOverage.disableConfirm.description':
+    'After disabling, storage overage will no longer be billed.',
+  'storageOverage.disableConfirm.existingCharges':
+    'Charges already incurred in this billing cycle will still be included on your subscription invoice.',
+  'storageOverage.disableConfirm.title': 'Disable storage pay-as-you-go?',
   'storageOverage.disableFailed': 'Failed to disable storage pay-as-you-go.',
   'storageOverage.disabled': 'Storage pay-as-you-go disabled.',
   'storageOverage.enableFailed': 'Failed to enable storage pay-as-you-go.',
@@ -997,7 +1004,7 @@ When I am ___, I need ___
     'Leave empty for unlimited. Uploads will be blocked when the cap is reached.',
   'storageOverage.noPaymentMethod': 'Please add a payment method to enable storage pay-as-you-go.',
   'storageOverage.rate':
-    '{{dailyRate}}/GB/day. Limited time: {{limitedMonthlyRate}}/GB/month (regular {{regularMonthlyRate}}).',
+    'About {{limitedMonthlyRate}}/GB/month for a limited time (regular {{regularMonthlyRate}}).',
   'storageOverage.subscriptionRequired.action': 'View plans',
   'storageOverage.subscriptionRequired.desc':
     'Subscribe to a plan to enable storage pay-as-you-go for overage usage.',
