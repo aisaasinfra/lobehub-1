@@ -2,10 +2,11 @@
 
 import { Flexbox } from '@lobehub/ui';
 import { McpIcon, ProviderIcon, SkillsIcon } from '@lobehub/ui/icons';
-import { Bot, Brain, ShapesIcon } from 'lucide-react';
+import { Bot, Brain, Building2, ShapesIcon } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useCommunityWorkspaceProfile } from '@/business/client/hooks/useCommunityWorkspaceProfile';
 import { type NavItemProps } from '@/features/NavPanel/components/NavItem';
 import NavItem from '@/features/NavPanel/components/NavItem';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
@@ -24,55 +25,65 @@ interface Item {
 
 const useActiveTabKey = () => {
   const pathname = usePathname();
-  if (pathname === '/community') return DiscoverTab.Home;
-  return (pathname.split('/community/').find(Boolean)! as DiscoverTab) || DiscoverTab.Home;
+  if (pathname.endsWith('/community')) return DiscoverTab.Home;
+  return (pathname.split('/community/').at(1) as DiscoverTab) || DiscoverTab.Home;
 };
 
 const Nav = memo(() => {
   const tab = useActiveTabKey();
   const navigate = useWorkspaceAwareNavigate();
   const { t } = useTranslation('discover');
+  const { isWorkspaceScope } = useCommunityWorkspaceProfile();
 
   const items: Item[] = useMemo(
-    () => [
-      {
-        icon: ShapesIcon,
-        key: DiscoverTab.Home,
-        title: t('tab.home'),
-        url: '/community',
-      },
-      {
-        icon: Bot,
-        key: DiscoverTab.Assistants,
-        title: t('tab.assistant'),
-        url: '/community/agent',
-      },
-      {
-        icon: SkillsIcon,
-        key: DiscoverTab.Skills,
-        title: t('tab.skill'),
-        url: '/community/skill',
-      },
-      {
-        icon: McpIcon,
-        key: DiscoverTab.Mcp,
-        title: `MCP`,
-        url: '/community/mcp',
-      },
-      {
-        icon: Brain,
-        key: DiscoverTab.Models,
-        title: t('tab.model'),
-        url: '/community/model',
-      },
-      {
-        icon: ProviderIcon,
-        key: DiscoverTab.Providers,
-        title: t('tab.provider'),
-        url: '/community/provider',
-      },
-    ],
-    [t],
+    () =>
+      [
+        {
+          icon: ShapesIcon,
+          key: DiscoverTab.Home,
+          title: t('tab.home'),
+          url: '/community',
+        },
+        isWorkspaceScope
+          ? {
+              icon: Building2,
+              key: DiscoverTab.Workspace,
+              title: t('tab.workspace'),
+              url: '/community/workspace',
+            }
+          : null,
+        {
+          icon: Bot,
+          key: DiscoverTab.Assistants,
+          title: t('tab.assistant'),
+          url: '/community/agent',
+        },
+        {
+          icon: SkillsIcon,
+          key: DiscoverTab.Skills,
+          title: t('tab.skill'),
+          url: '/community/skill',
+        },
+        {
+          icon: McpIcon,
+          key: DiscoverTab.Mcp,
+          title: `MCP`,
+          url: '/community/mcp',
+        },
+        {
+          icon: Brain,
+          key: DiscoverTab.Models,
+          title: t('tab.model'),
+          url: '/community/model',
+        },
+        {
+          icon: ProviderIcon,
+          key: DiscoverTab.Providers,
+          title: t('tab.provider'),
+          url: '/community/provider',
+        },
+      ].filter(Boolean) as Item[],
+    [isWorkspaceScope, t],
   );
 
   return (

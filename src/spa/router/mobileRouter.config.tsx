@@ -106,6 +106,16 @@ export const sharedMainAreaChildren: RouteObject[] = [
               },
             ],
           },
+          {
+            element: dynamicElement(
+              () =>
+                import('@/routes/(main)/community/(detail)/workspace').then(
+                  (m) => m.MobileWorkspaceDetailPage,
+                ),
+              'Mobile > Discover > List > Workspace',
+            ),
+            path: 'workspace',
+          },
         ],
         element: dynamicElement(
           () => import('@/routes/(mobile)/community/(list)/_layout'),

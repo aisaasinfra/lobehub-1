@@ -68,25 +68,23 @@ describe('resolveCommunityProfileUsername', () => {
 });
 
 describe('resolveWorkspaceCommunityProfileRedirect', () => {
-  it('redirects workspace user URLs to organization URLs', () => {
+  it('redirects workspace user URLs to the workspace Community page', () => {
     expect(
       resolveWorkspaceCommunityProfileRedirect({
         isWorkspaceScope: true,
         pathname: '/hug/community/user/rdmclin2',
-        workspaceUsername: 'ws-hug',
       }),
-    ).toBe('/community/org/ws-hug');
+    ).toBe('/community/workspace');
   });
 
-  it('redirects a mismatched workspace org URL to the active organization URL', () => {
+  it('redirects workspace org URLs to the workspace Community page', () => {
     expect(
       resolveWorkspaceCommunityProfileRedirect({
         isWorkspaceScope: true,
         pathname: '/hug/community/org/other',
         search: '?tab=skills',
-        workspaceUsername: 'ws-hug',
       }),
-    ).toBe('/community/org/ws-hug?tab=skills');
+    ).toBe('/community/workspace?tab=skills');
   });
 
   it('keeps the current URL outside workspace scope', () => {
@@ -94,7 +92,6 @@ describe('resolveWorkspaceCommunityProfileRedirect', () => {
       resolveWorkspaceCommunityProfileRedirect({
         isWorkspaceScope: false,
         pathname: '/community/user/rdmclin2',
-        workspaceUsername: 'ws-hug',
       }),
     ).toBeNull();
   });

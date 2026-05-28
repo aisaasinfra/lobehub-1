@@ -1113,6 +1113,8 @@ export default {
 
   'tab.user': 'User',
 
+  'tab.workspace': 'Workspace',
+
   'user.agents': 'Agents',
 
   'user.downloads': 'Downloads',

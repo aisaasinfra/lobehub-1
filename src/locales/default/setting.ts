@@ -1131,6 +1131,11 @@ When I am ___, I need ___
     '{{seats}} seats · {{credits}} credits / month',
   'workspace.billingPage.billing.breakdown.extraSeats': 'Extra seats',
   'workspace.billingPage.billing.breakdown.platform': 'Platform fee',
+  'workspace.billingPage.billing.breakdown.product': 'Product',
+  'workspace.billingPage.billing.breakdown.quantity': 'Quantity',
+  'workspace.billingPage.billing.breakdown.seatCount_one': '{{count}} Seat',
+  'workspace.billingPage.billing.breakdown.seatCount_other': '{{count}} Seats',
+  'workspace.billingPage.billing.breakdown.totalCost': 'Total Cost',
   'workspace.billingPage.billing.cancelConfirm':
     'Subscription will keep running until the end of the current billing cycle, then stop renewing. You can resume at any time before the cycle ends.',
   'workspace.billingPage.billing.cancelCta': 'Cancel subscription',
@@ -1195,6 +1200,7 @@ When I am ___, I need ___
   'workspace.billingPage.billing.currentPlan.title': 'Current plan',
   'workspace.billingPage.billing.summarySubtitle': 'Workspace subscription and billing breakdown',
   'workspace.billingPage.billing.summaryTitle': 'Subscription',
+  'workspace.billingPage.billing.totalLabel': 'Total',
   'workspace.billingPage.billing.upgradeFailedToast': 'Failed to start checkout.',
   'workspace.billingPage.credits.breakdownCount': 'Ops',
   'workspace.billingPage.credits.breakdownSpend': 'Spend',
@@ -1556,6 +1562,12 @@ When I am ___, I need ___
   'workspace.member.manageAccessModal.title': 'Manage Team Access',
   'workspace.member.primaryOwner': 'Primary',
   'workspace.member.promote': 'Promote to owner',
+  'workspace.member.transferPrimaryConfirm.billingNotice.acknowledge':
+    'I understand the saved payment method will keep being charged until the new primary owner replaces it.',
+  'workspace.member.transferPrimaryConfirm.billingNotice.description':
+    'Subscription charges will keep using the payment method on file ({{email}}) until the new primary owner adds their own card in Billing → Payment Methods. Remind the new owner to update it after transfer, or agree that this account will keep paying.',
+  'workspace.member.transferPrimaryConfirm.billingNotice.title':
+    "Payment method stays on the previous owner's card",
   'workspace.member.transferPrimaryConfirm.failed': 'Failed to transfer primary ownership',
   'workspace.member.transferPrimaryConfirm.noOwners':
     'No other owners in this workspace. Promote a member to owner first before transferring primary ownership.',

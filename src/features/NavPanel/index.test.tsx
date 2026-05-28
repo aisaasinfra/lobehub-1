@@ -49,6 +49,10 @@ vi.mock('@/routes/(main)/agent/_layout/Sidebar/Content', () => ({
   default: () => <div>Agent sidebar</div>,
 }));
 
+vi.mock('@/routes/(main)/community/_layout/Sidebar/Content', () => ({
+  default: () => <div>Community sidebar</div>,
+}));
+
 vi.mock('./components/NavPanelDraggable', () => ({
   NavPanelDraggable: ({ activeContent }: NavPanelDraggableMockProps) => (
     <div data-nav-key={activeContent.key} data-testid="nav-panel">
@@ -145,6 +149,18 @@ describe('NavPanel', () => {
       expect(screen.queryByText('Stale home snapshot')).not.toBeInTheDocument();
     });
     expect(screen.getByTestId('nav-panel')).not.toHaveAttribute('data-nav-key', 'home');
+  });
+
+  it('uses the community sidebar fallback before its route portal registers', async () => {
+    pathname = '/lobe-team/community';
+    const { default: NavPanel } = await import('./index');
+
+    render(<NavPanel />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('nav-panel')).toHaveAttribute('data-nav-key', 'discover');
+    });
+    expect(screen.getByText('Community sidebar')).toBeInTheDocument();
   });
 
   it.each(['/lobe-team/tasks', '/lobe-team/task/task-1'])(

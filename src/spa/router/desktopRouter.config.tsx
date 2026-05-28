@@ -212,6 +212,13 @@ export const sharedMainAreaChildren: RouteObject[] = [
           },
           {
             element: dynamicElement(
+              () => import('@/routes/(main)/community/(detail)/workspace'),
+              'Desktop > Discover > List > Workspace',
+            ),
+            path: 'workspace',
+          },
+          {
+            element: dynamicElement(
               () => import('@/routes/(main)/community/(list)/(home)'),
               'Desktop > Discover > List > Home',
             ),

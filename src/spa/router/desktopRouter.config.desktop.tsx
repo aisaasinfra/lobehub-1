@@ -51,6 +51,7 @@ import CommunityDetailModelPage from '@/routes/(main)/community/(detail)/model';
 import CommunityDetailProviderPage from '@/routes/(main)/community/(detail)/provider';
 import CommunityDetailSkillPage from '@/routes/(main)/community/(detail)/skill';
 import CommunityDetailUserPage from '@/routes/(main)/community/(detail)/user';
+import CommunityDetailWorkspacePage from '@/routes/(main)/community/(detail)/workspace';
 import CommunityListLayout from '@/routes/(main)/community/(list)/_layout';
 import CommunityListHomePage from '@/routes/(main)/community/(list)/(home)';
 import CommunityListAgentPage from '@/routes/(main)/community/(list)/agent';
@@ -243,6 +244,10 @@ export const sharedMainAreaChildren: RouteObject[] = [
             ],
             element: <CommunityListMcpLayout />,
             path: 'mcp',
+          },
+          {
+            element: <CommunityDetailWorkspacePage />,
+            path: 'workspace',
           },
           {
             element: <CommunityListHomePage />,

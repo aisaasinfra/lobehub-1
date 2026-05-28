@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 
 import WorkspaceSettingsSideBarContent from '@/features/WorkspaceSetting/SideBar/Content';
 import AgentSidebarContent from '@/routes/(main)/agent/_layout/Sidebar/Content';
+import CommunitySidebarContent from '@/routes/(main)/community/_layout/Sidebar/Content';
 import SidebarContent from '@/routes/(main)/home/_layout/SidebarContent';
 import SettingsSidebarContent from '@/routes/(main)/settings/_layout/SidebarContent';
 import { useWorkspaceStore, workspaceSelectors } from '@/store/workspace';
@@ -35,6 +36,7 @@ const setNavPanelSnapshot = (snapshot: NavPanelSnapshot) => {
 
 const FALLBACK_NAV_KEY = 'home';
 const AGENT_NAV_KEY = 'agent';
+const COMMUNITY_NAV_KEY = 'discover';
 const EMPTY_NAV_KEY = 'empty';
 const SETTINGS_NAV_KEY = 'settings';
 const WORKSPACE_SETTINGS_NAV_KEY = 'workspace-settings';
@@ -102,8 +104,16 @@ const NavPanel = memo(() => {
         node: <SettingsSidebarContent />,
       }
     : null;
-  const routeFallback = agentFallback || workspaceSettingsFallback || personalSettingsFallback;
   const mainRouteSegment = getMainRouteSegment(pathname, activeSlug);
+  const communityFallback =
+    mainRouteSegment === 'community'
+      ? {
+          key: COMMUNITY_NAV_KEY,
+          node: <CommunitySidebarContent />,
+        }
+      : null;
+  const routeFallback =
+    agentFallback || workspaceSettingsFallback || personalSettingsFallback || communityFallback;
   const hasDedicatedRouteNavPanel = DEDICATED_ROUTE_NAV_SEGMENTS.has(mainRouteSegment ?? '');
   const isStaleHomeSnapshot =
     panelContent?.key === FALLBACK_NAV_KEY && hasDedicatedRouteNavPanel && !isHomeRoute;

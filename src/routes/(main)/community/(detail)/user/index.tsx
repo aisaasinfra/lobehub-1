@@ -94,10 +94,9 @@ const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
       isWorkspaceScope,
       pathname: location.pathname,
       search: location.search,
-      workspaceUsername,
     });
     if (redirectTo) navigate(redirectTo, { replace: true });
-  }, [isWorkspaceScope, location.pathname, location.search, navigate, workspaceUsername]);
+  }, [isWorkspaceScope, location.pathname, location.search, navigate]);
 
   // Get current user's profile to check ownership by userName
   const currentUser = getCurrentUserInfo();
@@ -223,6 +222,10 @@ const UserDetailPage = memo<UserDetailPageProps>(({ mobile }) => {
 
 export const MobileUserDetailPage = memo(() => {
   return <UserDetailPage mobile={true} />;
+});
+
+export const WorkspaceCommunityPage = memo(() => {
+  return <UserDetailPage />;
 });
 
 export default UserDetailPage;

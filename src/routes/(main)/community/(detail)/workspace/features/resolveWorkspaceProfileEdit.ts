@@ -22,7 +22,6 @@ interface ResolveWorkspaceCommunityProfileRedirectParams {
   isWorkspaceScope: boolean;
   pathname: string;
   search?: string;
-  workspaceUsername?: string | null;
 }
 
 export const shouldShowWorkspaceProfileEdit = ({
@@ -44,11 +43,10 @@ export const resolveWorkspaceCommunityProfileRedirect = ({
   isWorkspaceScope,
   pathname,
   search = '',
-  workspaceUsername,
 }: ResolveWorkspaceCommunityProfileRedirectParams) => {
-  if (!isWorkspaceScope || !workspaceUsername) return null;
+  if (!isWorkspaceScope) return null;
 
-  const targetPath = `/community/org/${workspaceUsername}`;
+  const targetPath = '/community/workspace';
   if (pathname.endsWith(targetPath)) return null;
   if (!pathname.includes('/community/user/') && !pathname.includes('/community/org/')) return null;
 
