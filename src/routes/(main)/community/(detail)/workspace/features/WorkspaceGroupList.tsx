@@ -7,6 +7,11 @@ import { useTranslation } from 'react-i18next';
 
 import UserGroupCard from '../../user/features/UserGroupCard';
 import { useWorkspaceDetailContext } from './DetailProvider';
+import {
+  filterWorkspaceMarketItems,
+  type WorkspaceMarketStatusFilterValue,
+} from './filterWorkspaceMarketItems';
+import WorkspaceStatusFilter from './WorkspaceStatusFilter';
 
 interface WorkspaceGroupListProps {
   pageSize?: number;
@@ -18,19 +23,17 @@ const WorkspaceGroupList = memo<WorkspaceGroupListProps>(({ rows = 4, pageSize =
   const { agentGroups = [], groupCount, canEdit } = useWorkspaceDetailContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<WorkspaceMarketStatusFilterValue>('published');
 
   const filteredGroups = useMemo(() => {
-    let list = [...agentGroups];
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      list = list.filter((group) => {
-        const name = group?.title?.toLowerCase() || '';
-        const description = group?.description?.toLowerCase() || '';
-        return name.includes(query) || description.includes(query);
-      });
-    }
-    return list;
-  }, [agentGroups, searchQuery]);
+    return filterWorkspaceMarketItems({
+      getDescription: (group) => group.description,
+      getTitle: (group) => group.title,
+      items: agentGroups,
+      searchQuery,
+      status: statusFilter,
+    });
+  }, [agentGroups, searchQuery, statusFilter]);
 
   const paginatedGroups = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
@@ -39,7 +42,7 @@ const WorkspaceGroupList = memo<WorkspaceGroupListProps>(({ rows = 4, pageSize =
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, statusFilter]);
 
   if (agentGroups.length === 0) return null;
 
@@ -55,13 +58,16 @@ const WorkspaceGroupList = memo<WorkspaceGroupListProps>(({ rows = 4, pageSize =
           {groupCount > 0 && <Tag>{filteredGroups.length}</Tag>}
         </Flexbox>
         {canEdit && (
-          <Input.Search
-            allowClear
-            placeholder={t('user.searchPlaceholder')}
-            style={{ width: 200 }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          <Flexbox horizontal align={'center'} gap={8}>
+            <Input.Search
+              allowClear
+              placeholder={t('user.searchPlaceholder')}
+              style={{ width: 200 }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <WorkspaceStatusFilter value={statusFilter} onChange={setStatusFilter} />
+          </Flexbox>
         )}
       </Flexbox>
       <Grid rows={rows} width={'100%'}>

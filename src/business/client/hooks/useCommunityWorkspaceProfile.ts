@@ -3,6 +3,7 @@
 export interface CommunityWorkspaceMarketOrganizationProfile {
   accountId: number;
   avatarUrl: string | null;
+  bannerUrl: string | null;
   description: string | null;
   displayName: string | null;
   namespace: string;
@@ -11,6 +12,7 @@ export interface CommunityWorkspaceMarketOrganizationProfile {
 
 export interface CommunityWorkspaceProfileState {
   avatarUrl?: string | null;
+  bannerUrl?: string | null;
   canEdit: boolean;
   description?: string | null;
   displayName?: string | null;
@@ -23,6 +25,7 @@ export interface CommunityWorkspaceProfileState {
 
 export const useCommunityWorkspaceProfile = (): CommunityWorkspaceProfileState => ({
   avatarUrl: null,
+  bannerUrl: null,
   canEdit: false,
   description: null,
   displayName: null,

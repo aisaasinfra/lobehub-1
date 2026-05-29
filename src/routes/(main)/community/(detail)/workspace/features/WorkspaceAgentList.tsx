@@ -8,6 +8,11 @@ import { useTranslation } from 'react-i18next';
 import AssistantEmpty from '../../../features/AssistantEmpty';
 import UserAgentCard from '../../user/features/UserAgentCard';
 import { useWorkspaceDetailContext } from './DetailProvider';
+import {
+  filterWorkspaceMarketItems,
+  type WorkspaceMarketStatusFilterValue,
+} from './filterWorkspaceMarketItems';
+import WorkspaceStatusFilter from './WorkspaceStatusFilter';
 
 interface WorkspaceAgentListProps {
   pageSize?: number;
@@ -19,19 +24,17 @@ const WorkspaceAgentList = memo<WorkspaceAgentListProps>(({ rows = 4, pageSize =
   const { agents, agentCount, canEdit } = useWorkspaceDetailContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<WorkspaceMarketStatusFilterValue>('published');
 
   const filteredAgents = useMemo(() => {
-    let list = [...agents];
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      list = list.filter((agent) => {
-        const name = agent?.title?.toLowerCase() || '';
-        const description = agent?.description?.toLowerCase() || '';
-        return name.includes(query) || description.includes(query);
-      });
-    }
-    return list;
-  }, [agents, searchQuery]);
+    return filterWorkspaceMarketItems({
+      getDescription: (agent) => agent.description,
+      getTitle: (agent) => agent.title,
+      items: agents,
+      searchQuery,
+      status: statusFilter,
+    });
+  }, [agents, searchQuery, statusFilter]);
 
   const paginatedAgents = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
@@ -40,7 +43,7 @@ const WorkspaceAgentList = memo<WorkspaceAgentListProps>(({ rows = 4, pageSize =
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, statusFilter]);
 
   if (agents.length === 0) {
     return (
@@ -60,13 +63,16 @@ const WorkspaceAgentList = memo<WorkspaceAgentListProps>(({ rows = 4, pageSize =
           {agentCount > 0 && <Tag>{filteredAgents.length}</Tag>}
         </Flexbox>
         {canEdit && (
-          <Input.Search
-            allowClear
-            placeholder={t('user.searchPlaceholder')}
-            style={{ width: 200 }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          <Flexbox horizontal align={'center'} gap={8}>
+            <Input.Search
+              allowClear
+              placeholder={t('user.searchPlaceholder')}
+              style={{ width: 200 }}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <WorkspaceStatusFilter value={statusFilter} onChange={setStatusFilter} />
+          </Flexbox>
         )}
       </Flexbox>
       <Grid rows={rows} width={'100%'}>

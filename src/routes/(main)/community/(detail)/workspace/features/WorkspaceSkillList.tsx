@@ -1,10 +1,12 @@
 'use client';
 
 import { Flexbox, Grid, Tag, Text } from '@lobehub/ui';
-import { Input, Pagination } from 'antd';
+import { Button, Input, Pagination } from 'antd';
+import { Plus } from 'lucide-react';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import SubmitRepoModal from '../../user/features/SubmitRepoModal';
 import UserSkillCard from '../../user/features/UserSkillCard';
 import { useWorkspaceDetailContext } from './DetailProvider';
 
@@ -18,6 +20,7 @@ const WorkspaceSkillList = memo<WorkspaceSkillListProps>(({ rows = 4, pageSize =
   const { skills = [], canEdit } = useWorkspaceDetailContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [submitModalOpen, setSubmitModalOpen] = useState(false);
 
   const filteredSkills = useMemo(() => {
     let list = [...skills];
@@ -41,46 +44,62 @@ const WorkspaceSkillList = memo<WorkspaceSkillListProps>(({ rows = 4, pageSize =
     setCurrentPage(1);
   }, [searchQuery]);
 
-  if (skills.length === 0) return null;
+  if (skills.length === 0 && !canEdit) return null;
 
   const showPagination = filteredSkills.length > pageSize;
 
   return (
-    <Flexbox gap={16}>
-      <Flexbox horizontal align={'center'} gap={8} justify={'space-between'}>
-        <Flexbox horizontal align={'center'} gap={8}>
-          <Text fontSize={16} weight={500}>
-            {t('user.skills')}
-          </Text>
-          {skills.length > 0 && <Tag>{filteredSkills.length}</Tag>}
+    <>
+      <Flexbox gap={16}>
+        <Flexbox horizontal align={'center'} gap={8} justify={'space-between'}>
+          <Flexbox horizontal align={'center'} gap={8}>
+            <Text fontSize={16} weight={500}>
+              {t('user.skills')}
+            </Text>
+            {skills.length > 0 && <Tag>{filteredSkills.length}</Tag>}
+          </Flexbox>
+          <Flexbox horizontal align={'center'} gap={8}>
+            {canEdit && skills.length > 0 && (
+              <Input.Search
+                allowClear
+                placeholder={t('user.searchPlaceholder')}
+                style={{ width: 200 }}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            )}
+            {canEdit && (
+              <Button icon={<Plus size={14} />} onClick={() => setSubmitModalOpen(true)}>
+                {t('user.submitRepo')}
+              </Button>
+            )}
+          </Flexbox>
         </Flexbox>
-        {canEdit && skills.length > 0 && (
-          <Input.Search
-            allowClear
-            placeholder={t('user.searchPlaceholder')}
-            style={{ width: 200 }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        {skills.length > 0 ? (
+          <Grid rows={rows} width={'100%'}>
+            {paginatedSkills.map((item, index) => (
+              <UserSkillCard key={item.identifier || index} {...item} />
+            ))}
+          </Grid>
+        ) : (
+          <Flexbox align={'center'} justify={'center'} style={{ minHeight: 120, opacity: 0.5 }}>
+            <Text type={'secondary'}>{t('user.noSkills')}</Text>
+          </Flexbox>
+        )}
+        {showPagination && (
+          <Flexbox align={'center'} justify={'center'}>
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              showSizeChanger={false}
+              total={filteredSkills.length}
+              onChange={(page) => setCurrentPage(page)}
+            />
+          </Flexbox>
         )}
       </Flexbox>
-      <Grid rows={rows} width={'100%'}>
-        {paginatedSkills.map((item, index) => (
-          <UserSkillCard key={item.identifier || index} {...item} />
-        ))}
-      </Grid>
-      {showPagination && (
-        <Flexbox align={'center'} justify={'center'}>
-          <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            showSizeChanger={false}
-            total={filteredSkills.length}
-            onChange={(page) => setCurrentPage(page)}
-          />
-        </Flexbox>
-      )}
-    </Flexbox>
+      <SubmitRepoModal open={submitModalOpen} onClose={() => setSubmitModalOpen(false)} />
+    </>
   );
 });
 

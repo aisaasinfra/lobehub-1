@@ -9,6 +9,7 @@ import type { DiscoverUserProfile } from '@/types/discover';
 import NotFound from '../components/NotFound';
 import { WorkspaceDetailProvider } from './features/DetailProvider';
 import WorkspaceHeader from './features/Header';
+import { resolveWorkspaceCommunityProfile } from './features/resolveWorkspaceProfileEdit';
 import WorkspaceContent from './features/WorkspaceContent';
 import { openWorkspaceProfileModal } from './features/WorkspaceProfileModal';
 import Loading from './loading';
@@ -20,6 +21,7 @@ interface WorkspaceDetailPageProps {
 const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
   const {
     avatarUrl: workspaceAvatarUrl,
+    bannerUrl: workspaceBannerUrl,
     canEdit,
     description: workspaceDescription,
     displayName: workspaceDisplayName,
@@ -45,7 +47,7 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
       skills: [],
       user: {
         avatarUrl: workspaceAvatarUrl ?? null,
-        bannerUrl: null,
+        bannerUrl: workspaceBannerUrl ?? null,
         createdAt: '',
         description: workspaceDescription ?? null,
         displayName: workspaceDisplayName ?? workspaceUsername,
@@ -61,12 +63,20 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
   }, [
     marketOrganizationProfile?.accountId,
     workspaceAvatarUrl,
+    workspaceBannerUrl,
     workspaceDescription,
     workspaceDisplayName,
     workspaceUsername,
   ]);
 
-  const profileData = data ?? fallbackProfile;
+  const profileData = useMemo(
+    () =>
+      resolveWorkspaceCommunityProfile({
+        fallbackProfile,
+        marketProfile: data,
+      }),
+    [data, fallbackProfile],
+  );
 
   const handleEditWorkspaceProfile = useCallback(() => {
     if (!profileData?.user) return;

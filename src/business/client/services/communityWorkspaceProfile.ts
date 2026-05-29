@@ -1,5 +1,6 @@
 export interface UpdateCommunityWorkspaceProfileInput {
-  avatarUrl?: string;
+  avatarUrl?: string | null;
+  bannerUrl?: string | null;
   description?: string;
   displayName?: string;
   websiteUrl?: string;

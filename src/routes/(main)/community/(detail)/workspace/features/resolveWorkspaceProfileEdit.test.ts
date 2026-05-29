@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   resolveCommunityProfileUsername,
+  resolveWorkspaceCommunityProfile,
   resolveWorkspaceCommunityProfileRedirect,
   shouldShowWorkspaceProfileEdit,
 } from './resolveWorkspaceProfileEdit';
@@ -94,5 +95,48 @@ describe('resolveWorkspaceCommunityProfileRedirect', () => {
         pathname: '/community/user/rdmclin2',
       }),
     ).toBeNull();
+  });
+});
+
+describe('resolveWorkspaceCommunityProfile', () => {
+  const baseProfile = {
+    agentGroups: [],
+    agents: [],
+    favoriteAgentGroups: [],
+    favoriteAgents: [],
+    forkedAgentGroups: [],
+    forkedAgents: [],
+    plugins: [],
+    skills: [],
+    user: {
+      avatarUrl: null,
+      bannerUrl: null,
+      createdAt: '',
+      description: null,
+      displayName: 'Market workspace',
+      followersCount: 0,
+      followingCount: 0,
+      id: 42,
+      namespace: 'ws-xuxu',
+      socialLinks: null,
+      type: 'organization',
+      userName: null,
+    },
+  };
+
+  it('uses workspace avatar when the Market organization profile has no avatar', () => {
+    expect(
+      resolveWorkspaceCommunityProfile({
+        fallbackProfile: {
+          ...baseProfile,
+          user: {
+            ...baseProfile.user,
+            avatarUrl: '/avatars/workspace.png',
+            displayName: 'xuxu',
+          },
+        },
+        marketProfile: baseProfile,
+      })?.user.avatarUrl,
+    ).toBe('/avatars/workspace.png');
   });
 });

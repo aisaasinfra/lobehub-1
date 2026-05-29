@@ -1,3 +1,5 @@
+import type { DiscoverUserProfile } from '@/types/discover';
+
 interface CommunityProfileOwner {
   id: number;
   type?: string | null;
@@ -24,6 +26,11 @@ interface ResolveWorkspaceCommunityProfileRedirectParams {
   search?: string;
 }
 
+interface ResolveWorkspaceCommunityProfileParams {
+  fallbackProfile: DiscoverUserProfile | null;
+  marketProfile?: DiscoverUserProfile;
+}
+
 export const shouldShowWorkspaceProfileEdit = ({
   canEdit,
   marketOrganizationProfile,
@@ -38,6 +45,24 @@ export const resolveCommunityProfileUsername = ({
   routeUsername,
   workspaceUsername,
 }: ResolveCommunityProfileUsernameParams) => workspaceUsername || routeUsername;
+
+export const resolveWorkspaceCommunityProfile = ({
+  fallbackProfile,
+  marketProfile,
+}: ResolveWorkspaceCommunityProfileParams): DiscoverUserProfile | null => {
+  if (!marketProfile) return fallbackProfile;
+  if (!fallbackProfile) return marketProfile;
+
+  return {
+    ...marketProfile,
+    user: {
+      ...marketProfile.user,
+      avatarUrl: marketProfile.user.avatarUrl || fallbackProfile.user.avatarUrl,
+      description: marketProfile.user.description ?? fallbackProfile.user.description,
+      displayName: marketProfile.user.displayName || fallbackProfile.user.displayName,
+    },
+  };
+};
 
 export const resolveWorkspaceCommunityProfileRedirect = ({
   isWorkspaceScope,
