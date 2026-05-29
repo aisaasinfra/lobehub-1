@@ -527,7 +527,7 @@ export class FileModel {
           embeddingTaskId: null,
           fileHash: file.fileHash,
           fileType: file.fileType,
-          metadata: { ...file.metadata, duplicatedFrom: file.id },
+          metadata: { ...(file.metadata as Record<string, unknown>), duplicatedFrom: file.id },
           name: file.name,
           // parentId would dangle in target scope; the user can drag it under a folder later.
           parentId: null,

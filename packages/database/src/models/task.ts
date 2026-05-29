@@ -1020,7 +1020,10 @@ export class TaskModel {
             assigneeUserId: null,
             automationMode: original.automationMode,
             config: original.config ?? {},
-            context: { ...original.context, duplicatedFrom: original.id },
+            context: {
+              ...(original.context as Record<string, unknown>),
+              duplicatedFrom: original.id,
+            },
             createdByAgentId: null,
             createdByUserId: targetUserId,
             currentTopicId: null,
