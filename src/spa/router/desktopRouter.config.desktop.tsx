@@ -24,7 +24,6 @@ import WorkspaceSlugSettingsCreditsPage from '@/routes/(main)/[workspaceSlug]/se
 import WorkspaceSlugSettingsCredsPage from '@/routes/(main)/[workspaceSlug]/settings/creds';
 import WorkspaceSlugSettingsGeneralPage from '@/routes/(main)/[workspaceSlug]/settings/general';
 import WorkspaceSlugSettingsMembersPage from '@/routes/(main)/[workspaceSlug]/settings/members';
-import WorkspaceSlugSettingsMemoryPage from '@/routes/(main)/[workspaceSlug]/settings/memory';
 import WorkspaceSlugSettingsMessengerPage from '@/routes/(main)/[workspaceSlug]/settings/messenger';
 import WorkspaceSlugSettingsPlansPage from '@/routes/(main)/[workspaceSlug]/settings/plans';
 import WorkspaceSlugSettingsProviderPage from '@/routes/(main)/[workspaceSlug]/settings/provider';
@@ -561,7 +560,6 @@ export const desktopRoutes: RouteObject[] = [
                   { element: <WorkspaceSlugSettingsUsagePage />, path: 'usage' },
                   { element: <WorkspaceSlugSettingsSkillPage />, path: 'skill' },
                   { element: <WorkspaceSlugSettingsServiceModelPage />, path: 'service-model' },
-                  { element: <WorkspaceSlugSettingsMemoryPage />, path: 'memory' },
                   { element: <WorkspaceSlugSettingsCredsPage />, path: 'creds' },
                   { element: <WorkspaceSlugSettingsApiKeyPage />, path: 'apikey' },
                   { element: <WorkspaceSlugSettingsStoragePage />, path: 'storage' },

@@ -22,7 +22,6 @@ const UserAgentList = memo<UserAgentListProps>(({ rows = 4, pageSize = 8 }) => {
     agentCount,
     forkedAgents = [],
     favoriteAgents = [],
-    hideFollowButton,
     isOwner,
   } = useUserDetailContext();
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,14 +71,8 @@ const UserAgentList = memo<UserAgentListProps>(({ rows = 4, pageSize = 8 }) => {
   if (agents.length === 0 && forkedAgents.length === 0)
     return (
       <AssistantEmpty
+        description={isOwner ? t('user.noAgents.ownerDescription') : t('user.noAgents')}
         title={t('user.noAgents.title')}
-        description={
-          hideFollowButton
-            ? t('user.workspace.noAgents')
-            : isOwner
-              ? t('user.noAgents.ownerDescription')
-              : t('user.noAgents')
-        }
       />
     );
 

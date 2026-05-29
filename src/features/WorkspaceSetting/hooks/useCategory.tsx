@@ -1,7 +1,6 @@
 import { SkillsIcon } from '@lobehub/ui/icons';
 import {
   Brain,
-  BrainCircuit,
   Building2,
   ChartColumnBigIcon,
   Coins,
@@ -109,11 +108,6 @@ export const useWorkspaceSettingCategory = (): WorkspaceSettingCategoryGroup[] =
             icon: SkillsIcon,
             key: WorkspaceSettingsTabs.Skill,
             label: t('workspaceSetting.tab.skill'),
-          },
-          {
-            icon: BrainCircuit,
-            key: WorkspaceSettingsTabs.Memory,
-            label: t('tab.memory'),
           },
           {
             icon: KeyRound,

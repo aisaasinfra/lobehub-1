@@ -721,13 +721,6 @@ export const desktopRoutes: RouteObject[] = [
                   },
                   {
                     element: dynamicElement(
-                      () => import('@/routes/(main)/[workspaceSlug]/settings/memory'),
-                      'Desktop > Workspace > Settings > Memory',
-                    ),
-                    path: 'memory',
-                  },
-                  {
-                    element: dynamicElement(
                       () => import('@/routes/(main)/[workspaceSlug]/settings/stats'),
                       'Desktop > Workspace > Settings > Stats',
                     ),

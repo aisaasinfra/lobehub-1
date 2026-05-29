@@ -21,11 +21,9 @@ export interface UserDetailContextConfig {
   forkedAgentGroups?: DiscoverGroupAgentItem[];
   forkedAgents?: DiscoverAssistantItem[];
   groupCount: number;
-  hideFollowButton?: boolean;
   isOwner: boolean;
   mobile?: boolean;
   onEditProfile?: (onSuccess?: (profile: MarketUserProfile) => void) => void;
-  onEditWorkspaceProfile?: () => void;
   onStatusChange?: (
     identifier: string,
     action: 'publish' | 'unpublish' | 'deprecate',

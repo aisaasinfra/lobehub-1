@@ -29,7 +29,7 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
   } = useCommunityWorkspaceProfile();
 
   const useUserProfile = useDiscoverStore((s) => s.useUserProfile);
-  const { data, isLoading, mutate } = useUserProfile({ username: workspaceUsername });
+  const { data, isLoading, mutate } = useUserProfile({ username: workspaceUsername ?? '' });
 
   // Fallback profile so the page header renders even before the market profile is materialized
   const fallbackProfile = useMemo<DiscoverUserProfile | null>(() => {

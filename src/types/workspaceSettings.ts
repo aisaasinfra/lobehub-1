@@ -12,7 +12,6 @@ export enum WorkspaceSettingsTabs {
   Creds = 'creds',
   General = 'general',
   Members = 'members',
-  Memory = 'memory',
   Messenger = 'messenger',
   Plans = 'plans',
   Provider = 'provider',
