@@ -1,12 +1,11 @@
 'use client';
 
-import { ActionIcon, Block, Text } from '@lobehub/ui';
+import { ActionIcon, Block, type MenuProps, Text } from '@lobehub/ui';
 import { createStaticStyles, cssVar } from 'antd-style';
 import { MoreHorizontal } from 'lucide-react';
 import { memo, type ReactNode, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { type MenuProps } from '@/components/Menu';
 import UserAvatar from '@/features/User/UserAvatar';
 import UpgradeBadge from '@/features/User/UserPanel/UpgradeBadge';
 import { useNewVersion } from '@/features/User/UserPanel/useNewVersion';

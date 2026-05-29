@@ -8,6 +8,7 @@ import type {
   EvalTestCaseMetadata,
 } from '@lobechat/types';
 import { sql } from 'drizzle-orm';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 import {
   boolean,
   index,
@@ -207,7 +208,7 @@ export const agentEvalRuns = pgTable(
     targetAgentId: text('target_agent_id').references(() => agents.id, { onDelete: 'cascade' }),
 
     experimentId: text('experiment_id').references(() => agentEvalExperiments.id),
-    parentRunId: text('parent_run_id').references(() => agentEvalRuns.id),
+    parentRunId: text('parent_run_id').references((): AnyPgColumn => agentEvalRuns.id),
 
     userId: text('user_id')
       .references(() => users.id, { onDelete: 'cascade' })
@@ -309,7 +310,6 @@ export const agentEvalExperiments = pgTable(
 
     metadata: jsonb('metadata').$type<Record<string, unknown>>(),
 
-    accessedAt: timestamptz('accessed_at').notNull().defaultNow(),
     ...timestamps,
   },
   (t) => [

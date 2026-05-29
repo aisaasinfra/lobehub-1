@@ -1,11 +1,10 @@
 'use client';
 
-import { Popover } from '@lobehub/ui';
+import { type MenuProps, Popover } from '@lobehub/ui';
 import { createStaticStyles } from 'antd-style';
 import { type PropsWithChildren } from 'react';
 import { memo, Suspense, useEffect, useRef, useState } from 'react';
 
-import { type MenuProps } from '@/components/Menu';
 import { isDesktop } from '@/const/version';
 
 import PanelContent from './PanelContent';
@@ -48,6 +47,7 @@ const AccountPanel = memo<AccountPanelProps>(({ children, extraItems }) => {
     <Suspense fallback={children}>
       <Popover
         arrow={false}
+        content={<PanelContent closePopover={() => setOpen(false)} extraItems={extraItems} />}
         open={open}
         placement="topLeft"
         styles={triggerWidth ? { content: { minWidth: triggerWidth } } : undefined}
@@ -56,7 +56,6 @@ const AccountPanel = memo<AccountPanelProps>(({ children, extraItems }) => {
           root: styles.popover,
           content: styles.popoverContent,
         }}
-        content={<PanelContent closePopover={() => setOpen(false)} extraItems={extraItems} />}
         onOpenChange={setOpen}
       >
         <div ref={triggerRef} style={{ display: 'flex', flex: 1, minWidth: 0 }}>

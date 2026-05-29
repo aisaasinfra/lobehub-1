@@ -1,7 +1,7 @@
-import { Flexbox } from '@lobehub/ui';
+import { Flexbox, type MenuProps } from '@lobehub/ui';
 import { type FC } from 'react';
 
-import Menu, { type MenuProps } from '@/components/Menu';
+import Menu, { type MenuProps as AntdMenuProps } from '@/components/Menu';
 import { isDesktop } from '@/const/version';
 import LangButton from '@/features/User/UserPanel/LangButton';
 import { navigateToDesktopOnboarding } from '@/routes/(desktop)/desktop-onboarding/navigation';
@@ -43,7 +43,9 @@ const PanelContent: FC<PanelContentProps> = ({ closePopover, extraItems }) => {
   return (
     <Flexbox gap={2} style={{ minWidth: 260, width: '100%' }}>
       <AccountHeader onNavigate={closePopover} />
-      {extraItems && extraItems.length > 0 && <Menu items={extraItems} onClick={closePopover} />}
+      {extraItems && extraItems.length > 0 && (
+        <Menu items={extraItems as AntdMenuProps['items']} onClick={closePopover} />
+      )}
       <Menu items={mainItems} onClick={closePopover} />
       <LangButton placement={'right' as any} />
       <Menu items={logoutItems} onClick={handleSignOut} />
