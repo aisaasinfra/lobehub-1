@@ -23,6 +23,8 @@ export const openWorkspaceProfileModal = ({
     styles: {
       content: { padding: 0 },
     },
-    title: t('user.workspaceProfile.title', { ns: 'discover' }),
+    title: t(user.namespace ? 'user.workspaceProfile.title' : 'user.workspaceProfile.setup.title', {
+      ns: 'discover',
+    }),
     width: 'min(92vw, 560px)',
   });

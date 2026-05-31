@@ -1141,12 +1141,18 @@ export default {
 
   'user.logout': 'Logout',
 
+  'user.setupWorkspaceProfile': 'Set up Community Profile',
+
   'user.myProfile': 'My Profile',
 
   'user.workspaceProfile.cancel': 'Cancel',
   'user.workspaceProfile.description': 'Update the public workspace profile shown in Community.',
   'user.workspaceProfile.errors.displayName': 'Enter a workspace name',
   'user.workspaceProfile.errors.fileTooLarge': 'Image must be smaller than 2 MB',
+  'user.workspaceProfile.errors.namespace.length': 'Handle must be 3-32 characters',
+  'user.workspaceProfile.errors.namespace.pattern':
+    'Use lowercase letters, numbers, and hyphens. Start and end with a letter or number.',
+  'user.workspaceProfile.errors.namespace.required': 'Enter a Community handle',
   'user.workspaceProfile.errors.uploadFailed': 'Failed to upload avatar',
   'user.workspaceProfile.errors.url': 'Enter a valid URL',
   'user.workspaceProfile.failed': 'Failed to update workspace profile',
@@ -1163,9 +1169,22 @@ export default {
   'user.workspaceProfile.fields.displayName': 'Workspace name',
   'user.workspaceProfile.fields.displayName.maxLength': 'Workspace name can be up to 50 characters',
   'user.workspaceProfile.fields.displayName.placeholder': 'Enter the workspace name',
+  'user.workspaceProfile.fields.namespace': 'Community handle',
+  'user.workspaceProfile.fields.namespace.extra':
+    'This creates the public Community URL for your workspace.',
+  'user.workspaceProfile.fields.namespace.placeholder': 'workspace-handle',
   'user.workspaceProfile.fields.websiteUrl': 'Website',
   'user.workspaceProfile.fields.websiteUrl.placeholder': 'Workspace website link',
   'user.workspaceProfile.save': 'Save',
+  'user.workspaceProfile.setup.description':
+    'Create a public Community profile for this workspace. Your profile and published resources will be visible; members, chats, billing, credentials, and private resources stay private.',
+  'user.workspaceProfile.setup.empty.description':
+    'Set up a public Community profile before publishing or showing workspace resources.',
+  'user.workspaceProfile.setup.empty.title': 'Set up this workspace for Community',
+  'user.workspaceProfile.setup.failed': 'Failed to set up Community profile',
+  'user.workspaceProfile.setup.save': 'Set up profile',
+  'user.workspaceProfile.setup.success': 'Community profile created',
+  'user.workspaceProfile.setup.title': 'Set up Community Profile',
   'user.workspaceProfile.success': 'Workspace profile updated',
   'user.workspaceProfile.title': 'Edit Workspace',
 

@@ -39,13 +39,14 @@ const createConfig = (
 describe('WorkspaceHeader', () => {
   it('does not render a workspace handle before the Market namespace exists', () => {
     render(
-      <WorkspaceDetailProvider config={createConfig()}>
+      <WorkspaceDetailProvider config={createConfig({ onEditWorkspaceProfile: vi.fn() })}>
         <WorkspaceHeader />
       </WorkspaceDetailProvider>,
     );
 
     expect(screen.getByRole('heading', { name: 'dsdk' })).toBeInTheDocument();
     expect(screen.queryByText(/^@/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'user.setupWorkspaceProfile' })).toBeInTheDocument();
   });
 
   it('renders the organization handle when the Market namespace exists', () => {

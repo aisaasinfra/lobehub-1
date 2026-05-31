@@ -21,6 +21,7 @@ const WorkspaceHeader = memo(() => {
 
   const displayName = user.displayName || user.userName || user.namespace;
   const username = user.userName || user.namespace;
+  const isSetup = !username;
 
   const avatarUrl = useMemo(() => normalizeUrl(user.avatarUrl), [user.avatarUrl]);
   const bannerUrl = useMemo(() => normalizeUrl(user.bannerUrl), [user.bannerUrl]);
@@ -48,7 +49,7 @@ const WorkspaceHeader = memo(() => {
           </Flexbox>
           {onEditWorkspaceProfile && (
             <Button shape={'round'} onClick={onEditWorkspaceProfile}>
-              {t('user.editWorkspaceProfile')}
+              {t(isSetup ? 'user.setupWorkspaceProfile' : 'user.editWorkspaceProfile')}
             </Button>
           )}
         </Flexbox>

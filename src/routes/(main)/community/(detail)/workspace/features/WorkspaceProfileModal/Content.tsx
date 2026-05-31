@@ -9,7 +9,10 @@ import { CircleHelp, Globe, ImagePlus, Trash2 } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { updateCommunityWorkspaceProfile } from '@/business/client/services/communityWorkspaceProfile';
+import {
+  setupCommunityWorkspaceProfile,
+  updateCommunityWorkspaceProfile,
+} from '@/business/client/services/communityWorkspaceProfile';
 import EmojiPicker from '@/components/EmojiPicker';
 import { useFileStore } from '@/store/file';
 import type { DiscoverUserInfo } from '@/types/discover';
@@ -17,6 +20,7 @@ import type { DiscoverUserInfo } from '@/types/discover';
 interface FormValues {
   description?: string;
   displayName: string;
+  namespace?: string;
   websiteUrl?: string;
 }
 
@@ -32,6 +36,15 @@ const trimOptional = (value: string | undefined) => {
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
 
+const normalizeNamespace = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9-]/g, '-')
+    .replaceAll(/-+/g, '-')
+    .replaceAll(/^-|-$/g, '')
+    .slice(0, 32);
+
 export const Content = memo<ContentProps>(({ user, onSuccess }) => {
   const { t } = useTranslation('discover');
   const { message } = App.useApp();
@@ -43,6 +56,7 @@ export const Content = memo<ContentProps>(({ user, onSuccess }) => {
   const [bannerUrl, setBannerUrl] = useState<string | null>(user.bannerUrl ?? null);
   const [bannerUploading, setBannerUploading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const isSetup = !user.namespace;
 
   const handleAvatarUpload = useCallback(
     async (file: File) => {
@@ -123,28 +137,45 @@ export const Content = memo<ContentProps>(({ user, onSuccess }) => {
     const values = await form.validateFields();
     setLoading(true);
     try {
-      await updateCommunityWorkspaceProfile({
+      const profile = {
         avatarUrl,
         bannerUrl,
         description: trimOptional(values.description),
         displayName: values.displayName.trim(),
         websiteUrl: trimOptional(values.websiteUrl),
-      });
+      };
 
-      message.success(t('user.workspaceProfile.success'));
+      if (isSetup) {
+        await setupCommunityWorkspaceProfile({
+          ...profile,
+          namespace: values.namespace!.trim(),
+        });
+      } else {
+        await updateCommunityWorkspaceProfile(profile);
+      }
+
+      message.success(
+        t(isSetup ? 'user.workspaceProfile.setup.success' : 'user.workspaceProfile.success'),
+      );
       await onSuccess?.();
       close();
     } catch (error) {
       console.error('[WorkspaceProfileModal] Failed to update workspace profile:', error);
-      message.error(t('user.workspaceProfile.failed'));
+      message.error(
+        t(isSetup ? 'user.workspaceProfile.setup.failed' : 'user.workspaceProfile.failed'),
+      );
     } finally {
       setLoading(false);
     }
-  }, [avatarUrl, bannerUrl, close, form, loading, message, onSuccess, t]);
+  }, [avatarUrl, bannerUrl, close, form, isSetup, loading, message, onSuccess, t]);
 
   return (
     <Flexbox gap={20} padding={24}>
-      <Text type="secondary">{t('user.workspaceProfile.description')}</Text>
+      <Text type="secondary">
+        {t(
+          isSetup ? 'user.workspaceProfile.setup.description' : 'user.workspaceProfile.description',
+        )}
+      </Text>
 
       <Form
         form={form}
@@ -152,6 +183,7 @@ export const Content = memo<ContentProps>(({ user, onSuccess }) => {
         initialValues={{
           description: user.description ?? undefined,
           displayName: user.displayName ?? user.userName ?? user.namespace,
+          namespace: user.namespace || normalizeNamespace(user.displayName ?? user.userName ?? ''),
           websiteUrl: user.socialLinks?.website,
         }}
       >
@@ -189,6 +221,30 @@ export const Content = memo<ContentProps>(({ user, onSuccess }) => {
             />
           </Form.Item>
         </Flexbox>
+
+        {isSetup && (
+          <Form.Item
+            extra={t('user.workspaceProfile.fields.namespace.extra')}
+            label={t('user.workspaceProfile.fields.namespace')}
+            name="namespace"
+            rules={[
+              { message: t('user.workspaceProfile.errors.namespace.required'), required: true },
+              { max: 32, message: t('user.workspaceProfile.errors.namespace.length') },
+              { min: 3, message: t('user.workspaceProfile.errors.namespace.length') },
+              {
+                message: t('user.workspaceProfile.errors.namespace.pattern'),
+                pattern: /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/,
+              },
+            ]}
+          >
+            <Input
+              showCount
+              maxLength={32}
+              placeholder={t('user.workspaceProfile.fields.namespace.placeholder')}
+              prefix={<Text type="secondary">@</Text>}
+            />
+          </Form.Item>
+        )}
 
         <Form.Item
           label={t('user.workspaceProfile.fields.websiteUrl')}
@@ -311,7 +367,7 @@ export const Content = memo<ContentProps>(({ user, onSuccess }) => {
           {t('user.workspaceProfile.cancel')}
         </Button>
         <Button loading={loading} type="primary" onClick={handleSave}>
-          {t('user.workspaceProfile.save')}
+          {t(isSetup ? 'user.workspaceProfile.setup.save' : 'user.workspaceProfile.save')}
         </Button>
       </Flexbox>
     </Flexbox>
