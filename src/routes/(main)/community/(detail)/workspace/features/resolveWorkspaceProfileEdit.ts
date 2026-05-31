@@ -36,9 +36,15 @@ export const shouldShowWorkspaceProfileEdit = ({
   marketOrganizationProfile,
   user,
 }: ShouldShowWorkspaceProfileEditParams) => {
-  return (
-    canEdit && user.type === 'organization' && marketOrganizationProfile?.accountId === user.id
-  );
+  if (!canEdit || user.type !== 'organization') return false;
+  // The workspace's mirror Market organization is provisioned lazily (on the
+  // first write to Market). Before it exists, `marketOrganizationProfile` is
+  // null — an owner should still see the edit entry on their own workspace
+  // Community page; saving provisions the organization on demand. Once
+  // provisioned, the accountId must match the viewed profile so the edit entry
+  // never leaks onto a different organization's page.
+  if (!marketOrganizationProfile) return true;
+  return marketOrganizationProfile.accountId === user.id;
 };
 
 export const resolveCommunityProfileUsername = ({

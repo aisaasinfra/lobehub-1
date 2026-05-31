@@ -118,6 +118,28 @@ const buildMarketAuthHeaders = (ctx: {
   return headers;
 };
 
+const withActingAccountHeader = async <T>(
+  marketSDK: unknown,
+  actAs: number | undefined,
+  operation: () => Promise<T>,
+): Promise<T> => {
+  const headers = (marketSDK as { headers?: Record<string, string> }).headers;
+  if (actAs === undefined || !headers) return operation();
+
+  const previous = headers['x-lobe-owner-account-id'];
+  headers['x-lobe-owner-account-id'] = String(actAs);
+
+  try {
+    return await operation();
+  } finally {
+    if (previous === undefined) {
+      delete headers['x-lobe-owner-account-id'];
+    } else {
+      headers['x-lobe-owner-account-id'] = previous;
+    }
+  }
+};
+
 interface ForkAgentItemInput {
   /**
    * When present, fork is attributed to the given Market organization account.
@@ -240,6 +262,7 @@ const agentWriteProcedure = agentProcedure.use(withScopedPermission('agent:creat
 
 // Schema definitions
 const createAgentSchema = z.object({
+  actAs: z.number().int().positive().optional(),
   homepage: z.string().optional(),
   identifier: z.string(),
   isFeatured: z.boolean().optional(),
@@ -250,6 +273,7 @@ const createAgentSchema = z.object({
 });
 
 const createAgentVersionSchema = z.object({
+  actAs: z.number().int().positive().optional(),
   a2aProtocolVersion: z.string().optional(),
   avatar: z.string().optional(),
   category: z.string().optional(),
@@ -284,6 +308,7 @@ const paginationSchema = z.object({
 
 // Schema for the unified publish/create flow
 const publishOrCreateSchema = z.object({
+  actAs: z.number().int().positive().optional(),
   // Version data
   avatar: z.string().optional(),
 
@@ -377,7 +402,10 @@ export const agentRouter = router({
     log('createAgent input: %O', input);
 
     try {
-      const response = await ctx.marketSDK.agents.createAgent(input);
+      const { actAs, ...agentData } = input;
+      const response = await withActingAccountHeader(ctx.marketSDK, actAs, () =>
+        ctx.marketSDK.agents.createAgent(agentData),
+      );
       return response;
     } catch (error) {
       log('Error creating agent: %O', error);
@@ -399,7 +427,10 @@ export const agentRouter = router({
       log('createAgentVersion input: %O', input);
 
       try {
-        const response = await ctx.marketSDK.agents.createAgentVersion(input);
+        const { actAs, ...versionData } = input;
+        const response = await withActingAccountHeader(ctx.marketSDK, actAs, () =>
+          ctx.marketSDK.agents.createAgentVersion(versionData),
+        );
         return response;
       } catch (error) {
         log('Error creating agent version: %O', error);
@@ -702,7 +733,7 @@ export const agentRouter = router({
     .mutation(async ({ input, ctx }) => {
       log('publishOrCreate input: %O', input);
 
-      const { identifier: inputIdentifier, name, ...versionData } = input;
+      const { actAs, identifier: inputIdentifier, name, ...versionData } = input;
       let finalIdentifier = inputIdentifier;
       let isNewAgent = false;
 
@@ -727,7 +758,9 @@ export const agentRouter = router({
 
             log('Ownership check: currentAccountId=%s, ownerId=%s', currentAccountId, ownerId);
 
-            if (!currentAccountId || `${ownerId}` !== `${currentAccountId}`) {
+            const actingAccountId = actAs ?? currentAccountId;
+
+            if (!actingAccountId || `${ownerId}` !== `${actingAccountId}`) {
               // Not the owner, need to create a new agent
               log('User is not owner, will create new agent');
               finalIdentifier = undefined;
@@ -751,20 +784,24 @@ export const agentRouter = router({
 
           log('Creating new agent with identifier: %s', finalIdentifier);
 
-          await ctx.marketSDK.agents.createAgent({
-            identifier: finalIdentifier,
-            name,
-          });
+          await withActingAccountHeader(ctx.marketSDK, actAs, () =>
+            ctx.marketSDK.agents.createAgent({
+              identifier: finalIdentifier!,
+              name,
+            }),
+          );
         }
 
         // Step 3: Create version for the agent
         log('Creating version for agent: %s', finalIdentifier);
 
-        await ctx.marketSDK.agents.createAgentVersion({
-          ...versionData,
-          identifier: finalIdentifier,
-          name,
-        });
+        await withActingAccountHeader(ctx.marketSDK, actAs, () =>
+          ctx.marketSDK.agents.createAgentVersion({
+            ...versionData,
+            identifier: finalIdentifier!,
+            name,
+          }),
+        );
 
         return {
           identifier: finalIdentifier,

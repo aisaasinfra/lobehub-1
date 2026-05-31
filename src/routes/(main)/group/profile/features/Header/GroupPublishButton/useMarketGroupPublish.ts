@@ -9,6 +9,7 @@ import { useAgentGroupStore } from '@/store/agentGroup';
 import { agentGroupSelectors } from '@/store/agentGroup/selectors';
 import { useGlobalStore } from '@/store/global';
 import { globalGeneralSelectors } from '@/store/global/selectors';
+import { useWorkspaceStore, workspaceSelectors } from '@/store/workspace';
 
 import { type MarketPublishAction, type OriginalGroupInfo } from './types';
 import { generateDefaultChangelog } from './utils';
@@ -37,6 +38,7 @@ export const useMarketGroupPublish = ({ action, onSuccess }: UseMarketGroupPubli
   const currentGroupAgents = useAgentGroupStore(agentGroupSelectors.currentGroupAgents);
   const updateGroupMeta = useAgentGroupStore((s) => s.updateGroupMeta);
   const language = useGlobalStore(globalGeneralSelectors.currentLanguage);
+  const hasActiveWorkspace = useWorkspaceStore(workspaceSelectors.hasActiveWorkspace);
 
   const isSubmit = action === 'submit';
 
@@ -103,6 +105,9 @@ export const useMarketGroupPublish = ({ action, onSuccess }: UseMarketGroupPubli
       isPublishingRef.current = true;
       setIsPublishing(true);
       message.loading({ content: loadingMessage, key: messageKey });
+      const actAs = hasActiveWorkspace
+        ? (await lambdaClient.workspace.ensureMarketOrganization.mutate()).marketAccountId
+        : undefined;
 
       // Prepare member agents data
       const memberAgents = currentGroupAgents.map((agent, index) => ({
@@ -132,6 +137,7 @@ export const useMarketGroupPublish = ({ action, onSuccess }: UseMarketGroupPubli
 
       // Use tRPC publishOrCreate
       const result = await lambdaClient.market.agentGroup.publishOrCreate.mutate({
+        actAs,
         // Only include avatar if it's not null/undefined
         ...(currentGroupMeta.avatar ? { avatar: currentGroupMeta.avatar } : {}),
         // Only include backgroundColor if it's not null/undefined
@@ -199,6 +205,7 @@ export const useMarketGroupPublish = ({ action, onSuccess }: UseMarketGroupPubli
     currentGroupAgents,
     currentGroupConfig,
     currentGroupMeta,
+    hasActiveWorkspace,
     isAuthenticated,
     isSubmit,
     language,

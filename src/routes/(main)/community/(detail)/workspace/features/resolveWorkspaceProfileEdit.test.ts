@@ -47,6 +47,26 @@ describe('shouldShowWorkspaceProfileEdit', () => {
       }),
     ).toBe(false);
   });
+
+  it('returns true for an owner before the Market organization is provisioned', () => {
+    expect(
+      shouldShowWorkspaceProfileEdit({
+        canEdit: true,
+        marketOrganizationProfile: null,
+        user: { id: 0, type: 'organization' },
+      }),
+    ).toBe(true);
+  });
+
+  it('returns false for a non-owner before the Market organization is provisioned', () => {
+    expect(
+      shouldShowWorkspaceProfileEdit({
+        canEdit: false,
+        marketOrganizationProfile: null,
+        user: { id: 0, type: 'organization' },
+      }),
+    ).toBe(false);
+  });
 });
 
 describe('resolveCommunityProfileUsername', () => {

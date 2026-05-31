@@ -18,6 +18,7 @@ export interface WorkspaceDetailContextConfig {
   groupCount: number;
   mobile?: boolean;
   onEditWorkspaceProfile?: () => void;
+  onRefreshProfile?: () => Promise<void>;
   plugins?: DiscoverPluginItem[];
   skills?: DiscoverSkillItem[];
   totalInstalls: number;

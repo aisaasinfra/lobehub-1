@@ -83,6 +83,28 @@ const fetchMarketUserInfo = async (
   }
 };
 
+const withActingAccountHeader = async <T>(
+  marketSDK: unknown,
+  actAs: number | undefined,
+  operation: () => Promise<T>,
+): Promise<T> => {
+  const headers = (marketSDK as { headers?: Record<string, string> }).headers;
+  if (actAs === undefined || !headers) return operation();
+
+  const previous = headers['x-lobe-owner-account-id'];
+  headers['x-lobe-owner-account-id'] = String(actAs);
+
+  try {
+    return await operation();
+  } finally {
+    if (previous === undefined) {
+      delete headers['x-lobe-owner-account-id'];
+    } else {
+      headers['x-lobe-owner-account-id'] = previous;
+    }
+  }
+};
+
 // Authenticated procedure for agent group management
 const agentGroupProcedure = authedProcedure
   .use(serverDatabase)
@@ -123,6 +145,7 @@ const memberAgentSchema = z.object({
 });
 
 const publishOrCreateGroupSchema = z.object({
+  actAs: z.number().int().positive().optional(),
   avatar: z.string().nullish(),
   backgroundColor: z.string().nullish(),
   category: z.string().optional(),
@@ -657,7 +680,7 @@ export const agentGroupRouter = router({
     .mutation(async ({ input, ctx }) => {
       log('publishOrCreate input: %O', input);
 
-      const { identifier: inputIdentifier, name, memberAgents, ...groupData } = input;
+      const { actAs, identifier: inputIdentifier, name, memberAgents, ...groupData } = input;
       let finalIdentifier = inputIdentifier;
       let isNewGroup = false;
 
@@ -681,7 +704,9 @@ export const agentGroupRouter = router({
 
             log('Ownership check: currentAccountId=%s, ownerId=%s', currentAccountId, ownerId);
 
-            if (!currentAccountId || `${ownerId}` !== `${currentAccountId}`) {
+            const actingAccountId = actAs ?? currentAccountId;
+
+            if (!actingAccountId || `${ownerId}` !== `${actingAccountId}`) {
               // Not the owner, need to create a new group
               log('User is not owner, will create new group');
               finalIdentifier = undefined;
@@ -705,24 +730,28 @@ export const agentGroupRouter = router({
 
           log('Creating new group with identifier: %s', finalIdentifier);
 
-          await ctx.marketSDK.agentGroups.createAgentGroup({
-            ...groupData,
-            identifier: finalIdentifier,
-            // @ts-ignore
-            memberAgents,
-            name,
-          });
+          await withActingAccountHeader(ctx.marketSDK, actAs, () =>
+            ctx.marketSDK.agentGroups.createAgentGroup({
+              ...groupData,
+              identifier: finalIdentifier!,
+              // @ts-ignore
+              memberAgents,
+              name,
+            }),
+          );
         } else {
           // Update existing group - create new version
           log('Creating new version for group: %s', finalIdentifier);
 
-          await ctx.marketSDK.agentGroups.createAgentGroupVersion({
-            ...groupData,
-            identifier: finalIdentifier,
-            // @ts-ignore
-            memberAgents,
-            name,
-          });
+          await withActingAccountHeader(ctx.marketSDK, actAs, () =>
+            ctx.marketSDK.agentGroups.createAgentGroupVersion({
+              ...groupData,
+              identifier: finalIdentifier!,
+              // @ts-ignore
+              memberAgents,
+              name,
+            }),
+          );
         }
 
         return {

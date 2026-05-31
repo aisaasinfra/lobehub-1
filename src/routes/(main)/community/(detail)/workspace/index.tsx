@@ -9,7 +9,10 @@ import type { DiscoverUserProfile } from '@/types/discover';
 import NotFound from '../components/NotFound';
 import { WorkspaceDetailProvider } from './features/DetailProvider';
 import WorkspaceHeader from './features/Header';
-import { resolveWorkspaceCommunityProfile } from './features/resolveWorkspaceProfileEdit';
+import {
+  resolveWorkspaceCommunityProfile,
+  shouldShowWorkspaceProfileEdit,
+} from './features/resolveWorkspaceProfileEdit';
 import WorkspaceContent from './features/WorkspaceContent';
 import { openWorkspaceProfileModal } from './features/WorkspaceProfileModal';
 import Loading from './loading';
@@ -25,13 +28,20 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
     canEdit,
     description: workspaceDescription,
     displayName: workspaceDisplayName,
+    isLoading: isWorkspaceProfileLoading,
     profile: marketOrganizationProfile,
     refresh: refreshWorkspaceProfile,
     username: workspaceUsername,
   } = useCommunityWorkspaceProfile();
 
   const useUserProfile = useDiscoverStore((s) => s.useUserProfile);
-  const { data, isLoading, mutate } = useUserProfile({ username: workspaceUsername ?? '' });
+  const {
+    data,
+    isLoading: isUserProfileLoading,
+    mutate,
+  } = useUserProfile({
+    username: workspaceUsername ?? '',
+  });
 
   // Fallback profile so the page header renders even before the market profile is materialized
   const fallbackProfile = useMemo<DiscoverUserProfile | null>(() => {
@@ -89,12 +99,19 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
     });
   }, [profileData?.user, mutate, refreshWorkspaceProfile]);
 
+  const handleRefreshWorkspaceProfile = useCallback(async () => {
+    await Promise.all([mutate(), refreshWorkspaceProfile()]);
+  }, [mutate, refreshWorkspaceProfile]);
+
   const contextConfig = useMemo(() => {
     if (!profileData?.user) return null;
     const { user, agents, agentGroups, skills, plugins } = profileData;
     const totalInstalls = agents.reduce((sum, agent) => sum + (agent.installCount || 0), 0);
-    const canEditCurrent =
-      canEdit && user.type === 'organization' && marketOrganizationProfile?.accountId === user.id;
+    const canEditCurrent = shouldShowWorkspaceProfileEdit({
+      canEdit,
+      marketOrganizationProfile,
+      user,
+    });
 
     return {
       agentCount: agents.length,
@@ -104,14 +121,22 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
       groupCount: agentGroups?.length || 0,
       mobile,
       onEditWorkspaceProfile: canEditCurrent ? handleEditWorkspaceProfile : undefined,
+      onRefreshProfile: handleRefreshWorkspaceProfile,
       plugins: plugins || [],
       skills: skills || [],
       totalInstalls,
       user,
     };
-  }, [canEdit, handleEditWorkspaceProfile, marketOrganizationProfile, mobile, profileData]);
+  }, [
+    canEdit,
+    handleEditWorkspaceProfile,
+    handleRefreshWorkspaceProfile,
+    marketOrganizationProfile,
+    mobile,
+    profileData,
+  ]);
 
-  if (isLoading && !fallbackProfile) return <Loading />;
+  if ((isWorkspaceProfileLoading || isUserProfileLoading) && !fallbackProfile) return <Loading />;
   if (!contextConfig) return <NotFound />;
 
   return (

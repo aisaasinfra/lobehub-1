@@ -3,8 +3,10 @@
 import { Flexbox, Grid, Tag, Text } from '@lobehub/ui';
 import { Button, Input, Pagination } from 'antd';
 import { Plus } from 'lucide-react';
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { lambdaClient } from '@/libs/trpc/client';
 
 import SubmitRepoModal from '../../user/features/SubmitRepoModal';
 import UserSkillCard from '../../user/features/UserSkillCard';
@@ -17,10 +19,15 @@ interface WorkspaceSkillListProps {
 
 const WorkspaceSkillList = memo<WorkspaceSkillListProps>(({ rows = 4, pageSize = 8 }) => {
   const { t } = useTranslation('discover');
-  const { skills = [], canEdit } = useWorkspaceDetailContext();
+  const { skills = [], canEdit, onRefreshProfile } = useWorkspaceDetailContext();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [submitModalOpen, setSubmitModalOpen] = useState(false);
+
+  const prepareWorkspaceSubmit = useCallback(async () => {
+    const { marketAccountId } = await lambdaClient.workspace.ensureMarketOrganization.mutate();
+    return { actAs: marketAccountId };
+  }, []);
 
   const filteredSkills = useMemo(() => {
     let list = [...skills];
@@ -98,7 +105,12 @@ const WorkspaceSkillList = memo<WorkspaceSkillListProps>(({ rows = 4, pageSize =
           </Flexbox>
         )}
       </Flexbox>
-      <SubmitRepoModal open={submitModalOpen} onClose={() => setSubmitModalOpen(false)} />
+      <SubmitRepoModal
+        beforeSubmit={prepareWorkspaceSubmit}
+        open={submitModalOpen}
+        onClose={() => setSubmitModalOpen(false)}
+        onSuccess={onRefreshProfile}
+      />
     </>
   );
 });
