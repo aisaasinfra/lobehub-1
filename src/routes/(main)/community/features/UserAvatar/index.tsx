@@ -11,6 +11,8 @@ import { useMarketAuth, useMarketUserProfile } from '@/layout/AuthProvider/Marke
 import { useServerConfigStore } from '@/store/serverConfig';
 import { serverConfigSelectors } from '@/store/serverConfig/selectors';
 
+import { resolveCommunityUserAvatarTarget } from './navigation';
+
 /**
  * Check whether the user needs to complete their profile
  * When using trustedClient auto-authorization, the user's meta-related fields will be empty
@@ -73,22 +75,16 @@ const UserAvatar = memo(() => {
   }, [signIn]);
 
   const handleAvatarClick = useCallback(() => {
-    if (isWorkspaceScope && workspaceUsername) {
-      navigate(`/community/org/${workspaceUsername}`);
-      return;
-    }
-
     const profileUserName = userProfile?.userName || userProfile?.namespace;
-    if (profileUserName) {
-      navigate(`/community/user/${profileUserName}`);
+    const target = resolveCommunityUserAvatarTarget({
+      isWorkspaceScope,
+      profileUsername: profileUserName,
+    });
+
+    if (target) {
+      navigate(target);
     }
-  }, [
-    isWorkspaceScope,
-    navigate,
-    userProfile?.userName,
-    userProfile?.namespace,
-    workspaceUsername,
-  ]);
+  }, [isWorkspaceScope, navigate, userProfile?.userName, userProfile?.namespace]);
 
   if (isLoading) {
     return <Skeleton.Avatar active shape={'square'} size={28} style={{ borderRadius: 6 }} />;

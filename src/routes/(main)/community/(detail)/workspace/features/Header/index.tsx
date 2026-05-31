@@ -40,9 +40,11 @@ const WorkspaceHeader = memo(() => {
             <Text ellipsis as={'h1'} fontSize={24} style={{ margin: 0 }} weight={'bold'}>
               {displayName}
             </Text>
-            <Text ellipsis fontSize={12} type={'secondary'}>
-              @{username}
-            </Text>
+            {username && (
+              <Text ellipsis fontSize={12} type={'secondary'}>
+                @{username}
+              </Text>
+            )}
           </Flexbox>
           {onEditWorkspaceProfile && (
             <Button shape={'round'} onClick={onEditWorkspaceProfile}>

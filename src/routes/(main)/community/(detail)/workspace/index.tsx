@@ -45,7 +45,9 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
 
   // Fallback profile so the page header renders even before the market profile is materialized
   const fallbackProfile = useMemo<DiscoverUserProfile | null>(() => {
-    if (!workspaceUsername) return null;
+    const displayName = workspaceDisplayName ?? workspaceUsername;
+    if (!displayName) return null;
+
     return {
       agentGroups: [],
       agents: [],
@@ -60,11 +62,11 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
         bannerUrl: workspaceBannerUrl ?? null,
         createdAt: '',
         description: workspaceDescription ?? null,
-        displayName: workspaceDisplayName ?? workspaceUsername,
+        displayName,
         followersCount: 0,
         followingCount: 0,
         id: marketOrganizationProfile?.accountId ?? 0,
-        namespace: workspaceUsername,
+        namespace: workspaceUsername ?? '',
         socialLinks: null,
         type: 'organization',
         userName: null,

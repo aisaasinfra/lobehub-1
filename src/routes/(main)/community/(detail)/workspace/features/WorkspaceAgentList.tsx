@@ -45,12 +45,15 @@ const WorkspaceAgentList = memo<WorkspaceAgentListProps>(({ rows = 4, pageSize =
     setCurrentPage(1);
   }, [searchQuery, statusFilter]);
 
-  if (agents.length === 0) {
+  // Visitors with nothing to see get the full-page empty state; editors always keep the
+  // title + search + status filter row (matching the User page's "published agents").
+  if (agents.length === 0 && !canEdit) {
     return (
       <AssistantEmpty description={t('user.workspace.noAgents')} title={t('user.noAgents.title')} />
     );
   }
 
+  const isEmpty = agents.length === 0;
   const showPagination = filteredAgents.length > pageSize;
 
   return (
@@ -75,11 +78,18 @@ const WorkspaceAgentList = memo<WorkspaceAgentListProps>(({ rows = 4, pageSize =
           </Flexbox>
         )}
       </Flexbox>
-      <Grid rows={rows} width={'100%'}>
-        {paginatedAgents.map((item, index) => (
-          <UserAgentCard key={item.identifier || index} {...item} />
-        ))}
-      </Grid>
+      {isEmpty ? (
+        <AssistantEmpty
+          description={t('user.workspace.noAgents')}
+          title={t('user.noAgents.title')}
+        />
+      ) : (
+        <Grid rows={rows} width={'100%'}>
+          {paginatedAgents.map((item, index) => (
+            <UserAgentCard key={item.identifier || index} {...item} />
+          ))}
+        </Grid>
+      )}
       {showPagination && (
         <Flexbox align={'center'} justify={'center'}>
           <Pagination
