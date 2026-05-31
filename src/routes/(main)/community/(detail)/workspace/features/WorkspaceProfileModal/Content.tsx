@@ -1,11 +1,11 @@
 'use client';
 
-import { Button, Center, Flexbox, Input, Text, TextArea } from '@lobehub/ui';
+import { Button, Center, Flexbox, Icon, Input, Text, TextArea, Tooltip } from '@lobehub/ui';
 import { useModalContext } from '@lobehub/ui/base-ui';
 import type { UploadProps } from 'antd';
 import { App, Form, Upload } from 'antd';
 import { cssVar } from 'antd-style';
-import { ImagePlus, Trash2 } from 'lucide-react';
+import { CircleHelp, Globe, ImagePlus, Trash2 } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -160,13 +160,20 @@ export const Content = memo<ContentProps>(({ user, onSuccess }) => {
             <Form.Item
               label={t('user.workspaceProfile.fields.displayName')}
               name="displayName"
-              rules={[{ required: true, message: t('user.workspaceProfile.errors.displayName') }]}
+              rules={[
+                { message: t('user.workspaceProfile.errors.displayName'), required: true },
+                { max: 50, message: t('user.workspaceProfile.fields.displayName.maxLength') },
+              ]}
             >
-              <Input />
+              <Input
+                showCount
+                maxLength={50}
+                placeholder={t('user.workspaceProfile.fields.displayName.placeholder')}
+              />
             </Form.Item>
           </Flexbox>
 
-          <Form.Item label={t('user.workspaceProfile.fields.avatar')}>
+          <Form.Item>
             <EmojiPicker
               allowDelete={!!avatarUrl}
               loading={avatarUploading}
@@ -186,16 +193,39 @@ export const Content = memo<ContentProps>(({ user, onSuccess }) => {
         <Form.Item
           label={t('user.workspaceProfile.fields.websiteUrl')}
           name="websiteUrl"
-          rules={[{ type: 'url', message: t('user.workspaceProfile.errors.url') }]}
+          rules={[{ message: t('user.workspaceProfile.errors.url'), type: 'url' }]}
         >
-          <Input placeholder="https://example.com" />
+          <Input
+            placeholder={t('user.workspaceProfile.fields.websiteUrl.placeholder')}
+            prefix={
+              <Icon color={cssVar.colorTextSecondary} icon={Globe} style={{ marginRight: 8 }} />
+            }
+          />
         </Form.Item>
 
-        <Form.Item label={t('user.workspaceProfile.fields.description')} name="description">
-          <TextArea autoSize={{ maxRows: 5, minRows: 3 }} />
+        <Form.Item
+          label={t('user.workspaceProfile.fields.description')}
+          name="description"
+          rules={[{ max: 200, message: t('user.workspaceProfile.fields.description.maxLength') }]}
+        >
+          <TextArea
+            showCount
+            maxLength={200}
+            placeholder={t('user.workspaceProfile.fields.description.placeholder')}
+            rows={3}
+          />
         </Form.Item>
 
-        <Form.Item label={t('user.workspaceProfile.fields.bannerUrl')}>
+        <Form.Item
+          label={
+            <Flexbox horizontal align="center" gap={4}>
+              {t('user.workspaceProfile.fields.bannerUrl')}
+              <Tooltip title={t('user.workspaceProfile.fields.bannerUrl.tooltip')}>
+                <CircleHelp size={14} style={{ cursor: 'help', opacity: 0.5 }} />
+              </Tooltip>
+            </Flexbox>
+          }
+        >
           <Flexbox gap={8} width="100%">
             <Upload
               accept="image/*"
