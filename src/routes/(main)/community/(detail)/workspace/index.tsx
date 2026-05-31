@@ -3,6 +3,7 @@
 import { memo, useCallback, useMemo } from 'react';
 
 import { useCommunityWorkspaceProfile } from '@/business/client/hooks/useCommunityWorkspaceProfile';
+import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useDiscoverStore } from '@/store/discover';
 import type { DiscoverUserProfile } from '@/types/discover';
 
@@ -33,6 +34,7 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
     refresh: refreshWorkspaceProfile,
     username: workspaceUsername,
   } = useCommunityWorkspaceProfile();
+  const navigate = useWorkspaceAwareNavigate();
 
   const useUserProfile = useDiscoverStore((s) => s.useUserProfile);
   const {
@@ -91,6 +93,11 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
   );
 
   const handleEditWorkspaceProfile = useCallback(() => {
+    if (marketOrganizationProfile) {
+      navigate('/community/workspace/settings');
+      return;
+    }
+
     if (!profileData?.user) return;
 
     openWorkspaceProfileModal({
@@ -99,7 +106,7 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
       },
       user: profileData.user,
     });
-  }, [profileData?.user, mutate, refreshWorkspaceProfile]);
+  }, [marketOrganizationProfile, mutate, navigate, profileData?.user, refreshWorkspaceProfile]);
 
   const handleRefreshWorkspaceProfile = useCallback(async () => {
     await Promise.all([mutate(), refreshWorkspaceProfile()]);
@@ -121,6 +128,7 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
       agents,
       canEdit: canEditCurrent,
       groupCount: agentGroups?.length || 0,
+      isLoading: isWorkspaceProfileLoading || isUserProfileLoading,
       mobile,
       onEditWorkspaceProfile: canEditCurrent ? handleEditWorkspaceProfile : undefined,
       onRefreshProfile: handleRefreshWorkspaceProfile,
@@ -133,6 +141,8 @@ const WorkspaceDetailPage = memo<WorkspaceDetailPageProps>(({ mobile }) => {
     canEdit,
     handleEditWorkspaceProfile,
     handleRefreshWorkspaceProfile,
+    isUserProfileLoading,
+    isWorkspaceProfileLoading,
     marketOrganizationProfile,
     mobile,
     profileData,

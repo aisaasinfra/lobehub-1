@@ -51,6 +51,7 @@ import CommunityDetailProviderPage from '@/routes/(main)/community/(detail)/prov
 import CommunityDetailSkillPage from '@/routes/(main)/community/(detail)/skill';
 import CommunityDetailUserPage from '@/routes/(main)/community/(detail)/user';
 import CommunityDetailWorkspacePage from '@/routes/(main)/community/(detail)/workspace';
+import CommunityDetailWorkspaceSettingsPage from '@/routes/(main)/community/(detail)/workspace/settings';
 import CommunityListLayout from '@/routes/(main)/community/(list)/_layout';
 import CommunityListHomePage from '@/routes/(main)/community/(list)/(home)';
 import CommunityListAgentPage from '@/routes/(main)/community/(list)/agent';
@@ -197,6 +198,10 @@ export const sharedMainAreaChildren: RouteObject[] = [
   // Discover routes with nested structure
   {
     children: [
+      {
+        element: <CommunityDetailWorkspaceSettingsPage />,
+        path: 'workspace/settings',
+      },
       // List routes (with ListLayout)
       {
         children: [

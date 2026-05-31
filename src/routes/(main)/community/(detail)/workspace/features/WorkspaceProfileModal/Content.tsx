@@ -1,12 +1,24 @@
 'use client';
 
-import { Button, Center, Flexbox, Icon, Input, Text, TextArea, Tooltip } from '@lobehub/ui';
+import { OFFICIAL_URL } from '@lobechat/const';
+import type { CollapseProps } from '@lobehub/ui';
+import {
+  Button,
+  Center,
+  Collapse,
+  Flexbox,
+  Icon,
+  Input,
+  Text,
+  TextArea,
+  Tooltip,
+} from '@lobehub/ui';
 import { useModalContext } from '@lobehub/ui/base-ui';
 import type { UploadProps } from 'antd';
-import { App, Form, Upload } from 'antd';
+import { App, Form, Input as AntInput, Upload } from 'antd';
 import { cssVar } from 'antd-style';
 import { CircleHelp, Globe, ImagePlus, Trash2 } from 'lucide-react';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -35,6 +47,7 @@ const trimOptional = (value: string | undefined) => {
 };
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
+const ORGANIZATION_URL_PREFIX = `${OFFICIAL_URL.replace(/^https?:\/\//, '')}/community/org/`;
 
 const normalizeNamespace = (value: string) =>
   value
@@ -169,14 +182,123 @@ export const Content = memo<ContentProps>(({ user, onSuccess }) => {
     }
   }, [avatarUrl, bannerUrl, close, form, isSetup, loading, message, onSuccess, t]);
 
+  const optionalItems = useMemo<CollapseProps['items']>(
+    () => [
+      {
+        children: (
+          <>
+            <Form.Item
+              label={t('user.workspaceProfile.fields.websiteUrl')}
+              name="websiteUrl"
+              rules={[{ message: t('user.workspaceProfile.errors.url'), type: 'url' }]}
+            >
+              <Input
+                placeholder={t('user.workspaceProfile.fields.websiteUrl.placeholder')}
+                prefix={
+                  <Icon color={cssVar.colorTextSecondary} icon={Globe} style={{ marginRight: 8 }} />
+                }
+              />
+            </Form.Item>
+
+            <Form.Item
+              label={
+                <Flexbox horizontal align="center" gap={4}>
+                  {t('user.workspaceProfile.fields.bannerUrl')}
+                  <Tooltip title={t('user.workspaceProfile.fields.bannerUrl.tooltip')}>
+                    <CircleHelp size={14} style={{ cursor: 'help', opacity: 0.5 }} />
+                  </Tooltip>
+                </Flexbox>
+              }
+            >
+              <Flexbox gap={8} width="100%">
+                <Upload
+                  accept="image/*"
+                  customRequest={handleBannerUpload}
+                  maxCount={1}
+                  showUploadList={false}
+                  style={{ display: 'block', width: '100%' }}
+                >
+                  <div
+                    style={{
+                      backgroundColor: bannerUrl ? undefined : cssVar.colorFillTertiary,
+                      backgroundImage: bannerUrl ? `url(${bannerUrl})` : undefined,
+                      backgroundPosition: 'center',
+                      backgroundSize: 'cover',
+                      borderRadius: cssVar.borderRadiusLG,
+                      cursor: 'pointer',
+                      height: 160,
+                      overflow: 'hidden',
+                      position: 'relative',
+                      width: '100%',
+                    }}
+                  >
+                    <Center
+                      style={{
+                        background: bannerUrl ? 'rgba(0,0,0,0.4)' : 'transparent',
+                        height: '100%',
+                        opacity: bannerUrl ? 0 : 1,
+                        transition: 'opacity 0.2s',
+                        width: '100%',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.opacity = '1';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (bannerUrl) e.currentTarget.style.opacity = '0';
+                      }}
+                    >
+                      <Flexbox align="center" gap={8}>
+                        <ImagePlus
+                          size={24}
+                          style={{ color: bannerUrl ? '#fff' : cssVar.colorTextSecondary }}
+                        />
+                        <Text
+                          style={{
+                            color: bannerUrl ? '#fff' : cssVar.colorTextSecondary,
+                            fontSize: 12,
+                          }}
+                        >
+                          {bannerUploading
+                            ? t('user.workspaceProfile.fields.bannerUrl.uploading')
+                            : t('user.workspaceProfile.fields.bannerUrl.clickToUpload')}
+                        </Text>
+                      </Flexbox>
+                    </Center>
+                  </div>
+                </Upload>
+                {bannerUrl && (
+                  <Flexbox horizontal align="center" gap={8} justify="flex-end">
+                    <Text
+                      style={{
+                        color: cssVar.colorError,
+                        cursor: 'pointer',
+                        fontSize: 12,
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setBannerUrl(null);
+                      }}
+                    >
+                      <Flexbox horizontal align="center" gap={4}>
+                        <Trash2 size={12} />
+                        {t('user.workspaceProfile.fields.bannerUrl.remove')}
+                      </Flexbox>
+                    </Text>
+                  </Flexbox>
+                )}
+              </Flexbox>
+            </Form.Item>
+          </>
+        ),
+        key: 'optional',
+        label: t('user.workspaceProfile.optional.toggle'),
+      },
+    ],
+    [bannerUploading, bannerUrl, handleBannerUpload, t],
+  );
+
   return (
     <Flexbox gap={20} padding={24}>
-      <Text type="secondary">
-        {t(
-          isSetup ? 'user.workspaceProfile.setup.description' : 'user.workspaceProfile.description',
-        )}
-      </Text>
-
       <Form
         form={form}
         layout="vertical"
@@ -224,7 +346,6 @@ export const Content = memo<ContentProps>(({ user, onSuccess }) => {
 
         {isSetup && (
           <Form.Item
-            extra={t('user.workspaceProfile.fields.namespace.extra')}
             label={t('user.workspaceProfile.fields.namespace')}
             name="namespace"
             rules={[
@@ -237,27 +358,14 @@ export const Content = memo<ContentProps>(({ user, onSuccess }) => {
               },
             ]}
           >
-            <Input
+            <AntInput
               showCount
+              addonBefore={ORGANIZATION_URL_PREFIX}
               maxLength={32}
               placeholder={t('user.workspaceProfile.fields.namespace.placeholder')}
-              prefix={<Text type="secondary">@</Text>}
             />
           </Form.Item>
         )}
-
-        <Form.Item
-          label={t('user.workspaceProfile.fields.websiteUrl')}
-          name="websiteUrl"
-          rules={[{ message: t('user.workspaceProfile.errors.url'), type: 'url' }]}
-        >
-          <Input
-            placeholder={t('user.workspaceProfile.fields.websiteUrl.placeholder')}
-            prefix={
-              <Icon color={cssVar.colorTextSecondary} icon={Globe} style={{ marginRight: 8 }} />
-            }
-          />
-        </Form.Item>
 
         <Form.Item
           label={t('user.workspaceProfile.fields.description')}
@@ -272,94 +380,17 @@ export const Content = memo<ContentProps>(({ user, onSuccess }) => {
           />
         </Form.Item>
 
-        <Form.Item
-          label={
-            <Flexbox horizontal align="center" gap={4}>
-              {t('user.workspaceProfile.fields.bannerUrl')}
-              <Tooltip title={t('user.workspaceProfile.fields.bannerUrl.tooltip')}>
-                <CircleHelp size={14} style={{ cursor: 'help', opacity: 0.5 }} />
-              </Tooltip>
-            </Flexbox>
-          }
-        >
-          <Flexbox gap={8} width="100%">
-            <Upload
-              accept="image/*"
-              customRequest={handleBannerUpload}
-              maxCount={1}
-              showUploadList={false}
-              style={{ display: 'block', width: '100%' }}
-            >
-              <div
-                style={{
-                  backgroundColor: bannerUrl ? undefined : cssVar.colorFillTertiary,
-                  backgroundImage: bannerUrl ? `url(${bannerUrl})` : undefined,
-                  backgroundPosition: 'center',
-                  backgroundSize: 'cover',
-                  borderRadius: cssVar.borderRadiusLG,
-                  cursor: 'pointer',
-                  height: 160,
-                  overflow: 'hidden',
-                  position: 'relative',
-                  width: '100%',
-                }}
-              >
-                <Center
-                  style={{
-                    background: bannerUrl ? 'rgba(0,0,0,0.4)' : 'transparent',
-                    height: '100%',
-                    opacity: bannerUrl ? 0 : 1,
-                    transition: 'opacity 0.2s',
-                    width: '100%',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.opacity = '1';
-                  }}
-                  onMouseLeave={(e) => {
-                    if (bannerUrl) e.currentTarget.style.opacity = '0';
-                  }}
-                >
-                  <Flexbox align="center" gap={8}>
-                    <ImagePlus
-                      size={24}
-                      style={{ color: bannerUrl ? '#fff' : cssVar.colorTextSecondary }}
-                    />
-                    <Text
-                      style={{
-                        color: bannerUrl ? '#fff' : cssVar.colorTextSecondary,
-                        fontSize: 12,
-                      }}
-                    >
-                      {bannerUploading
-                        ? t('user.workspaceProfile.fields.bannerUrl.uploading')
-                        : t('user.workspaceProfile.fields.bannerUrl.clickToUpload')}
-                    </Text>
-                  </Flexbox>
-                </Center>
-              </div>
-            </Upload>
-            {bannerUrl && (
-              <Flexbox horizontal align="center" gap={8} justify="flex-end">
-                <Text
-                  style={{
-                    color: cssVar.colorError,
-                    cursor: 'pointer',
-                    fontSize: 12,
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setBannerUrl(null);
-                  }}
-                >
-                  <Flexbox horizontal align="center" gap={4}>
-                    <Trash2 size={12} />
-                    {t('user.workspaceProfile.fields.bannerUrl.remove')}
-                  </Flexbox>
-                </Text>
-              </Flexbox>
-            )}
-          </Flexbox>
-        </Form.Item>
+        <Collapse
+          defaultActiveKey={isSetup ? undefined : ['optional']}
+          expandIconPlacement="end"
+          items={optionalItems}
+          size="small"
+          variant="borderless"
+          styles={{
+            header: { cursor: 'pointer', width: '100%' },
+            title: { cursor: 'pointer', width: '100%' },
+          }}
+        />
       </Form>
 
       <Flexbox horizontal gap={8} justify="flex-end">

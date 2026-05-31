@@ -16,6 +16,7 @@ export interface WorkspaceDetailContextConfig {
   agents: DiscoverAssistantItem[];
   canEdit: boolean;
   groupCount: number;
+  isLoading?: boolean;
   mobile?: boolean;
   onEditWorkspaceProfile?: () => void;
   onRefreshProfile?: () => Promise<void>;

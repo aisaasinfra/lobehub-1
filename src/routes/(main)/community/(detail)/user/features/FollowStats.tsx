@@ -4,14 +4,22 @@ import { Flexbox, Text } from '@lobehub/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useDiscoverStore } from '@/store/discover';
+
 import { useUserDetailContext } from './DetailProvider';
 
 const FollowStats = memo(() => {
   const { t } = useTranslation('discover');
   const { user } = useUserDetailContext();
 
-  const followingCount = user.followingCount ?? 0;
-  const followersCount = user.followersCount ?? 0;
+  // Live follow counts: the `follow-counts-{userId}` cache is invalidated by
+  // follow()/unfollow(), so the numbers update immediately after toggling follow.
+  // Fall back to the static profile counts to avoid a flash before the first fetch.
+  const useFollowCounts = useDiscoverStore((s) => s.useFollowCounts);
+  const { data: followCounts } = useFollowCounts(user.id);
+
+  const followingCount = followCounts?.followingCount ?? user.followingCount ?? 0;
+  const followersCount = followCounts?.followersCount ?? user.followersCount ?? 0;
 
   return (
     <Flexbox horizontal align={'center'} gap={16}>

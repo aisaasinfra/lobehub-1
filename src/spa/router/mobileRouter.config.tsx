@@ -56,6 +56,13 @@ export const sharedMainAreaChildren: RouteObject[] = [
   // Discover routes with nested structure
   {
     children: [
+      {
+        element: dynamicElement(
+          () => import('@/routes/(main)/community/(detail)/workspace/settings'),
+          'Mobile > Discover > Workspace > Settings',
+        ),
+        path: 'workspace/settings',
+      },
       // List routes (with ListLayout)
       {
         children: [

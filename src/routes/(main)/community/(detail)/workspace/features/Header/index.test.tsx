@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { type WorkspaceDetailContextConfig, WorkspaceDetailProvider } from '../DetailProvider';
 import WorkspaceHeader from './index';
@@ -12,6 +13,10 @@ vi.mock('react-i18next', () => ({
 vi.mock('./Banner', () => ({
   default: () => <div data-testid="workspace-banner" />,
 }));
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 const createConfig = (
   overrides: Partial<WorkspaceDetailContextConfig> = {},
@@ -49,6 +54,20 @@ describe('WorkspaceHeader', () => {
     expect(screen.getByRole('button', { name: 'user.setupWorkspaceProfile' })).toBeInTheDocument();
   });
 
+  it('does not render the setup button while the profile is loading', () => {
+    render(
+      <WorkspaceDetailProvider
+        config={createConfig({ isLoading: true, onEditWorkspaceProfile: vi.fn() })}
+      >
+        <WorkspaceHeader />
+      </WorkspaceDetailProvider>,
+    );
+
+    expect(
+      screen.queryByRole('button', { name: 'user.setupWorkspaceProfile' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('renders the organization handle when the Market namespace exists', () => {
     render(
       <WorkspaceDetailProvider
@@ -64,5 +83,27 @@ describe('WorkspaceHeader', () => {
     );
 
     expect(screen.getByText('@org-7k3p9xq2m4')).toBeInTheDocument();
+  });
+
+  it('opens the public organization profile in a new tab after setup', async () => {
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+    render(
+      <WorkspaceDetailProvider
+        config={createConfig({
+          onEditWorkspaceProfile: vi.fn(),
+          user: {
+            ...createConfig().user,
+            namespace: 'acme-labs',
+          },
+        })}
+      >
+        <WorkspaceHeader />
+      </WorkspaceDetailProvider>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'user.openWorkspacePublicProfile' }));
+
+    expect(open).toHaveBeenCalledWith('/community/org/acme-labs', '_blank', 'noopener,noreferrer');
   });
 });

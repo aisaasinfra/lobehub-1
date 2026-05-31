@@ -218,8 +218,7 @@ const forkAgentItemSchema = z.object({
   /**
    * Optional Market organization account id to attribute the fork to. Triggers
    * `X-Lobe-Owner-Account-Id` on the fork request. Caller is responsible for
-   * resolving the workspace → marketAccountId mapping
-   * (`WorkspaceMarketIdentityService.ensureOrganization`).
+   * resolving the organization account id before passing this field.
    */
   actAs: z.number().int().positive().optional(),
   identifier: z.string(),

@@ -76,6 +76,16 @@ describe('WorkspaceContent', () => {
     expect(onEditWorkspaceProfile).toHaveBeenCalledOnce();
   });
 
+  it('shows a skeleton instead of the setup empty-state while the profile is loading', () => {
+    render(
+      <WorkspaceDetailProvider config={createConfig({ isLoading: true })}>
+        <WorkspaceContent />
+      </WorkspaceDetailProvider>,
+    );
+
+    expect(screen.queryByText('user.workspaceProfile.setup.empty.title')).not.toBeInTheDocument();
+  });
+
   it('renders resource sections after setup', () => {
     render(
       <WorkspaceDetailProvider

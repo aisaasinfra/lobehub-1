@@ -5,6 +5,8 @@ import { Building2 } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ListLoading from '@/routes/(main)/community/components/ListLoading';
+
 import { useWorkspaceDetailContext } from './DetailProvider';
 import WorkspaceAgentList from './WorkspaceAgentList';
 import WorkspaceGroupList from './WorkspaceGroupList';
@@ -13,7 +15,12 @@ import WorkspaceSkillList from './WorkspaceSkillList';
 
 const WorkspaceContent = memo(() => {
   const { t } = useTranslation('discover');
-  const { canEdit, onEditWorkspaceProfile, user } = useWorkspaceDetailContext();
+  const { canEdit, isLoading, onEditWorkspaceProfile, user } = useWorkspaceDetailContext();
+
+  // While the market profile is still resolving we don't yet know whether this
+  // workspace has a community profile, so render a skeleton instead of flashing
+  // the setup empty-state (which would pop in and then be replaced by content).
+  if (!user.namespace && isLoading) return <ListLoading length={4} rows={4} />;
 
   if (!user.namespace) {
     return (

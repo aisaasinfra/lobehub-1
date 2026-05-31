@@ -1,9 +1,18 @@
 'use client';
 
-import { ActionIcon, Avatar, Button, Flexbox, Text, Tooltip, TooltipGroup } from '@lobehub/ui';
+import {
+  ActionIcon,
+  Avatar,
+  Button,
+  Flexbox,
+  Skeleton,
+  Text,
+  Tooltip,
+  TooltipGroup,
+} from '@lobehub/ui';
 import { cssVar } from 'antd-style';
-import { Globe } from 'lucide-react';
-import { memo, useMemo } from 'react';
+import { ExternalLink, Globe, Settings } from 'lucide-react';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useWorkspaceDetailContext } from '../DetailProvider';
@@ -15,9 +24,11 @@ const normalizeUrl = (input?: string | null) => {
   return input;
 };
 
+const getWorkspacePublicProfileUrl = (username: string) => `/community/org/${username}`;
+
 const WorkspaceHeader = memo(() => {
   const { t } = useTranslation('discover');
-  const { user, onEditWorkspaceProfile } = useWorkspaceDetailContext();
+  const { user, onEditWorkspaceProfile, isLoading } = useWorkspaceDetailContext();
 
   const displayName = user.displayName || user.userName || user.namespace;
   const username = user.userName || user.namespace;
@@ -25,6 +36,13 @@ const WorkspaceHeader = memo(() => {
 
   const avatarUrl = useMemo(() => normalizeUrl(user.avatarUrl), [user.avatarUrl]);
   const bannerUrl = useMemo(() => normalizeUrl(user.bannerUrl), [user.bannerUrl]);
+  const publicProfileUrl = username ? getWorkspacePublicProfileUrl(username) : undefined;
+
+  const handleOpenPublicProfile = useCallback(() => {
+    if (!publicProfileUrl) return;
+
+    window.open(publicProfileUrl, '_blank', 'noopener,noreferrer');
+  }, [publicProfileUrl]);
 
   return (
     <>
@@ -47,10 +65,26 @@ const WorkspaceHeader = memo(() => {
               </Text>
             )}
           </Flexbox>
-          {onEditWorkspaceProfile && (
-            <Button shape={'round'} onClick={onEditWorkspaceProfile}>
-              {t(isSetup ? 'user.setupWorkspaceProfile' : 'user.editWorkspaceProfile')}
-            </Button>
+          {isLoading ? (
+            <Skeleton.Button active style={{ height: 32, width: 140 }} />
+          ) : (
+            <Flexbox horizontal gap={8}>
+              {publicProfileUrl && (
+                <Button icon={ExternalLink} shape={'round'} onClick={handleOpenPublicProfile}>
+                  {t('user.openWorkspacePublicProfile')}
+                </Button>
+              )}
+              {onEditWorkspaceProfile && (
+                <Button
+                  icon={Settings}
+                  shape={'round'}
+                  type={'primary'}
+                  onClick={onEditWorkspaceProfile}
+                >
+                  {t(isSetup ? 'user.setupWorkspaceProfile' : 'user.editWorkspaceProfile')}
+                </Button>
+              )}
+            </Flexbox>
           )}
         </Flexbox>
 

@@ -13,6 +13,10 @@ import { serverConfigSelectors } from '@/store/serverConfig/selectors';
 
 import { resolveCommunityUserAvatarTarget } from './navigation';
 
+interface UserAvatarProps {
+  avatarOverride?: string | null;
+}
+
 /**
  * Check whether the user needs to complete their profile
  * When using trustedClient auto-authorization, the user's meta-related fields will be empty
@@ -37,7 +41,7 @@ const checkNeedsProfileSetup = (
   return !hasAvatarUrl;
 };
 
-const UserAvatar = memo(() => {
+const UserAvatar = memo<UserAvatarProps>(({ avatarOverride }) => {
   const { t } = useTranslation('discover');
   const navigate = useWorkspaceAwareNavigate();
   const [loading, setLoading] = useState(false);
@@ -109,9 +113,11 @@ const UserAvatar = memo(() => {
   }
 
   // Get avatar from user profile (fetched via SWR with caching)
-  const avatarUrl = isWorkspaceScope
-    ? workspaceAvatarUrl || workspaceUsername
-    : userProfile?.avatarUrl || userProfile?.userName || username;
+  const avatarUrl =
+    avatarOverride ||
+    (isWorkspaceScope
+      ? workspaceAvatarUrl || workspaceUsername
+      : userProfile?.avatarUrl || userProfile?.userName || username);
 
   return <Avatar avatar={avatarUrl} shape={'square'} size={28} onClick={handleAvatarClick} />;
 });
