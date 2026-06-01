@@ -1,7 +1,10 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { matchRoutes } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
+
+import { desktopRoutes } from './desktopRouter.config';
 
 /**
  * Known path pairs that intentionally differ between web and desktop (Electron).
@@ -31,6 +34,16 @@ async function readDesktopRouterSources() {
 }
 
 describe('desktopRouter config sync', () => {
+  it('personal memory settings route is not shadowed by workspace memory route', () => {
+    const matches = matchRoutes(desktopRoutes, '/settings/memory');
+    const paths = matches?.map((match) => match.route.path);
+
+    expect(paths).toContain('settings');
+    expect(paths).not.toContain(':workspaceSlug');
+    expect(paths?.at(-1)).toBe('memory');
+    expect(matches?.at(-1)?.route.handle).toMatchObject({ settingsTab: 'memory' });
+  });
+
   it('desktop (sync) route paths must match web (async) route paths', async () => {
     const [asyncSource, syncSource] = await readDesktopRouterSources();
 

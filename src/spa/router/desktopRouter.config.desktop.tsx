@@ -101,6 +101,7 @@ import TaskDetailRoute from '@/routes/(main)/task/[taskId]';
 import AllTasksPage from '@/routes/(main)/tasks';
 import ShareTopicPage from '@/routes/share/t/[id]';
 import ShareTopicLayout from '@/routes/share/t/[id]/_layout';
+import { SettingsTabs } from '@/store/global/initialState';
 import { ErrorBoundary, redirectElement } from '@/utils/router';
 
 /**
@@ -519,6 +520,11 @@ export const desktopRoutes: RouteObject[] = [
             ],
             element: <ProviderLayout />,
             path: 'provider',
+          },
+          {
+            element: <SettingsTabPage />,
+            handle: { settingsTab: SettingsTabs.Memory },
+            path: 'memory',
           },
           // Other settings tabs
           {

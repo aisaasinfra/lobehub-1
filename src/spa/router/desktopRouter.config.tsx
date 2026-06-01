@@ -6,6 +6,7 @@ import {
   BusinessDesktopRoutesWithMainLayout,
   BusinessDesktopRoutesWithoutMainLayout,
 } from '@/business/client/BusinessDesktopRoutes';
+import { SettingsTabs } from '@/store/global/initialState';
 import { dynamicElement, dynamicLayout, ErrorBoundary, redirectElement } from '@/utils/router';
 
 const agentChatElement = dynamicElement(() => import('@/routes/(main)/agent'), 'Desktop > Chat');
@@ -611,6 +612,14 @@ export const desktopRoutes: RouteObject[] = [
               'Desktop > Settings > Provider > Layout',
             ),
             path: 'provider',
+          },
+          {
+            element: dynamicElement(
+              () => import('@/routes/(main)/settings'),
+              'Desktop > Settings > Memory',
+            ),
+            handle: { settingsTab: SettingsTabs.Memory },
+            path: 'memory',
           },
           // Other settings tabs
           {
