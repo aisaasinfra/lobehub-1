@@ -1198,6 +1198,18 @@ export default {
     'Describe what this workspace publishes or works on.',
   'user.workspaceProfile.settings.displayName.description':
     'This name appears on the Community profile.',
+  'user.workspaceProfile.settings.members.description':
+    'Members currently mirrored into this workspace’s Community organization.',
+  'user.workspaceProfile.settings.members.empty':
+    'No members synced yet. Sync to mirror the current workspace members.',
+  'user.workspaceProfile.settings.members.role.admin': 'Admin',
+  'user.workspaceProfile.settings.members.role.member': 'Member',
+  'user.workspaceProfile.settings.members.sync': 'Sync members',
+  'user.workspaceProfile.settings.members.syncFailed': 'Failed to sync members',
+  'user.workspaceProfile.settings.members.syncHint':
+    'Sync the current workspace members to the Community organization.',
+  'user.workspaceProfile.settings.members.syncSuccess': 'Members synced',
+  'user.workspaceProfile.settings.members.title': 'Community Members',
   'user.workspaceProfile.settings.namespace.description':
     'Set the public Community URL for this workspace.',
   'user.workspaceProfile.settings.namespace.hint': 'Use up to {{max}} characters.',

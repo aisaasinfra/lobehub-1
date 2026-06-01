@@ -1,11 +1,23 @@
 'use client';
 
 import { OFFICIAL_URL } from '@lobechat/const';
-import { Block, Button, Center, Flexbox, Icon, Input, Text, TextArea, Tooltip } from '@lobehub/ui';
+import {
+  Avatar,
+  Block,
+  Button,
+  Center,
+  Flexbox,
+  Icon,
+  Input,
+  Tag,
+  Text,
+  TextArea,
+  Tooltip,
+} from '@lobehub/ui';
 import type { UploadProps } from 'antd';
-import { App, Input as AntInput, Upload } from 'antd';
+import { App, Input as AntInput, Skeleton, Upload } from 'antd';
 import { createStaticStyles, cssVar } from 'antd-style';
-import { ArrowLeft, CircleHelp, Globe, ImagePlus, Trash2 } from 'lucide-react';
+import { ArrowLeft, CircleHelp, Globe, ImagePlus, RefreshCw, Trash2 } from 'lucide-react';
 import {
   memo,
   type PropsWithChildren,
@@ -17,8 +29,12 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useCommunityWorkspaceMembers } from '@/business/client/hooks/useCommunityWorkspaceMembers';
 import { useCommunityWorkspaceProfile } from '@/business/client/hooks/useCommunityWorkspaceProfile';
-import { updateCommunityWorkspaceProfile } from '@/business/client/services/communityWorkspaceProfile';
+import {
+  syncCommunityWorkspaceMembers,
+  updateCommunityWorkspaceProfile,
+} from '@/business/client/services/communityWorkspaceProfile';
 import EmojiPicker from '@/components/EmojiPicker';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { usePermission } from '@/hooks/usePermission';
@@ -92,6 +108,80 @@ const PageContainer = memo<PropsWithChildren>(({ children }) => (
 ));
 
 PageContainer.displayName = 'CommunityWorkspaceSettingsPageContainer';
+
+const MembersCard = memo<{ canManage: boolean }>(({ canManage }) => {
+  const { t } = useTranslation('discover');
+  const { message } = App.useApp();
+  const { canSync, isLoading, members, refresh } = useCommunityWorkspaceMembers();
+  const [syncing, setSyncing] = useState(false);
+
+  const canTriggerSync = canManage && canSync;
+
+  const handleSync = useCallback(async () => {
+    setSyncing(true);
+    try {
+      await syncCommunityWorkspaceMembers();
+      await refresh();
+      message.success(t('user.workspaceProfile.settings.members.syncSuccess'));
+    } catch (error) {
+      message.error(
+        (error as Error).message || t('user.workspaceProfile.settings.members.syncFailed'),
+      );
+    } finally {
+      setSyncing(false);
+    }
+  }, [message, refresh, t]);
+
+  return (
+    <SettingCard
+      description={t('user.workspaceProfile.settings.members.description')}
+      hint={t('user.workspaceProfile.settings.members.syncHint')}
+      title={t('user.workspaceProfile.settings.members.title')}
+      action={
+        <Button disabled={!canTriggerSync} icon={RefreshCw} loading={syncing} onClick={handleSync}>
+          {t('user.workspaceProfile.settings.members.sync')}
+        </Button>
+      }
+    >
+      {isLoading && members.length === 0 ? (
+        <Skeleton active paragraph={{ rows: 2 }} title={false} />
+      ) : members.length === 0 ? (
+        <Text style={{ fontSize: 13 }} type="secondary">
+          {t('user.workspaceProfile.settings.members.empty')}
+        </Text>
+      ) : (
+        <Flexbox gap={12}>
+          {members.map((member) => {
+            const name =
+              member.displayName || member.userName || member.namespace || `#${member.accountId}`;
+            return (
+              <Flexbox horizontal align="center" gap={12} key={member.accountId}>
+                <Avatar avatar={member.avatarUrl || undefined} size={36} title={name} />
+                <Flexbox flex={1} gap={2}>
+                  <Text strong style={{ fontSize: 14 }}>
+                    {name}
+                  </Text>
+                  {member.namespace && (
+                    <Text style={{ fontSize: 12 }} type="secondary">
+                      @{member.namespace}
+                    </Text>
+                  )}
+                </Flexbox>
+                <Tag>
+                  {member.role === 'admin'
+                    ? t('user.workspaceProfile.settings.members.role.admin')
+                    : t('user.workspaceProfile.settings.members.role.member')}
+                </Tag>
+              </Flexbox>
+            );
+          })}
+        </Flexbox>
+      )}
+    </SettingCard>
+  );
+});
+
+MembersCard.displayName = 'CommunityWorkspaceMembersCard';
 
 const trimOptional = (value: string | undefined) => {
   const trimmed = value?.trim();
@@ -320,6 +410,8 @@ const CommunityWorkspaceSettings = memo(() => {
   return (
     <PageContainer>
       {renderHeader(t('user.workspaceProfile.settings.subtitle'))}
+
+      <MembersCard canManage={canManageSettings} />
 
       <SettingCard
         description={t('user.workspaceProfile.settings.displayName.description')}

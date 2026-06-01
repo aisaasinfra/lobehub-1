@@ -18,3 +18,5 @@ export const setupCommunityWorkspaceProfile = async (
 export const updateCommunityWorkspaceProfile = async (
   _input: UpdateCommunityWorkspaceProfileInput,
 ): Promise<void> => {};
+
+export const syncCommunityWorkspaceMembers = async (): Promise<void> => {};

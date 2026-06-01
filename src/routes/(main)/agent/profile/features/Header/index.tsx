@@ -1,6 +1,7 @@
 import { ActionIcon, DropdownMenu, Flexbox, Icon } from '@lobehub/ui';
+import { confirmModal } from '@lobehub/ui/base-ui';
 import { ShapesUploadIcon } from '@lobehub/ui/icons';
-import { App, Modal } from 'antd';
+import { App } from 'antd';
 import isEqual from 'fast-deep-equal';
 import { BotMessageSquareIcon, MoreHorizontal, Settings2Icon, Trash } from 'lucide-react';
 import { memo, useCallback, useMemo, useState } from 'react';
@@ -13,6 +14,7 @@ import { DESKTOP_HEADER_ICON_SMALL_SIZE } from '@/const/layoutTokens';
 import NavHeader from '@/features/NavHeader';
 import ToggleRightPanelButton from '@/features/RightPanel/ToggleRightPanelButton';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
+import { useCommunityPublishGuard } from '@/hooks/useCommunityPublishGuard';
 import { usePermission } from '@/hooks/usePermission';
 import { useMarketAuth } from '@/layout/AuthProvider/MarketAuth';
 import { resolveMarketAuthError } from '@/layout/AuthProvider/MarketAuth/errors';
@@ -41,6 +43,7 @@ const Header = memo(() => {
   const { allowed: canEdit } = usePermission('edit_own_content');
   const { isAuthenticated, isLoading: isAuthLoading, signIn } = useMarketAuth();
   const { isUnderReview } = useVersionReviewStatus();
+  const ensureCommunityPublishAllowed = useCommunityPublishGuard();
 
   const action = meta?.marketIdentifier ? 'upload' : 'submit';
 
@@ -71,6 +74,7 @@ const Header = memo(() => {
 
   const handlePublishClick = useCallback(async () => {
     if (!canEdit) return;
+    if (!ensureCommunityPublishAllowed()) return;
     if (isUnderReview) {
       message.warning({
         content: t('marketPublish.validation.underReview', {
@@ -94,8 +98,10 @@ const Header = memo(() => {
       return;
     }
 
-    Modal.confirm({
-      okButtonProps: { type: 'primary' },
+    confirmModal({
+      cancelText: t('cancel', { ns: 'common' }),
+      content: t('marketPublish.validation.confirmPublishDesc', { ns: 'setting' }),
+      okText: t('ok', { ns: 'common' }),
       onOk: async () => {
         if (!isAuthenticated) {
           try {
@@ -119,6 +125,7 @@ const Header = memo(() => {
     action,
     canEdit,
     doPublish,
+    ensureCommunityPublishAllowed,
     isAuthenticated,
     isUnderReview,
     meta?.title,
