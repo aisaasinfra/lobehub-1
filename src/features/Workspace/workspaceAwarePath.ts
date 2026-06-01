@@ -37,7 +37,6 @@ export const WORKSPACE_SETTINGS_TABS: ReadonlySet<string> = new Set([
   'credits',
   'general',
   'members',
-  'memory',
   'messenger',
   'plans',
   'provider',

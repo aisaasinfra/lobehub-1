@@ -1464,7 +1464,7 @@ When I am ___, I need ___
   'workspace.general.transferAgents.modal.selected': 'selected',
   'workspace.general.transferAgents.modal.selectedAgent': 'Agent to transfer to {{target}}.',
   'workspace.general.transferAgents.modal.success': '{{count}} agent(s) transferred successfully',
-  'workspace.general.transferAgents.modal.title': 'Agents Transfer',
+  'workspace.general.transferAgents.modal.title': 'Transfer Agents',
   'workspace.general.transferAgents.modal.transfer': 'Transfer {{count}} agent(s)',
   'workspace.general.transferAgents.modal.warning':
     'Custom plugins may not be available and multi-agent group associations will be removed.',

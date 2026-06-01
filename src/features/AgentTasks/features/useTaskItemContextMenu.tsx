@@ -334,7 +334,7 @@ export const useTaskItemContextMenu = (task: TaskContextMenuTarget): TaskItemCon
       ...base.slice(0, insertAt),
       ...transferItems,
       { type: 'divider' } as ContextMenuItem,
-      ...base.slice(insertAt),
+      ...base.slice(deleteAnchor),
     ];
   }, [buildItems, task, transferItems]);
   const onContextMenu = useCallback(

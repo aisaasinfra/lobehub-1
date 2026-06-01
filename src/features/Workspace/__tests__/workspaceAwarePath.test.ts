@@ -61,6 +61,7 @@ describe('buildWorkspaceAwarePath', () => {
   it('skips prefix for personal-only settings sub-paths', () => {
     expect(buildWorkspaceAwarePath('/settings/profile', 'acme')).toBe('/settings/profile');
     expect(buildWorkspaceAwarePath('/settings/llm', 'acme')).toBe('/settings/llm');
+    expect(buildWorkspaceAwarePath('/settings/memory', 'acme')).toBe('/settings/memory');
     expect(buildWorkspaceAwarePath('/settings/referral', 'acme')).toBe('/settings/referral');
     expect(buildWorkspaceAwarePath('/settings/system-tools', 'acme')).toBe(
       '/settings/system-tools',

@@ -4,6 +4,7 @@ import { CopyIcon, LinkIcon, MoreHorizontal, Trash } from 'lucide-react';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useTaskTransferMenuItem } from '@/business/client/hooks/useTaskTransferMenuItem';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useAppOrigin } from '@/hooks/useAppOrigin';
 import { usePermission } from '@/hooks/usePermission';
@@ -18,6 +19,7 @@ const TaskDetailHeaderActions = memo(() => {
   const { allowed: canEditTask } = usePermission('create_content');
   const taskId = useTaskStore(taskDetailSelectors.activeTaskId);
   const deleteTask = useTaskStore((s) => s.deleteTask);
+  const transferItems = useTaskTransferMenuItem(taskId) as DropdownItem[] | null;
 
   const triggerDelete = useCallback(() => {
     if (!canEditTask) return;
@@ -41,7 +43,7 @@ const TaskDetailHeaderActions = memo(() => {
 
     const taskUrl = `${appOrigin}/task/${taskId}`;
 
-    return [
+    const baseItems: DropdownItem[] = [
       {
         icon: <Icon icon={CopyIcon} />,
         key: 'copyId',
@@ -70,7 +72,11 @@ const TaskDetailHeaderActions = memo(() => {
         onClick: triggerDelete,
       },
     ];
-  }, [taskId, appOrigin, t, message, triggerDelete, canEditTask]);
+
+    if (!transferItems || transferItems.length === 0) return baseItems;
+
+    return [...baseItems.slice(0, 3), ...transferItems, { type: 'divider' }, ...baseItems.slice(3)];
+  }, [taskId, appOrigin, t, message, triggerDelete, canEditTask, transferItems]);
 
   if (!taskId) return null;
 

@@ -1502,7 +1502,7 @@
   "workspace.general.transferAgents.modal.selected": "已选择",
   "workspace.general.transferAgents.modal.selectedAgent": "要转移到 {{target}} 的代理。",
   "workspace.general.transferAgents.modal.success": "已成功迁移 {{count}} 个 Agent",
-  "workspace.general.transferAgents.modal.title": "Agents Transfer",
+  "workspace.general.transferAgents.modal.title": "迁移 Agent",
   "workspace.general.transferAgents.modal.transfer": "迁移 {{count}} 个 Agent",
   "workspace.general.transferAgents.modal.warning": "自定义插件可能不可用，多 Agent 对话组关联将被移除。",
   "workspace.general.transferAgents.personalAccount": "个人账号",
