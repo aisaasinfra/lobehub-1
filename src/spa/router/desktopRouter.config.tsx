@@ -291,7 +291,7 @@ export const sharedMainAreaChildren: RouteObject[] = [
           },
           {
             element: dynamicElement(
-              () => import('@/routes/(main)/community/(detail)/user'),
+              () => import('@/routes/(main)/community/(detail)/organization'),
               'Desktop > Discover > Detail > Organization',
             ),
             path: 'org/:slug',

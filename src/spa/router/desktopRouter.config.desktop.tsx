@@ -47,6 +47,7 @@ import CommunityDetailAgentPage from '@/routes/(main)/community/(detail)/agent';
 import CommunityDetailGroupAgentPage from '@/routes/(main)/community/(detail)/group_agent';
 import CommunityDetailMcpPage from '@/routes/(main)/community/(detail)/mcp';
 import CommunityDetailModelPage from '@/routes/(main)/community/(detail)/model';
+import CommunityDetailOrganizationPage from '@/routes/(main)/community/(detail)/organization';
 import CommunityDetailProviderPage from '@/routes/(main)/community/(detail)/provider';
 import CommunityDetailSkillPage from '@/routes/(main)/community/(detail)/skill';
 import CommunityDetailUserPage from '@/routes/(main)/community/(detail)/user';
@@ -292,7 +293,7 @@ export const sharedMainAreaChildren: RouteObject[] = [
             path: 'user/:slug',
           },
           {
-            element: <CommunityDetailUserPage />,
+            element: <CommunityDetailOrganizationPage />,
             path: 'org/:slug',
           },
         ],

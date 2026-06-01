@@ -1,44 +1,32 @@
 'use client';
 
 import { SiGithub, SiX } from '@icons-pack/react-simple-icons';
-import { ActionIcon, Avatar, Button, Flexbox, Tag, Text, Tooltip, TooltipGroup } from '@lobehub/ui';
+import { ActionIcon, Avatar, Flexbox, Tag, Text, Tooltip, TooltipGroup } from '@lobehub/ui';
 import { cssVar } from 'antd-style';
 import { Globe } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useUserDetailContext } from '../DetailProvider';
-import FollowButton from '../FollowButton';
+import FollowButton from '@/routes/(main)/community/(detail)/features/FollowButton';
+
+import { useOrganizationDetailContext } from '../DetailProvider';
 import FollowStats from '../FollowStats';
 import Banner from './Banner';
 
-const UserHeader = memo(() => {
+const normalizeUrl = (input?: string | null) => {
+  if (!input) return undefined;
+  if (input.startsWith('/')) return `${window.location.origin}${input}`;
+  return input;
+};
+
+const OrganizationHeader = memo(() => {
   const { t } = useTranslation('discover');
-  const { user, isOwner, onEditProfile } = useUserDetailContext();
+  const { user } = useOrganizationDetailContext();
 
   const displayName = user.displayName || user.userName || user.namespace;
   const username = user.userName || user.namespace;
-  const showEditButton = isOwner && !!onEditProfile;
-  const isOrg = user.type === 'organization';
-
-  // Normalize avatar URL - convert relative paths to absolute URLs
-  const avatarUrl = useMemo(() => {
-    if (!user.avatarUrl) return undefined;
-    // If it's a relative path (starts with /), prepend the origin
-    if (user.avatarUrl.startsWith('/')) {
-      return `${window.location.origin}${user.avatarUrl}`;
-    }
-    return user.avatarUrl;
-  }, [user.avatarUrl]);
-
-  const bannerUrl = useMemo(() => {
-    if (!user.bannerUrl) return null;
-    // If it's a relative path (starts with /), prepend the origin
-    if (user.bannerUrl.startsWith('/')) {
-      return `${window.location.origin}${user.bannerUrl}`;
-    }
-    return user.bannerUrl;
-  }, [user.bannerUrl]);
+  const avatarUrl = useMemo(() => normalizeUrl(user.avatarUrl), [user.avatarUrl]);
+  const bannerUrl = useMemo(() => normalizeUrl(user.bannerUrl), [user.bannerUrl]);
 
   return (
     <>
@@ -51,31 +39,18 @@ const UserHeader = memo(() => {
           style={{ boxShadow: `0 0 0 4px ${cssVar.colorBgContainer}`, flexShrink: 0 }}
         />
         <Flexbox horizontal align={'flex-start'} gap={16} justify={'space-between'}>
-          <Flexbox
-            gap={4}
-            style={{
-              overflow: 'hidden',
-            }}
-          >
+          <Flexbox gap={4} style={{ overflow: 'hidden' }}>
             <Flexbox horizontal align={'center'} gap={8}>
               <Text ellipsis as={'h1'} fontSize={24} style={{ margin: 0 }} weight={'bold'}>
                 {displayName}
               </Text>
-              {isOrg && (
-                <Tag style={{ flexShrink: 0, margin: 0 }}>{t('user.accountType.organization')}</Tag>
-              )}
+              <Tag style={{ flexShrink: 0, margin: 0 }}>{t('user.accountType.organization')}</Tag>
             </Flexbox>
             <Text ellipsis fontSize={12} type={'secondary'}>
               @{username}
             </Text>
           </Flexbox>
-          {showEditButton ? (
-            <Button shape={'round'} onClick={() => onEditProfile?.()}>
-              {t('user.editProfile')}
-            </Button>
-          ) : (
-            <FollowButton userId={user.id} />
-          )}
+          <FollowButton userId={user.id} />
         </Flexbox>
 
         <FollowStats />
@@ -85,9 +60,9 @@ const UserHeader = memo(() => {
         <TooltipGroup>
           <Flexbox horizontal align={'center'} gap={8}>
             {user.socialLinks?.github && (
-              <Tooltip title={`@${user.socialLinks?.github}`}>
+              <Tooltip title={`@${user.socialLinks.github}`}>
                 <a
-                  href={`https://github.com/${user?.socialLinks?.github}`}
+                  href={`https://github.com/${user.socialLinks.github}`}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -96,9 +71,9 @@ const UserHeader = memo(() => {
               </Tooltip>
             )}
             {user.socialLinks?.twitter && (
-              <Tooltip title={`@${user.socialLinks?.twitter}`}>
+              <Tooltip title={`@${user.socialLinks.twitter}`}>
                 <a
-                  href={`https://twitter.com/${user?.socialLinks?.twitter}`}
+                  href={`https://twitter.com/${user.socialLinks.twitter}`}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -107,8 +82,8 @@ const UserHeader = memo(() => {
               </Tooltip>
             )}
             {user.socialLinks?.website && (
-              <Tooltip title={user.socialLinks?.website}>
-                <a href={user?.socialLinks?.website} rel="noopener noreferrer" target="_blank">
+              <Tooltip title={user.socialLinks.website}>
+                <a href={user.socialLinks.website} rel="noopener noreferrer" target="_blank">
                   <ActionIcon icon={Globe} size={20} variant={'outlined'} />
                 </a>
               </Tooltip>
@@ -120,4 +95,4 @@ const UserHeader = memo(() => {
   );
 });
 
-export default UserHeader;
+export default OrganizationHeader;

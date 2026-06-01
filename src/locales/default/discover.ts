@@ -1218,13 +1218,17 @@ export default {
   'user.workspaceProfile.success': 'Workspace profile updated',
   'user.workspaceProfile.title': 'Edit Workspace',
 
+  'user.accountType.organization': 'Organization',
+
   'user.noAgents': 'This user hasn’t published any Agents yet',
 
   'user.noAgents.ownerDescription': 'Create your first Agent and share it with the Community.',
 
   'user.noAgents.title': 'No Agents yet',
 
-  'user.workspace.noAgents': 'This workspace has not published any Agents to Community yet.',
+  'user.org.noAgents': 'This organization hasn’t published any Agents yet',
+
+  'user.workspace.noAgents': 'This organization has not published any Agents to Community yet.',
 
   'user.noFavoriteAgents': 'No saved Agents yet',
 

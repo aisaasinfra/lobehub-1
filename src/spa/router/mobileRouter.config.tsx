@@ -180,8 +180,8 @@ export const sharedMainAreaChildren: RouteObject[] = [
           {
             element: dynamicElement(
               () =>
-                import('@/routes/(main)/community/(detail)/user').then(
-                  (m) => m.MobileUserDetailPage,
+                import('@/routes/(main)/community/(detail)/organization').then(
+                  (m) => m.MobileOrganizationDetailPage,
                 ),
               'Mobile > Discover > Detail > Organization',
             ),
