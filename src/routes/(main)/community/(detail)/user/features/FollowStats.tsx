@@ -14,12 +14,14 @@ const FollowStats = memo(() => {
 
   // Live follow counts: the `follow-counts-{userId}` cache is invalidated by
   // follow()/unfollow(), so the numbers update immediately after toggling follow.
-  // Fall back to the static profile counts to avoid a flash before the first fetch.
+  // Fall back to the static profile counts (which come straight from the
+  // authoritative `accounts.*_count` columns) whenever the live count is missing
+  // or 0 — so a not-yet-populated live query never clobbers a real count.
   const useFollowCounts = useDiscoverStore((s) => s.useFollowCounts);
   const { data: followCounts } = useFollowCounts(user.id);
 
-  const followingCount = followCounts?.followingCount ?? user.followingCount ?? 0;
-  const followersCount = followCounts?.followersCount ?? user.followersCount ?? 0;
+  const followingCount = followCounts?.followingCount || user.followingCount || 0;
+  const followersCount = followCounts?.followersCount || user.followersCount || 0;
 
   return (
     <Flexbox horizontal align={'center'} gap={16}>

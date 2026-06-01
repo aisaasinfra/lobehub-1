@@ -12,11 +12,14 @@ const FollowStats = memo(() => {
   const { t } = useTranslation('discover');
   const { user } = useOrganizationDetailContext();
 
+  // Fall back to the static profile counts (sourced from the authoritative
+  // `accounts.*_count` columns) whenever the live count is missing or 0, so a
+  // not-yet-populated live query never clobbers a real count.
   const useFollowCounts = useDiscoverStore((s) => s.useFollowCounts);
   const { data: followCounts } = useFollowCounts(user.id);
 
-  const followingCount = followCounts?.followingCount ?? user.followingCount ?? 0;
-  const followersCount = followCounts?.followersCount ?? user.followersCount ?? 0;
+  const followingCount = followCounts?.followingCount || user.followingCount || 0;
+  const followersCount = followCounts?.followersCount || user.followersCount || 0;
 
   return (
     <Flexbox horizontal align={'center'} gap={16}>
