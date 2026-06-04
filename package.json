@@ -443,6 +443,7 @@
     "xast-util-to-xml": "^4.0.0",
     "xastscript": "^4.0.0",
     "yaml": "^2.8.2",
+    "zlib-sync": "^0.1.10",
     "zod": "^3.25.76",
     "zod-to-json-schema": "^3.25.1",
     "zustand": "5.0.4",
