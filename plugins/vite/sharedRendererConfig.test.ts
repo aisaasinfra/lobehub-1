@@ -1,6 +1,16 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
-import { __testing, sharedModulePreload } from './sharedRendererConfig';
+import { __testing, sharedModulePreload, sharedRendererDefine } from './sharedRendererConfig';
+
+const originalReactScan = process.env.REACT_SCAN;
+
+afterEach(() => {
+  if (originalReactScan === undefined) {
+    delete process.env.REACT_SCAN;
+  } else {
+    process.env.REACT_SCAN = originalReactScan;
+  }
+});
 
 describe('sharedModulePreload', () => {
   it('keeps vendor modulepreload dependencies while excluding i18n chunks', () => {
@@ -60,5 +70,29 @@ describe('sharedManualChunks', () => {
         '/repo/node_modules/.pnpm/openai@4/node_modules/openai/index.mjs',
       ),
     ).toBe('vendor-ai-runtime');
+  });
+});
+
+describe('sharedRendererDefine', () => {
+  it('keeps react-scan disabled by default', () => {
+    delete process.env.REACT_SCAN;
+
+    expect(sharedRendererDefine({ isElectron: false, isMobile: false }).__REACT_SCAN__).toBe(
+      'false',
+    );
+  });
+
+  it('enables react-scan only when explicitly requested', () => {
+    process.env.REACT_SCAN = 'true';
+
+    expect(sharedRendererDefine({ isElectron: false, isMobile: false }).__REACT_SCAN__).toBe(
+      'true',
+    );
+
+    process.env.REACT_SCAN = '1';
+
+    expect(sharedRendererDefine({ isElectron: false, isMobile: false }).__REACT_SCAN__).toBe(
+      'true',
+    );
   });
 });
