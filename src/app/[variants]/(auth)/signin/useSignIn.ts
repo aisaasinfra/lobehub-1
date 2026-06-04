@@ -177,12 +177,14 @@ export const useSignIn = () => {
         { callbackURL: callbackUrl, email, password: values.password },
         {
           onError: (ctx) => {
-            console.error('Sign in error:', ctx.error);
             if (ctx.error.status === 403) {
               router.push(
                 `/verify-email?email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent(callbackUrl)}`,
               );
+              return;
             }
+
+            console.error('Sign in error:', ctx.error);
           },
           onSuccess: () => router.push(callbackUrl),
         },

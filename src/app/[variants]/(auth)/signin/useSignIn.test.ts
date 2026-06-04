@@ -269,6 +269,8 @@ describe('useSignIn', () => {
     });
 
     it('should redirect to verify-email on 403', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
       mockSignInEmail.mockImplementation(async (_data: any, opts: any) => {
         opts.onError({ error: { status: 403 } });
         return { error: { message: 'Email not verified', status: 403 } };
@@ -292,6 +294,7 @@ describe('useSignIn', () => {
       expect(mockPush).toHaveBeenCalledWith(
         expect.stringContaining('/verify-email?email=user%40example.com'),
       );
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
   });
 
