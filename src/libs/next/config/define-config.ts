@@ -3,6 +3,7 @@ import { type NextConfig } from 'next';
 import { type Header, type Redirect } from 'next/dist/lib/load-custom-routes';
 
 interface CustomNextConfig {
+  allowedDevOrigins?: NextConfig['allowedDevOrigins'];
   experimental?: NextConfig['experimental'];
   headers?: Header[];
   outputFileTracingExcludes?: NextConfig['outputFileTracingExcludes'];
@@ -11,6 +12,27 @@ interface CustomNextConfig {
   serverExternalPackages?: NextConfig['serverExternalPackages'];
   turbopack?: NextConfig['turbopack'];
 }
+
+const normalizeAllowedDevOrigin = (origin: string) => {
+  const trimmed = origin.trim();
+  if (!trimmed) return;
+  if (trimmed.includes('*')) return trimmed;
+
+  try {
+    return new URL(trimmed.includes('://') ? trimmed : `http://${trimmed}`).hostname;
+  } catch {
+    return trimmed;
+  }
+};
+
+const resolveAllowedDevOrigins = (configuredOrigins?: string[]) => {
+  const envOrigins = (process.env.NEXT_ALLOWED_DEV_ORIGINS ?? '').split(',');
+  const origins = [...(configuredOrigins ?? []), ...envOrigins]
+    .map(normalizeAllowedDevOrigin)
+    .filter((origin): origin is string => Boolean(origin));
+
+  return origins.length > 0 ? Array.from(new Set(origins)) : undefined;
+};
 
 export function defineConfig(config: CustomNextConfig) {
   const isProd = process.env.NODE_ENV === 'production';
@@ -60,6 +82,7 @@ export function defineConfig(config: CustomNextConfig) {
 
   const nextConfig: NextConfig = {
     ...(isStandaloneMode ? standaloneConfig : {}),
+    allowedDevOrigins: resolveAllowedDevOrigins(config.allowedDevOrigins),
     assetPrefix,
 
     compiler: {
