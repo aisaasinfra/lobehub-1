@@ -11,6 +11,7 @@ interface CustomNextConfig {
   redirects?: Redirect[];
   serverExternalPackages?: NextConfig['serverExternalPackages'];
   turbopack?: NextConfig['turbopack'];
+  webpack?: NextConfig['webpack'];
 }
 
 const normalizeAllowedDevOrigin = (origin: string) => {
@@ -33,6 +34,16 @@ const resolveAllowedDevOrigins = (configuredOrigins?: string[]) => {
 
   return origins.length > 0 ? Array.from(new Set(origins)) : undefined;
 };
+
+const isNodeOnlyExternalPackage = (request?: string) =>
+  !!request &&
+  (request.startsWith('@grpc/') ||
+    request.startsWith('@opentelemetry/') ||
+    request === '@chat-adapter/discord' ||
+    request === '@larksuiteoapi/node-sdk' ||
+    request === 'discord.js' ||
+    request === 'protobufjs' ||
+    request === 'zlib-sync');
 
 export function defineConfig(config: CustomNextConfig) {
   const isProd = process.env.NODE_ENV === 'production';
@@ -379,7 +390,10 @@ export function defineConfig(config: CustomNextConfig) {
       'pdfkit',
       '@napi-rs/canvas',
       '@lobehub/editor',
+      '@chat-adapter/discord',
+      '@larksuiteoapi/node-sdk',
       'discord.js',
+      'zlib-sync',
       'ffmpeg-static',
       'pdfjs-dist',
       'ajv',
@@ -405,6 +419,28 @@ export function defineConfig(config: CustomNextConfig) {
 
     typescript: {
       ignoreBuildErrors: true,
+    },
+
+    webpack: (webpackConfig, options) => {
+      const nextWebpackConfig = config.webpack?.(webpackConfig, options) ?? webpackConfig;
+
+      if (!options.isServer) {
+        return nextWebpackConfig;
+      }
+
+      const nodeOnlyExternal = ({ request }: { request?: string }, callback: any) => {
+        if (isNodeOnlyExternalPackage(request)) {
+          return callback(null, `commonjs ${request}`);
+        }
+
+        return callback();
+      };
+
+      nextWebpackConfig.externals = Array.isArray(nextWebpackConfig.externals)
+        ? [...nextWebpackConfig.externals, nodeOnlyExternal]
+        : [nextWebpackConfig.externals, nodeOnlyExternal].filter(Boolean);
+
+      return nextWebpackConfig;
     },
   };
 
