@@ -142,7 +142,7 @@ const main = async () => {
   process.once('SIGINT', () => shutdownAll('SIGINT'));
   process.once('SIGTERM', () => shutdownAll('SIGTERM'));
 
-  nextProcess = spawn('npx', ['next', 'dev', '-p', String(NEXT_PORT)], {
+  nextProcess = spawn('npx', ['next', 'dev', '--webpack', '-p', String(NEXT_PORT)], {
     env: process.env,
     stdio: 'inherit',
     shell: process.platform === 'win32',
